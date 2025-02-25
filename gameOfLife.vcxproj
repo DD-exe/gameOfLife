@@ -142,6 +142,7 @@
   <ItemGroup>
     <Image Include="image\OIP-C.bmp" />
     <Image Include="image\OIP-C.ico" />
+    <Image Include="image\small.ico" />
   </ItemGroup>
   <ItemGroup>
     <None Include=".gitignore" />

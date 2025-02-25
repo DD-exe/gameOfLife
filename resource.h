@@ -8,11 +8,17 @@
 #define IDD_ABOUTBOX                    103
 #define IDM_ABOUT                       104
 #define IDM_EXIT                        105
-#define IDI_SMALL						108
+#define IDI_SMALL                       108
 #define IDC_GAMEOFLIFE                  109
 #define IDR_MAINFRAME                   128
 #define IDB_LINbmp                      131
 #define IDI_LINico                      132
+#define ID_32772                        32772
+#define ID_SAVE                         32773
+#define ID_32774                        32774
+#define ID_START                        32775
+#define ID_32776                        32776
+#define ID_STOP                         32777
 #define IDC_STATIC                      -1
 
 // Next default values for new objects
@@ -21,7 +27,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NO_MFC                     1
 #define _APS_NEXT_RESOURCE_VALUE        133
-#define _APS_NEXT_COMMAND_VALUE         32772
+#define _APS_NEXT_COMMAND_VALUE         32778
 #define _APS_NEXT_CONTROL_VALUE         1000
 #define _APS_NEXT_SYMED_VALUE           110
 #endif

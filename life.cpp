@@ -25,7 +25,8 @@
  * \param new Where to put the replacement universe.
  * \note \c new must have three times the space used by \c this.
  */
-void life(int *this, int *new)
+#include "gameOfLife.h"
+void life(int *that, int *newi)
 {
 	unsigned bitmap;
 	int *next, *prev;
@@ -53,17 +54,17 @@ void life(int *this, int *new)
 		}
 	}
 
-	prev = next = this;
+	prev = next = that;
 	bitmap = 0;
-	*new = 0;
+	*newi = 0;
 	for(;;) {
 		/* did we write an X co-ordinate? */
-		if(*new < 0)
-			new++;
+		if(*newi < 0)
+			newi++;
 		if(prev == next) {
 			/* start a new group of rows */
 			if(*next == 0) {
-				*new = 0;
+				*newi = 0;
 				return;
 			}
 			y = *next++ + 1;
@@ -71,18 +72,18 @@ void life(int *this, int *new)
 			/* move to next row and work out which ones to scan */
 			if(*prev == y--)
 				prev++;
-			if(*this == y)
-				this++;
+			if(*that == y)
+				that++;
 			if(*next == y-1)
 				next++;
 		}
 		/* write new row co-ordinate */
-		*new = y;
+		*newi = y;
 		for(;;) {
 			/* skip to the leftmost cell */
 			x = *prev;
-			if(x > *this)
-				x = *this;
+			if(x > *that)
+				x = *that;
 			if(x > *next)
 				x = *next;
 			/* end of line? */
@@ -94,9 +95,9 @@ void life(int *this, int *new)
 					bitmap |= 0100;
 					prev++;
 				}
-				if(*this == x) {
+				if(*that == x) {
 					bitmap |= 0200;
-					this++;
+					that++;
 				}
 				if(*next == x) {
 					bitmap |= 0400;
@@ -104,7 +105,7 @@ void life(int *this, int *new)
 				}
 				/* what does this bitmap indicate? */
 				if(state[bitmap] == LIVE)
-					*++new = x - 1;
+					*++newi = x - 1;
 				else if(bitmap == 000)
 					break;
 				/* move right */

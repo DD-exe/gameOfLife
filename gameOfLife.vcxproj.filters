@@ -48,6 +48,9 @@
     <Image Include="image\OIP-C.ico">
       <Filter>资源文件</Filter>
     </Image>
+    <Image Include="image\small.ico">
+      <Filter>资源文件</Filter>
+    </Image>
   </ItemGroup>
   <ItemGroup>
     <None Include="readme.md" />
