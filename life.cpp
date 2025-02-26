@@ -31,15 +31,12 @@ void life(int *that, int *newi)
 	unsigned bitmap;
 	int *next, *prev;
 	int x, y;
-	static enum {
-		DEAD, LIVE
-	} state[1 << 9];
-
-	if(state[007] == 0) {
+	static enum{DEAD, LIVE} state[1 << 9];
+	if(state[007] == 0) { //读活例子，避免重复初始化
 		for(bitmap = 0; bitmap < 1<<9; bitmap++) {
 			for(x = y = 0; y < 9; y++)
-				if(bitmap & 1<<y)
-					x += 1;
+				if(bitmap & 1<<y) // 读第y个是否为1
+					x += 1; //计数
 			if(bitmap & 020) {
 				if(x == 2 || x == 3)
 					state[bitmap] = LIVE;
@@ -52,7 +49,7 @@ void life(int *that, int *newi)
 					state[bitmap] = DEAD;
 			}
 		}
-	}
+	} // 初始化9位状态->LIVE/DEAD的映射
 
 	prev = next = that;
 	bitmap = 0;

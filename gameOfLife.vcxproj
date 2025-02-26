@@ -134,7 +134,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="gameOfLife.cpp" />
-    <ClCompile Include="life.c" />
+    <ClCompile Include="life.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="gameOfLife.rc" />
