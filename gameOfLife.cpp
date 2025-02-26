@@ -3,10 +3,10 @@
 #define MAX_LOADSTRING 100
 
 // 全局变量
-HINSTANCE hInst;                                // 当前实例
-WCHAR szTitle[MAX_LOADSTRING];                  // 标题栏文本
-WCHAR szWindowClass[MAX_LOADSTRING];            // 主窗口类名
-bool ifRun;
+HINSTANCE   hInst;                                // 当前实例
+WCHAR       szTitle[MAX_LOADSTRING];              // 标题栏文本
+WCHAR       szWindowClass[MAX_LOADSTRING];        // 主窗口类名
+bool        ifRun;
 
 // 函数前向声明
 ATOM                MyRegisterClass(HINSTANCE hInstance);
@@ -99,6 +99,12 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
             case IDM_ABOUT:
                 DialogBox(hInst, MAKEINTRESOURCE(IDD_ABOUTBOX), hWnd, About);
                 break;
+            case ID_START:
+                break;
+            case ID_STOP:
+                break;
+            case ID_SAVE:
+                break;
             case IDM_EXIT:
                 DestroyWindow(hWnd);
                 break;
@@ -111,7 +117,19 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         {
             PAINTSTRUCT ps;
             HDC hdc = BeginPaint(hWnd, &ps);
-            // TODO: 在此处添加使用 hdc 的任何绘图代码...
+            // TODO: 在此处添加使用 hdc 的任何绘图代码..
+            static HWND startBotton = CreateWindow(
+                L"BUTTON", L"启动/暂停(O)",
+                WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON,
+                0, 0, 100, 30,
+                hWnd, (HMENU)1, NULL, NULL
+            );
+            static HWND stopBotton = CreateWindow(
+                L"BUTTON", L"重置(U)",
+                WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON,
+                0, 40, 100, 30,
+                hWnd, (HMENU)1, NULL, NULL
+            );
             EndPaint(hWnd, &ps);
         }
         break;

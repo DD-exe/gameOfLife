@@ -28,7 +28,7 @@
 #include "gameOfLife.h"
 void life(int *that, int *newi)
 {
-	unsigned bitmap;
+	unsigned int bitmap; // notice
 	int *next, *prev;
 	int x, y;
 	static enum{DEAD, LIVE} state[1 << 9];
