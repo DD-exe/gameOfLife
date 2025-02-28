@@ -133,6 +133,8 @@
     <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="about.cpp" />
+    <ClCompile Include="downloads.cpp" />
     <ClCompile Include="gameOfLife.cpp" />
     <ClCompile Include="life.cpp" />
   </ItemGroup>

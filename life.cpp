@@ -1,32 +1,8 @@
-/*!
- * \file life.c
- *
- * \brief An implementation of the Game of Life
- *
- * The Life universe is represented by an array containing the co-ordinates
- * of the live cells, organized as a sequence of rows. Each row is a Y value
- * followed by a sequence of X values. X and Y are distinguished from each
- * other by their sign. The array is terminated by a Y value of 0.
- *
- * Y values have the same sign as the terminator, so they are positive and X
- * values are negative. Y values are all greater than the terminator, so they
- * decrease in order to make the terminator sort last. X values are all less
- * than Y values, so they increase in order to make the Y value following the
- * line sort after the line.
- *
- * $Copyright: (C) 2003 Tony Finch <dot@dotat.at> $
- *
- * $dotat: things/life.c,v 1.7 2003/12/04 17:06:27 fanf2 Exp $
- */
-
-/*!
- * \brief Compute the next generation of the Game of Life.
- * \param this The current state of the known universe.
- * \param new Where to put the replacement universe.
- * \note \c new must have three times the space used by \c this.
- */
 #include "gameOfLife.h"
-void life(int *that, int *newi)
+
+
+void life(int *that, int *newi) // 此函数学习于https://dotat.at/prog/life/life.html
+								// List Life algorithm(by Tony Finch)
 {
 	unsigned int bitmap; // notice
 	int *next, *prev;
@@ -112,5 +88,3 @@ void life(int *that, int *newi)
 		}
 	}
 }
-
-/* EOF life.c */

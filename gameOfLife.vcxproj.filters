@@ -35,6 +35,12 @@
     <ClCompile Include="life.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="about.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="downloads.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="gameOfLife.rc">

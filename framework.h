@@ -8,3 +8,6 @@
 #include <malloc.h>
 #include <memory.h>
 #include <tchar.h>
+
+void life(int* that, int* newi);
+INT_PTR CALLBACK About(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam);

@@ -9,16 +9,15 @@ WCHAR       szWindowClass[MAX_LOADSTRING];        // 主窗口类名
 BOOL        ifRun;
 INT         cellSize;
 INT         tableX;
-INT         tableY;
+INT         tableY;         // table表示法待重构
 BOOL      **table;
-BOOL        ifMouseDown;  // 释放鼠标按下状态
+BOOL        ifMouseDown;    // 释放鼠标按下状态
 INT         lastX;
 INT         lastY;
 // 函数前向声明
 ATOM                MyRegisterClass(HINSTANCE hInstance);
 BOOL                InitInstance(HINSTANCE, int);
 LRESULT CALLBACK    WndProc(HWND, UINT, WPARAM, LPARAM);
-INT_PTR CALLBACK    About(HWND, UINT, WPARAM, LPARAM);
 
 int APIENTRY wWinMain(_In_ HINSTANCE hInstance,_In_opt_ HINSTANCE hPrevInstance,_In_ LPWSTR lpCmdLine,_In_ int nCmdShow)
 {
@@ -117,6 +116,12 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
                 ifRun = !ifRun;
                 break;
             case ID_STOP:
+                for (int i = 0; i < tableX; ++i) {
+                    for (int j = 0; j < tableY; ++j) {
+                        table[i][j] = FALSE;
+                    }
+                }
+                InvalidateRect(hWnd, NULL, TRUE);
                 break;
             case ID_SAVE:
                 break;
@@ -132,17 +137,21 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         {
             PAINTSTRUCT ps;
             HDC hdc = BeginPaint(hWnd, &ps);
+            RECT clientRect;
+            GetClientRect(hWnd, &clientRect);  // 获取客户区区域
+            INT clientWidth = clientRect.right - clientRect.left;   // 客户区宽度
+            INT clientHeight = clientRect.bottom - clientRect.top;  // 客户区高度
             static HWND startBotton = CreateWindow(
                 L"BUTTON", L"启动/暂停(O)",
                 WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON,
-                0, 0, 100, 30,
-                hWnd, (HMENU)1, NULL, NULL
+                clientWidth-100, 0, 100, 30,
+                hWnd, (HMENU)ID_START, NULL, NULL
             );
             static HWND stopBotton = CreateWindow(
                 L"BUTTON", L"重置(U)",
                 WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON,
-                0, 40, 100, 30,
-                hWnd, (HMENU)1, NULL, NULL
+                clientWidth - 100, 40, 100, 30,
+                hWnd, (HMENU)ID_STOP, NULL, NULL
             );
             for (int y = 0; y <tableY; y++) {
                 for (int x = 0; x < tableX; x++) {
@@ -150,6 +159,11 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
                         (x + 1) * cellSize, (y + 1) * cellSize };
                     if (table[y][x]) {
                         HBRUSH hBrush = CreateSolidBrush(RGB(100, 100, 255)); // 蓝色填充
+                        FillRect(hdc, &rect, hBrush);
+                        DeleteObject(hBrush);
+                    }
+                    else {
+                        HBRUSH hBrush = CreateSolidBrush(RGB(200, 200, 200)); // 蓝色填充
                         FillRect(hdc, &rect, hBrush);
                         DeleteObject(hBrush);
                     }
@@ -179,8 +193,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
             lastX = x; lastY = y;  // 记录上次处理的格子，避免 `WM_MOUSEMOVE` 立即重复处理
         }
     }
-    break;
-
+        break;
     case WM_MOUSEMOVE:
     {
         if (ifMouseDown) {  // 仅在鼠标按住时处理
@@ -198,8 +211,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
             }
         }
     }
-    break;
-
+        break;
     case WM_LBUTTONUP:
         ifMouseDown = false;  // 释放鼠标按下状态
         lastX = lastY = -1;   // 清除上次处理的格子记录
@@ -211,24 +223,4 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         return DefWindowProc(hWnd, message, wParam, lParam);
     }
     return 0;
-}
-
-// “关于”框的消息处理程序。
-INT_PTR CALLBACK About(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
-{
-    UNREFERENCED_PARAMETER(lParam);
-    switch (message)
-    {
-    case WM_INITDIALOG:
-        return (INT_PTR)TRUE;
-
-    case WM_COMMAND:
-        if (LOWORD(wParam) == IDOK || LOWORD(wParam) == IDCANCEL)
-        {
-            EndDialog(hDlg, LOWORD(wParam));
-            return (INT_PTR)TRUE;
-        }
-        break;
-    }
-    return (INT_PTR)FALSE;
 }
