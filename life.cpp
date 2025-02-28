@@ -7,12 +7,12 @@ void life(int *that, int *newi) // 此函数学习于https://dotat.at/prog/life/life.h
 	unsigned int bitmap; // notice
 	int *next, *prev;
 	int x, y;
-	static enum{DEAD, LIVE} state[1 << 9];
-	if(state[007] == 0) { //读活例子，避免重复初始化
+	static enum{DEAD,LIVE} state[1 << 9];
+	if(state[007] == 0) {							//读活例子，避免重复初始化
 		for(bitmap = 0; bitmap < 1<<9; bitmap++) {
 			for(x = y = 0; y < 9; y++)
-				if(bitmap & 1<<y) // 读第y个是否为1
-					x += 1; //计数
+				if(bitmap & 1<<y)					// 读第y个是否为1
+					x += 1;							//计数
 			if(bitmap & 020) {
 				if(x == 2 || x == 3)
 					state[bitmap] = LIVE;

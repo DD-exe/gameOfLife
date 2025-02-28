@@ -137,6 +137,7 @@
     <ClCompile Include="downloads.cpp" />
     <ClCompile Include="gameOfLife.cpp" />
     <ClCompile Include="life.cpp" />
+    <ClCompile Include="tools.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="gameOfLife.rc" />

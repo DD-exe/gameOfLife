@@ -6,14 +6,21 @@
 HINSTANCE   hInst;                                // 当前实例
 WCHAR       szTitle[MAX_LOADSTRING];              // 标题栏文本
 WCHAR       szWindowClass[MAX_LOADSTRING];        // 主窗口类名
+// 表格问题
 BOOL        ifRun;
 INT         cellSize;
 INT         tableX;
 INT         tableY;         // table表示法待重构
 BOOL      **table;
+// 鼠标问题
 BOOL        ifMouseDown;    // 释放鼠标按下状态
 INT         lastX;
 INT         lastY;
+// 控制栏问题
+HWND        startBotton, stopBotton;
+static HWND hBmpStatic;
+INT         listHalfSize;   // 控制栏半宽度
+INT         listUnitHeight;
 // 函数前向声明
 ATOM                MyRegisterClass(HINSTANCE hInstance);
 BOOL                InitInstance(HINSTANCE, int);
@@ -23,9 +30,6 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,_In_opt_ HINSTANCE hPrevInstance,
 {
     UNREFERENCED_PARAMETER(hPrevInstance);
     UNREFERENCED_PARAMETER(lpCmdLine);
-
-    // TODO: 在此处放置代码。
-
     // 初始化全局字符串
     LoadStringW(hInstance, IDS_APP_TITLE, szTitle, MAX_LOADSTRING);
     LoadStringW(hInstance, IDC_GAMEOFLIFE, szWindowClass, MAX_LOADSTRING);
@@ -83,6 +87,8 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
    for (int i = 0; i < tableX; ++i)table[i] = new BOOL[tableY];// TODO:重构table部分
    ifMouseDown = FALSE;
    lastX = lastY = -1;//TODO:
+   listHalfSize = 100;
+   listUnitHeight = 40;
 
    HWND hWnd = CreateWindowW(szWindowClass, szTitle, WS_OVERLAPPEDWINDOW,
       CW_USEDEFAULT, 0, CW_USEDEFAULT, 0, nullptr, nullptr, hInstance, nullptr);
@@ -133,26 +139,49 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
             }
         }
         break;
+    case WM_CREATE:
+    {
+        INT clientWidth,clientHeight;
+        getClientXY(hWnd, &clientWidth, &clientHeight);
+        startBotton = CreateWindow(
+            L"BUTTON", L"启动/暂停(O)",
+            WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON,
+            clientWidth - 50 - listHalfSize, 0, 100, 30,
+            hWnd, (HMENU)ID_START, NULL, NULL
+        );
+        stopBotton = CreateWindow(
+            L"BUTTON", L"重置(U)",
+            WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON,
+            clientWidth - 50 - listHalfSize, listUnitHeight * 1, 100, 30,
+            hWnd, (HMENU)ID_STOP, NULL, NULL
+        );
+
+        HBITMAP hBmp = LoadBitmap(GetModuleHandle(NULL), MAKEINTRESOURCE(IDB_LINbmp));
+        hBmpStatic = CreateWindow(
+            L"STATIC", NULL,
+            WS_CHILD | WS_VISIBLE | SS_BITMAP,
+            clientWidth - 2*listHalfSize, listUnitHeight * 3, 2 * listHalfSize, 2 * listHalfSize,
+            hWnd, NULL, NULL, NULL
+        );
+        SendMessage(hBmpStatic, STM_SETIMAGE, (WPARAM)IMAGE_BITMAP, (LPARAM)hBmp);// 关联 BMP 图片到静态控件
+    }
+        break;
+    case WM_SIZE:
+    {
+        int clientWidth = LOWORD(lParam);
+        int clientHeight = HIWORD(lParam);
+        MoveWindow(startBotton, clientWidth - 50 - listHalfSize,
+            0, 100, 30, TRUE);
+        MoveWindow(stopBotton, clientWidth - 50 - listHalfSize,
+            listUnitHeight * 1, 100, 30, TRUE);
+        MoveWindow(hBmpStatic, clientWidth - 2 * listHalfSize,
+            listUnitHeight * 3, 2 * listHalfSize, 2 * listHalfSize, TRUE);
+    }
+        break;
     case WM_PAINT:
         {
             PAINTSTRUCT ps;
             HDC hdc = BeginPaint(hWnd, &ps);
-            RECT clientRect;
-            GetClientRect(hWnd, &clientRect);  // 获取客户区区域
-            INT clientWidth = clientRect.right - clientRect.left;   // 客户区宽度
-            INT clientHeight = clientRect.bottom - clientRect.top;  // 客户区高度
-            static HWND startBotton = CreateWindow(
-                L"BUTTON", L"启动/暂停(O)",
-                WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON,
-                clientWidth-100, 0, 100, 30,
-                hWnd, (HMENU)ID_START, NULL, NULL
-            );
-            static HWND stopBotton = CreateWindow(
-                L"BUTTON", L"重置(U)",
-                WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON,
-                clientWidth - 100, 40, 100, 30,
-                hWnd, (HMENU)ID_STOP, NULL, NULL
-            );
             for (int y = 0; y <tableY; y++) {
                 for (int x = 0; x < tableX; x++) {
                     RECT rect = { x * cellSize, y * cellSize,
@@ -181,7 +210,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         break;
     case WM_LBUTTONDOWN:
     {
-        ifMouseDown = true;  // 标记鼠标按下
+        ifMouseDown = TRUE;  // 标记鼠标按下
         int x = LOWORD(lParam) / cellSize;
         int y = HIWORD(lParam) / cellSize;
 
@@ -213,7 +242,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
     }
         break;
     case WM_LBUTTONUP:
-        ifMouseDown = false;  // 释放鼠标按下状态
+        ifMouseDown = FALSE;  // 释放鼠标按下状态
         lastX = lastY = -1;   // 清除上次处理的格子记录
         break;
     case WM_DESTROY:

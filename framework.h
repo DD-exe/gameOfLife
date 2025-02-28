@@ -9,5 +9,6 @@
 #include <memory.h>
 #include <tchar.h>
 
-void life(int* that, int* newi);
-INT_PTR CALLBACK About(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam);
+void life(int* that, int* newi);// life
+void getClientXY(HWND hWnd, INT* x, INT* y); //tools
+INT_PTR CALLBACK About(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam);// about
