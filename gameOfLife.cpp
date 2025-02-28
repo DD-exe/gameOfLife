@@ -6,8 +6,14 @@
 HINSTANCE   hInst;                                // 当前实例
 WCHAR       szTitle[MAX_LOADSTRING];              // 标题栏文本
 WCHAR       szWindowClass[MAX_LOADSTRING];        // 主窗口类名
-bool        ifRun;
-
+BOOL        ifRun;
+INT         cellSize;
+INT         tableX;
+INT         tableY;
+BOOL      **table;
+BOOL        ifMouseDown;  // 释放鼠标按下状态
+INT         lastX;
+INT         lastY;
 // 函数前向声明
 ATOM                MyRegisterClass(HINSTANCE hInstance);
 BOOL                InitInstance(HINSTANCE, int);
@@ -70,6 +76,14 @@ ATOM MyRegisterClass(HINSTANCE hInstance)
 BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 {
    hInst = hInstance; // 将实例句柄存储在全局变量中
+   ifRun = FALSE;
+   cellSize = 3;
+   tableX = 100;
+   tableY = 100;
+   table = new BOOL * [tableX];
+   for (int i = 0; i < tableX; ++i)table[i] = new BOOL[tableY];// TODO:重构table部分
+   ifMouseDown = FALSE;
+   lastX = lastY = -1;//TODO:
 
    HWND hWnd = CreateWindowW(szWindowClass, szTitle, WS_OVERLAPPEDWINDOW,
       CW_USEDEFAULT, 0, CW_USEDEFAULT, 0, nullptr, nullptr, hInstance, nullptr);
@@ -100,6 +114,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
                 DialogBox(hInst, MAKEINTRESOURCE(IDD_ABOUTBOX), hWnd, About);
                 break;
             case ID_START:
+                ifRun = !ifRun;
                 break;
             case ID_STOP:
                 break;
@@ -117,7 +132,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         {
             PAINTSTRUCT ps;
             HDC hdc = BeginPaint(hWnd, &ps);
-            // TODO: 在此处添加使用 hdc 的任何绘图代码..
             static HWND startBotton = CreateWindow(
                 L"BUTTON", L"启动/暂停(O)",
                 WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON,
@@ -130,8 +144,65 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
                 0, 40, 100, 30,
                 hWnd, (HMENU)1, NULL, NULL
             );
+            for (int y = 0; y <tableY; y++) {
+                for (int x = 0; x < tableX; x++) {
+                    RECT rect = { x * cellSize, y * cellSize,
+                        (x + 1) * cellSize, (y + 1) * cellSize };
+                    if (table[y][x]) {
+                        HBRUSH hBrush = CreateSolidBrush(RGB(100, 100, 255)); // 蓝色填充
+                        FillRect(hdc, &rect, hBrush);
+                        DeleteObject(hBrush);
+                    }
+                    /*
+                    HPEN hPen = CreatePen(PS_SOLID, 1, RGB(100, 100, 100));
+                    HPEN hOldPen = (HPEN)SelectObject(hdc, hPen);
+                    Rectangle(hdc, rect.left, rect.top, rect.right, rect.bottom);                    
+                    SelectObject(hdc, hOldPen);
+                    DeleteObject(hPen);// 恢复旧画笔
+                    */
+                }
+            }
             EndPaint(hWnd, &ps);
         }
+        break;
+    case WM_LBUTTONDOWN:
+    {
+        ifMouseDown = true;  // 标记鼠标按下
+        int x = LOWORD(lParam) / cellSize;
+        int y = HIWORD(lParam) / cellSize;
+
+        if (x < tableX && y < tableY) {
+            table[y][x] = !table[y][x];  // 切换状态
+            RECT rect = { x * cellSize, y * cellSize,
+                        (x + 1) * cellSize, (y + 1) * cellSize };
+            InvalidateRect(hWnd, &rect, TRUE);  // 仅重绘该区域
+            lastX = x; lastY = y;  // 记录上次处理的格子，避免 `WM_MOUSEMOVE` 立即重复处理
+        }
+    }
+    break;
+
+    case WM_MOUSEMOVE:
+    {
+        if (ifMouseDown) {  // 仅在鼠标按住时处理
+            int x = LOWORD(lParam) / cellSize;
+            int y = HIWORD(lParam) / cellSize;
+
+            if (x < tableX && y < tableY && (x != lastX || y != lastY)) {
+                // 只有当鼠标进入新格子时才处理，防止重复
+                table[y][x] = !table[y][x];
+                RECT rect = { x * cellSize, y * cellSize, (x + 1) * cellSize, (y + 1) * cellSize };
+                InvalidateRect(hWnd, &rect, TRUE);
+
+                lastX = x;
+                lastY = y;  // 记录上次处理的格子
+            }
+        }
+    }
+    break;
+
+    case WM_LBUTTONUP:
+        ifMouseDown = false;  // 释放鼠标按下状态
+        lastX = lastY = -1;   // 清除上次处理的格子记录
         break;
     case WM_DESTROY:
         PostQuitMessage(0);
