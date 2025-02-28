@@ -143,6 +143,7 @@
     <ResourceCompile Include="gameOfLife.rc" />
   </ItemGroup>
   <ItemGroup>
+    <Image Include="image\lin.bmp" />
     <Image Include="image\OIP-C.bmp" />
     <Image Include="image\OIP-C.ico" />
     <Image Include="image\small.ico" />

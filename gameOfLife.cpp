@@ -2,6 +2,9 @@
 #include "gameOfLife.h"
 #define MAX_LOADSTRING 100
 
+#define RGBgrey RGB(200,200,200)
+#define RGBwhite RGB(255,255,255)
+#define RGBblue RGB(100,100,255)
 // 全局变量
 HINSTANCE   hInst;                                // 当前实例
 WCHAR       szTitle[MAX_LOADSTRING];              // 标题栏文本
@@ -87,7 +90,7 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
    for (int i = 0; i < tableX; ++i)table[i] = new BOOL[tableY];// TODO:重构table部分
    ifMouseDown = FALSE;
    lastX = lastY = -1;//TODO:
-   listHalfSize = 100;
+   listHalfSize = 150;
    listUnitHeight = 40;
 
    HWND hWnd = CreateWindowW(szWindowClass, szTitle, WS_OVERLAPPEDWINDOW,
@@ -156,11 +159,11 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
             hWnd, (HMENU)ID_STOP, NULL, NULL
         );
 
-        HBITMAP hBmp = LoadBitmap(GetModuleHandle(NULL), MAKEINTRESOURCE(IDB_LINbmp));
+        HBITMAP hBmp = LoadBitmap(GetModuleHandle(NULL), MAKEINTRESOURCE(IDB_LINbmpPro));
         hBmpStatic = CreateWindow(
             L"STATIC", NULL,
             WS_CHILD | WS_VISIBLE | SS_BITMAP,
-            clientWidth - 2*listHalfSize, listUnitHeight * 3, 2 * listHalfSize, 2 * listHalfSize,
+            clientWidth - 2*listHalfSize, listUnitHeight * 3, 2 * listHalfSize, 3 * listHalfSize,
             hWnd, NULL, NULL, NULL
         );
         SendMessage(hBmpStatic, STM_SETIMAGE, (WPARAM)IMAGE_BITMAP, (LPARAM)hBmp);// 关联 BMP 图片到静态控件
@@ -175,7 +178,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         MoveWindow(stopBotton, clientWidth - 50 - listHalfSize,
             listUnitHeight * 1, 100, 30, TRUE);
         MoveWindow(hBmpStatic, clientWidth - 2 * listHalfSize,
-            listUnitHeight * 3, 2 * listHalfSize, 2 * listHalfSize, TRUE);
+            listUnitHeight * 3, 2 * listHalfSize, 3 * listHalfSize, TRUE);
     }
         break;
     case WM_PAINT:
@@ -187,12 +190,12 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
                     RECT rect = { x * cellSize, y * cellSize,
                         (x + 1) * cellSize, (y + 1) * cellSize };
                     if (table[y][x]) {
-                        HBRUSH hBrush = CreateSolidBrush(RGB(100, 100, 255)); // 蓝色填充
+                        HBRUSH hBrush = CreateSolidBrush(RGBwhite); // 白色填充
                         FillRect(hdc, &rect, hBrush);
                         DeleteObject(hBrush);
                     }
                     else {
-                        HBRUSH hBrush = CreateSolidBrush(RGB(200, 200, 200)); // 蓝色填充
+                        HBRUSH hBrush = CreateSolidBrush(RGBblue); // 蓝色填充
                         FillRect(hdc, &rect, hBrush);
                         DeleteObject(hBrush);
                     }
