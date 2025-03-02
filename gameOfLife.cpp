@@ -139,6 +139,15 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
                 }
                 InvalidateRect(hWnd, NULL, TRUE);
                 break;
+            case ID_EDIT1OK:
+            {
+                BOOL success;
+                INT x = GetDlgItemInt(hWnd, ID_EDIT1, &success, TRUE);
+                if (success) { 
+                    cellSize = x; InvalidateRect(hWnd, NULL, TRUE);
+                }
+            }                
+                break;
             case ID_SAVE:
                 break;
             case IDM_EXIT:
