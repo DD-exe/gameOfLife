@@ -9,6 +9,13 @@
 #include <memory.h>
 #include <tchar.h>
 
-void life(int* that, int* newi);// life
-void getClientXY(HWND hWnd, INT* x, INT* y); //tools
+void life(int* that, int* newi); // life
 INT_PTR CALLBACK About(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam);// about
+
+// inline
+inline void getClientXY(HWND hWnd, INT* x, INT* y) {
+    RECT clientRect;
+    GetClientRect(hWnd, &clientRect);  // 获取客户区区域
+    *x = clientRect.right - clientRect.left;   // 客户区宽度
+    *y = clientRect.bottom - clientRect.top;  // 客户区高度
+}

@@ -17,9 +17,9 @@
 #define IDB_LINbmpPro                   133
 #define ID_32772                        32772
 #define ID_SAVE                         32773
-#define ID_32774                        32774
+#define ID_EDIT1						32774
 #define ID_START                        32775
-#define ID_32776                        32776
+#define ID_EDIT1OK                      32776
 #define ID_STOP                         32777
 #define IDC_STATIC                      -1
 

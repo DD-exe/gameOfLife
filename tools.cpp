@@ -1,9 +1,17 @@
 #include "framework.h"
 #include "gameOfLife.h"
 
-void getClientXY(HWND hWnd,INT* x,INT* y) {
-    RECT clientRect;
-    GetClientRect(hWnd, &clientRect);  // 获取客户区区域
-    *x = clientRect.right - clientRect.left;   // 客户区宽度
-    *y = clientRect.bottom - clientRect.top;  // 客户区高度
+void myPaintFrame(Gdiplus::Graphics& graphics, int x, int y, int w, int h, int cellSize)
+{
+    Gdiplus::Pen pen(Gdiplus::Color(255, 200, 200, 200), 0.1f);
+
+    // 绘制垂直线
+    for (int i = 0; i <= w; i += cellSize) {
+        graphics.DrawLine(&pen, x + i, y, x + i, y + h);
+    }
+
+    // 绘制水平线
+    for (int i = 0; i <= h; i += cellSize) {
+        graphics.DrawLine(&pen, x, y + i, x + w, y + i);
+    }
 }

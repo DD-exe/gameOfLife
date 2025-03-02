@@ -11,16 +11,18 @@ WCHAR       szTitle[MAX_LOADSTRING];              // 标题栏文本
 WCHAR       szWindowClass[MAX_LOADSTRING];        // 主窗口类名
 // 表格问题
 BOOL        ifRun;
+BOOL        ifCreate;
 INT         cellSize;
 INT         tableX;
 INT         tableY;         // table表示法待重构
 BOOL      **table;
+ULONG_PTR   gdiplusToken;
 // 鼠标问题
 BOOL        ifMouseDown;    // 释放鼠标按下状态
 INT         lastX;
 INT         lastY;
 // 控制栏问题
-HWND        startBotton, stopBotton;
+HWND        startBotton, stopBotton, cellsizeEdit, cellsizeBotton;
 static HWND hBmpStatic;
 INT         listHalfSize;   // 控制栏半宽度
 INT         listUnitHeight;
@@ -36,6 +38,9 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,_In_opt_ HINSTANCE hPrevInstance,
     // 初始化全局字符串
     LoadStringW(hInstance, IDS_APP_TITLE, szTitle, MAX_LOADSTRING);
     LoadStringW(hInstance, IDC_GAMEOFLIFE, szWindowClass, MAX_LOADSTRING);
+    // 初始化gdi+
+    Gdiplus::GdiplusStartupInput gdiplusStartupInput;
+    Gdiplus::GdiplusStartup(&gdiplusToken, &gdiplusStartupInput, NULL);
     MyRegisterClass(hInstance);
     if (!InitInstance (hInstance, nCmdShow))return FALSE; // 执行应用程序初始化
 
@@ -53,6 +58,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,_In_opt_ HINSTANCE hPrevInstance,
         }
     }
 
+    Gdiplus::GdiplusShutdown(gdiplusToken);
     return (int) msg.wParam;
 }
 
@@ -83,9 +89,10 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 {
    hInst = hInstance; // 将实例句柄存储在全局变量中
    ifRun = FALSE;
-   cellSize = 3;
+   cellSize = 10;
    tableX = 100;
    tableY = 100;
+   ifCreate = FALSE;
    table = new BOOL * [tableX];
    for (int i = 0; i < tableX; ++i)table[i] = new BOOL[tableY];// TODO:重构table部分
    ifMouseDown = FALSE;
@@ -149,7 +156,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         startBotton = CreateWindow(
             L"BUTTON", L"启动/暂停(O)",
             WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON,
-            clientWidth - 50 - listHalfSize, 0, 100, 30,
+            clientWidth - 50 - listHalfSize, listUnitHeight * 0, 100, 30,
             hWnd, (HMENU)ID_START, NULL, NULL
         );
         stopBotton = CreateWindow(
@@ -159,14 +166,26 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
             hWnd, (HMENU)ID_STOP, NULL, NULL
         );
 
+        cellsizeEdit = CreateWindowEx(WS_EX_CLIENTEDGE, L"EDIT", L"10",
+            WS_CHILD | WS_VISIBLE | WS_BORDER | ES_AUTOHSCROLL,
+            clientWidth - 50 - listHalfSize, listUnitHeight * 2, 50, 30,
+            hWnd, (HMENU)ID_EDIT1, (HINSTANCE)GetWindowLongPtr(hWnd, GWLP_HINSTANCE), NULL
+        );
+        cellsizeBotton = CreateWindow(
+            L"BUTTON", L"确认",
+            WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON,
+            clientWidth - listHalfSize, listUnitHeight * 2, 50, 30,
+            hWnd, (HMENU)ID_EDIT1OK, NULL, NULL
+        );
+
         HBITMAP hBmp = LoadBitmap(GetModuleHandle(NULL), MAKEINTRESOURCE(IDB_LINbmpPro));
         hBmpStatic = CreateWindow(
             L"STATIC", NULL,
             WS_CHILD | WS_VISIBLE | SS_BITMAP,
-            clientWidth - 2*listHalfSize, listUnitHeight * 3, 2 * listHalfSize, 3 * listHalfSize,
+            clientWidth - 2*listHalfSize, listUnitHeight * 4, 2 * listHalfSize, 3 * listHalfSize,
             hWnd, NULL, NULL, NULL
         );
-        SendMessage(hBmpStatic, STM_SETIMAGE, (WPARAM)IMAGE_BITMAP, (LPARAM)hBmp);// 关联 BMP 图片到静态控件
+        SendMessage(hBmpStatic, STM_SETIMAGE, (WPARAM)IMAGE_BITMAP, (LPARAM)hBmp);// 关联 BMP 图片到静态控件       
     }
         break;
     case WM_SIZE:
@@ -174,40 +193,36 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         int clientWidth = LOWORD(lParam);
         int clientHeight = HIWORD(lParam);
         MoveWindow(startBotton, clientWidth - 50 - listHalfSize,
-            0, 100, 30, TRUE);
+            listUnitHeight * 0, 100, 30, TRUE);
         MoveWindow(stopBotton, clientWidth - 50 - listHalfSize,
             listUnitHeight * 1, 100, 30, TRUE);
+        MoveWindow(cellsizeEdit, clientWidth - 50 - listHalfSize,
+            listUnitHeight * 2, 50, 30, TRUE);
+        MoveWindow(cellsizeBotton, clientWidth - listHalfSize,
+            listUnitHeight * 2, 50, 30, TRUE);
         MoveWindow(hBmpStatic, clientWidth - 2 * listHalfSize,
-            listUnitHeight * 3, 2 * listHalfSize, 3 * listHalfSize, TRUE);
+            listUnitHeight * 4, 2 * listHalfSize, 3 * listHalfSize, TRUE);
     }
         break;
     case WM_PAINT:
         {
             PAINTSTRUCT ps;
             HDC hdc = BeginPaint(hWnd, &ps);
+            HBRUSH hBrushLive = CreateSolidBrush(RGBwhite);
+            HBRUSH hBrushDead = CreateSolidBrush(RGBblue);
             for (int y = 0; y <tableY; y++) {
                 for (int x = 0; x < tableX; x++) {
                     RECT rect = { x * cellSize, y * cellSize,
                         (x + 1) * cellSize, (y + 1) * cellSize };
-                    if (table[y][x]) {
-                        HBRUSH hBrush = CreateSolidBrush(RGBwhite); // 白色填充
-                        FillRect(hdc, &rect, hBrush);
-                        DeleteObject(hBrush);
-                    }
-                    else {
-                        HBRUSH hBrush = CreateSolidBrush(RGBblue); // 蓝色填充
-                        FillRect(hdc, &rect, hBrush);
-                        DeleteObject(hBrush);
-                    }
-                    /*
-                    HPEN hPen = CreatePen(PS_SOLID, 1, RGB(100, 100, 100));
-                    HPEN hOldPen = (HPEN)SelectObject(hdc, hPen);
-                    Rectangle(hdc, rect.left, rect.top, rect.right, rect.bottom);                    
-                    SelectObject(hdc, hOldPen);
-                    DeleteObject(hPen);// 恢复旧画笔
-                    */
+                    if (table[y][x]) FillRect(hdc, &rect, hBrushLive);
+                    else FillRect(hdc, &rect, hBrushDead);                                     
                 }
             }
+            Gdiplus::Graphics graphics(hdc);
+            myPaintFrame(graphics, 0, 0, tableX * cellSize, tableY * cellSize, cellSize);
+            
+            DeleteObject(hBrushLive);
+            DeleteObject(hBrushDead);
             EndPaint(hWnd, &ps);
         }
         break;
