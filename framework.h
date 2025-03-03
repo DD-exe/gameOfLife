@@ -8,9 +8,15 @@
 #include <malloc.h>
 #include <memory.h>
 #include <tchar.h>
+// 文件系统访问
+#include <commdlg.h>
+#include <stdio.h>
 
-void life(int* that, int* newi); // life
-INT_PTR CALLBACK About(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam);// about
+void life(int* that, int* newi);                                                // life
+void saveBmp(HWND hWnd, INT x, INT y, INT dx, INT dy);                          //downloads
+void bfhWrite(BITMAPFILEHEADER& bfh, FILE* file, INT dx, INT dy);
+void bihWrite(BITMAPINFOHEADER& bfh, FILE* file, INT dx, INT dy);
+INT_PTR CALLBACK About(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam);  // about
 
 // inline
 inline void getClientXY(HWND hWnd, INT* x, INT* y) {

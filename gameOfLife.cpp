@@ -149,6 +149,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
             }                
                 break;
             case ID_SAVE:
+                saveBmp(hWnd, 0, 0, cellSize * tableX, cellSize * tableY);
                 break;
             case IDM_EXIT:
                 DestroyWindow(hWnd);
