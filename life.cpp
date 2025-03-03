@@ -41,7 +41,8 @@ void life(int *that, int *newi) // 此函数学习于https://dotat.at/prog/life/life.h
 				return;
 			}
 			y = *next++ + 1;
-		} else {
+		} 
+		else {
 			/* move to next row and work out which ones to scan */
 			if(*prev == y--)
 				prev++;

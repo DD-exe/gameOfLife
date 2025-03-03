@@ -89,7 +89,7 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 {
    hInst = hInstance; // 将实例句柄存储在全局变量中
    ifRun = FALSE;
-   cellSize = 10;
+   cellSize = 7;
    tableX = 100;
    tableY = 100;
    ifCreate = FALSE;
@@ -175,7 +175,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
             hWnd, (HMENU)ID_STOP, NULL, NULL
         );
 
-        cellsizeEdit = CreateWindowEx(WS_EX_CLIENTEDGE, L"EDIT", L"10",
+        cellsizeEdit = CreateWindowEx(WS_EX_CLIENTEDGE, L"EDIT", L"7",
             WS_CHILD | WS_VISIBLE | WS_BORDER | ES_AUTOHSCROLL,
             clientWidth - 50 - listHalfSize, listUnitHeight * 2, 50, 30,
             hWnd, (HMENU)ID_EDIT1, (HINSTANCE)GetWindowLongPtr(hWnd, GWLP_HINSTANCE), NULL
