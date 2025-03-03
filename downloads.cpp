@@ -5,27 +5,12 @@ void saveBmp(HWND hWnd, INT x, INT y, INT dx, INT dy) {
     HDC hdcMem = CreateCompatibleDC(hdcWindow);
     HBITMAP hBitmap = CreateCompatibleBitmap(hdcWindow, dx, dy);
     SelectObject(hdcMem, hBitmap);
-
-    // 从窗口中复制指定区域到内存
-    BitBlt(hdcMem, 0, 0, dx, dy, hdcWindow, x, y, SRCCOPY);
-
+   
+    BitBlt(hdcMem, 0, 0, dx, dy, hdcWindow, x, y, SRCCOPY);// 从窗口中复制指定区域
     // 获取文件保存路径
     OPENFILENAME ofn;
-    WCHAR szFile[260];
-    ZeroMemory(&ofn, sizeof(ofn));
-    ofn.lStructSize = sizeof(ofn);
-    ofn.hwndOwner = hWnd;
-    ofn.lpstrFile = szFile;
-    ofn.lpstrFile[0] = L'\0';
-    ofn.nMaxFile = sizeof(szFile);
-    ofn.lpstrFilter = L"BMP Files\0*.BMP\0All Files\0*.*\0";
-    ofn.nFilterIndex = 1;
-    ofn.lpstrFileTitle = NULL;
-    ofn.nMaxFileTitle = 0;
-    ofn.lpstrInitialDir = NULL;
-    ofn.lpstrTitle = L"保存记录";
-    ofn.Flags = OFN_PATHMUSTEXIST | OFN_FILEMUSTEXIST | OFN_OVERWRITEPROMPT;
-    if (GetSaveFileName(&ofn) == FALSE) { // 取消        
+    WCHAR szFile[260]; szFile[0] = L'\0';
+    if (ofnRead(hWnd,ofn,szFile,260) == FALSE) { // 取消        
         DeleteObject(hBitmap);
         DeleteDC(hdcMem);
         ReleaseDC(hWnd, hdcWindow);
@@ -46,8 +31,6 @@ void saveBmp(HWND hWnd, INT x, INT y, INT dx, INT dy) {
     BITMAPINFOHEADER bitInfoHeader;
     bfhWrite(bitFileHeader, file, dx, dy);
     bihWrite(bitInfoHeader, file, dx, dy);
-
-    // 获取图像数据并写入文件
     BYTE* pixels = (BYTE*)malloc(dx * dy * 3);
     GetDIBits(hdcMem, hBitmap, 0, dy, pixels, (BITMAPINFO*)&bitInfoHeader, DIB_RGB_COLORS);
     if (pixels != nullptr) {
@@ -58,6 +41,24 @@ void saveBmp(HWND hWnd, INT x, INT y, INT dx, INT dy) {
     DeleteObject(hBitmap);
     DeleteDC(hdcMem);
     ReleaseDC(hWnd, hdcWindow);
+}
+
+BOOL ofnRead(HWND hWnd,OPENFILENAME& ofn, WCHAR* szFile,DWORD bufSize) {
+    ZeroMemory(&ofn, sizeof(ofn));
+    ofn.lStructSize = sizeof(ofn);
+    ofn.hwndOwner = hWnd;
+    ofn.lpstrFile = szFile;
+    ofn.lpstrFile[0] = L'\0';
+    ofn.nMaxFile = bufSize;
+    ofn.lpstrFilter = L"BMP Files\0*.BMP\0All Files\0*.*\0";
+    ofn.nFilterIndex = 1;
+    ofn.lpstrFileTitle = NULL;
+    ofn.nMaxFileTitle = 0;
+    ofn.lpstrInitialDir = NULL;
+    ofn.lpstrTitle = L"保存记录";
+    ofn.Flags = OFN_PATHMUSTEXIST | OFN_FILEMUSTEXIST | OFN_OVERWRITEPROMPT;
+
+    return GetSaveFileName(&ofn);
 }
 
 void bfhWrite(BITMAPFILEHEADER& bfh, FILE* file,INT dx,INT dy) {

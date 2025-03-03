@@ -14,6 +14,7 @@
 
 void life(int* that, int* newi);                                                // life
 void saveBmp(HWND hWnd, INT x, INT y, INT dx, INT dy);                          //downloads
+BOOL ofnRead(HWND hWnd, OPENFILENAME& ofn, WCHAR* szFile, DWORD bufSize);
 void bfhWrite(BITMAPFILEHEADER& bfh, FILE* file, INT dx, INT dy);
 void bihWrite(BITMAPINFOHEADER& bfh, FILE* file, INT dx, INT dy);
 INT_PTR CALLBACK About(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam);  // about
