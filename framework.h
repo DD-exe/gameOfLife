@@ -11,8 +11,13 @@
 // 文件系统访问
 #include <commdlg.h>
 #include <stdio.h>
+// stl
+#include <unordered_map>
 
-void life(int* that, int* newi);                                                // life
+void lifeOrigin(int* that, int* newi);                                          // life
+BOOL findLife(std::unordered_map<INT, std::unordered_map<INT, BOOL>> &grid, INT x, INT y);
+void exchangeLife(std::unordered_map<INT, std::unordered_map<INT, BOOL>>& grid, INT x, INT y);
+void myLife(std::unordered_map<INT, std::unordered_map<INT, BOOL>>& grid);
 void saveBmp(HWND hWnd, INT x, INT y, INT dx, INT dy);                          //downloads
 BOOL ofnRead(HWND hWnd, OPENFILENAME& ofn, WCHAR* szFile, DWORD bufSize);
 void bfhWrite(BITMAPFILEHEADER& bfh, FILE* file, INT dx, INT dy);

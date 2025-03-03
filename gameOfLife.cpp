@@ -14,8 +14,9 @@ BOOL        ifRun;
 BOOL        ifCreate;
 INT         cellSize;
 INT         tableX;
-INT         tableY;         // table表示法待重构
-BOOL      **table;
+INT         tableY;         
+std::unordered_map<INT, std::unordered_map<INT, BOOL>> grid;
+
 ULONG_PTR   gdiplusToken;
 // 鼠标问题
 BOOL        ifMouseDown;    // 释放鼠标按下状态
@@ -93,8 +94,6 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
    tableX = 100;
    tableY = 100;
    ifCreate = FALSE;
-   table = new BOOL * [tableX];
-   for (int i = 0; i < tableX; ++i)table[i] = new BOOL[tableY];// TODO:重构table部分
    ifMouseDown = FALSE;
    lastX = lastY = -1;//TODO:
    listHalfSize = 150;
@@ -132,11 +131,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
                 ifRun = !ifRun;
                 break;
             case ID_STOP:
-                for (int i = 0; i < tableX; ++i) {
-                    for (int j = 0; j < tableY; ++j) {
-                        table[i][j] = FALSE;
-                    }
-                }
+                grid.clear();
                 InvalidateRect(hWnd, NULL, TRUE);
                 break;
             case ID_EDIT1OK:
@@ -224,7 +219,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
                 for (int x = 0; x < tableX; x++) {
                     RECT rect = { x * cellSize, y * cellSize,
                         (x + 1) * cellSize, (y + 1) * cellSize };
-                    if (table[y][x]) FillRect(hdc, &rect, hBrushLive);
+                    if (findLife(grid,x,y)) FillRect(hdc, &rect, hBrushLive);
                     else FillRect(hdc, &rect, hBrushDead);                                     
                 }
             }
@@ -243,7 +238,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         int y = HIWORD(lParam) / cellSize;
 
         if (x < tableX && y < tableY) {
-            table[y][x] = !table[y][x];  // 切换状态
+            exchangeLife(grid, x, y);
             RECT rect = { x * cellSize, y * cellSize,
                         (x + 1) * cellSize, (y + 1) * cellSize };
             InvalidateRect(hWnd, &rect, TRUE);  // 仅重绘该区域
@@ -259,7 +254,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
             if (x < tableX && y < tableY && (x != lastX || y != lastY)) {
                 // 只有当鼠标进入新格子时才处理，防止重复
-                table[y][x] = !table[y][x];
+                exchangeLife(grid, x, y);
                 RECT rect = { x * cellSize, y * cellSize, (x + 1) * cellSize, (y + 1) * cellSize };
                 InvalidateRect(hWnd, &rect, TRUE);
 

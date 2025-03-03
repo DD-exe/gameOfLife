@@ -1,7 +1,19 @@
-#include "gameOfLife.h"
+#include "framework.h"
 
+void myLife(std::unordered_map<INT, std::unordered_map<INT, BOOL>>& grid) {
 
-void life(int *that, int *newi) // 此函数学习于https://dotat.at/prog/life/life.html
+}
+
+BOOL findLife(std::unordered_map<INT, std::unordered_map<INT, BOOL>> &grid,INT x, INT y) {
+	return grid.count(y) && grid[y].count(x);
+}
+
+void exchangeLife(std::unordered_map<INT, std::unordered_map<INT, BOOL>>& grid, INT x, INT y) {
+	if (findLife(grid, x, y))grid[y].erase(x);
+	else grid[y][x] = TRUE;
+}
+
+void lifeOrigin(int *that, int *newi) // 此函数学习于https://dotat.at/prog/life/life.html
 								// List Life algorithm(by Tony Finch)
 {
 	unsigned int bitmap; // notice
