@@ -10,7 +10,7 @@ void myLife(std::unordered_map<INT, std::unordered_map<INT, BOOL>>& grid) {
 					x += 1;								// ¼ÆÊý
 			if (bitmap & 020) {
 				if (x == 2 || x == 3)
-					state[bitmap] = LIVE;
+					state[bitmap] = LIVE;  
 				else
 					state[bitmap] = DEAD;
 			}
