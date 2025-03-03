@@ -2,9 +2,9 @@
 #include "gameOfLife.h"
 #define MAX_LOADSTRING 100
 
-#define RGBgrey RGB(200,200,200)
-#define RGBwhite RGB(255,255,255)
-#define RGBblue RGB(100,100,255)
+#define RGBgrey     RGB(200,200,200)
+#define RGBwhite    RGB(255,255,255)
+#define RGBblue     RGB(100,100,255)
 // 全局变量
 HINSTANCE   hInst;                                // 当前实例
 WCHAR       szTitle[MAX_LOADSTRING];              // 标题栏文本
@@ -91,8 +91,6 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
    hInst = hInstance; // 将实例句柄存储在全局变量中
    ifRun = FALSE;
    cellSize = 7;
-   tableX = 100;
-   tableY = 100;
    ifCreate = FALSE;
    ifMouseDown = FALSE;
    lastX = lastY = -1;//TODO:
@@ -139,7 +137,12 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
                 BOOL success;
                 INT x = GetDlgItemInt(hWnd, ID_EDIT1, &success, TRUE);
                 if (success) { 
-                    cellSize = x; InvalidateRect(hWnd, NULL, TRUE);
+                    cellSize = x;
+                    INT clientWidth, clientHeight;
+                    getClientXY(hWnd, &clientWidth, &clientHeight);
+                    tableX = (clientWidth - 2 * listHalfSize - 10) / cellSize;
+                    tableY = clientHeight / cellSize;
+                    InvalidateRect(hWnd, NULL, TRUE);
                 }
             }                
                 break;
@@ -158,6 +161,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
     {
         INT clientWidth,clientHeight;
         getClientXY(hWnd, &clientWidth, &clientHeight);
+        tableX = (clientWidth - 2 * listHalfSize - 10) / cellSize;
+        tableY = clientHeight / cellSize;
         startBotton = CreateWindow(
             L"BUTTON", L"启动/暂停(O)",
             WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON,
@@ -197,6 +202,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
     {
         int clientWidth = LOWORD(lParam);
         int clientHeight = HIWORD(lParam);
+        tableX = (clientWidth - 2 * listHalfSize - 10) / cellSize;
+        tableY = clientHeight / cellSize;
         MoveWindow(startBotton, clientWidth - 50 - listHalfSize,
             listUnitHeight * 0, 100, 30, TRUE);
         MoveWindow(stopBotton, clientWidth - 50 - listHalfSize,
