@@ -40,15 +40,16 @@ void life(int *that, int *newi) // 此函数学习于https://dotat.at/prog/life/life.h
 				*newi = 0;
 				return;
 			}
-			y = *next++ + 1;
-		} 
+			y = *next + 1; next++;
+		}
 		else {
 			/* move to next row and work out which ones to scan */
-			if(*prev == y--)
+			y--;
+			if (*prev == y + 1)
 				prev++;
-			if(*that == y)
+			if (*that == y)
 				that++;
-			if(*next == y-1)
+			if (*next == y - 1)
 				next++;
 		}
 		/* write new row co-ordinate */
