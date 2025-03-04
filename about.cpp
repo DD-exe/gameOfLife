@@ -1,3 +1,6 @@
+/*
+    用于实现“关于”对话框消息处理
+*/
 #include "framework.h"
 #include "gameOfLife.h"
 

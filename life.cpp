@@ -1,3 +1,6 @@
+/*
+	用于实现生命游戏规则下矩阵数据的迭代
+*/
 #include "framework.h"
 
 void myLife(std::unordered_map<INT, std::unordered_map<INT, BOOL>>& grid,
@@ -25,6 +28,7 @@ void myLife(std::unordered_map<INT, std::unordered_map<INT, BOOL>>& grid,
 	}
 	INT prev = 0; INT that = 1; INT next = 2;
 	INT size = (INT)grid.size();
+	bitmap = 0; // debug1
 	for (INT done = 0; done < size; done += grid.count(prev)) {
 		INT jump = grid.count(prev) + grid.count(that) + grid.count(next);
 		if (jump > 0) {

@@ -21,6 +21,8 @@
 #define ID_START                        32775
 #define ID_EDIT1OK                      32776
 #define ID_STOP                         32777
+#define ID_EDIT2                        32778
+#define ID_EDIT2OK                      32779
 #define IDC_STATIC                      -1
 
 // Next default values for new objects

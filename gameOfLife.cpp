@@ -5,6 +5,7 @@
 #define RGBgrey     RGB(200,200,200)
 #define RGBwhite    RGB(255,255,255)
 #define RGBblue     RGB(100,100,255)
+#define RGBpurple   RGB(180,150,255)
 // 全局变量
 HINSTANCE   hInst;                                // 当前实例
 WCHAR       szTitle[MAX_LOADSTRING];              // 标题栏文本
@@ -23,7 +24,7 @@ BOOL        ifMouseDown;    // 释放鼠标按下状态
 INT         lastX;
 INT         lastY;
 // 控制栏问题
-HWND        startBotton, stopBotton, cellsizeEdit, cellsizeBotton;
+HWND        startBotton, stopBotton, cellsizeEdit, cellsizeBotton, timeEdit, timeBotton;
 static HWND hBmpStatic;
 INT         listHalfSize;   // 控制栏半宽度
 INT         listUnitHeight;
@@ -156,6 +157,16 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
                 }
             }                
                 break;
+            case ID_EDIT2OK:
+            {
+                BOOL success;
+                INT x = GetDlgItemInt(hWnd, ID_EDIT2, &success, TRUE);
+                if (success) {
+                    KillTimer(hWnd, ID_TIMER);
+                    SetTimer(hWnd, ID_TIMER, 100 * x, NULL);
+                }
+            }
+            break;
             case ID_SAVE:
                 saveBmp(hWnd, 0, 0, cellSize * tableX, cellSize * tableY);
                 break;
@@ -178,7 +189,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         break;
     case WM_CREATE:
     {
-        SetTimer(hWnd, ID_TIMER, 100, NULL);
+        SetTimer(hWnd, ID_TIMER, 1000, NULL);
         INT clientWidth,clientHeight;
         getClientXY(hWnd, &clientWidth, &clientHeight);
         tableX = (clientWidth - 2 * listHalfSize - 10) / cellSize;
@@ -207,12 +218,23 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
             clientWidth - listHalfSize, listUnitHeight * 2, 50, 30,
             hWnd, (HMENU)ID_EDIT1OK, NULL, NULL
         );
+        timeEdit = CreateWindowEx(WS_EX_CLIENTEDGE, L"EDIT", L"10",
+            WS_CHILD | WS_VISIBLE | WS_BORDER | ES_AUTOHSCROLL,
+            clientWidth - 50 - listHalfSize, listUnitHeight * 3, 50, 30,
+            hWnd, (HMENU)ID_EDIT2, (HINSTANCE)GetWindowLongPtr(hWnd, GWLP_HINSTANCE), NULL
+        );
+        timeBotton = CreateWindow(
+            L"BUTTON", L"确认",
+            WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON,
+            clientWidth - listHalfSize, listUnitHeight * 3, 50, 30,
+            hWnd, (HMENU)ID_EDIT2OK, NULL, NULL
+        );
 
         HBITMAP hBmp = LoadBitmap(GetModuleHandle(NULL), MAKEINTRESOURCE(IDB_LINbmpPro));
         hBmpStatic = CreateWindow(
             L"STATIC", NULL,
             WS_CHILD | WS_VISIBLE | SS_BITMAP,
-            clientWidth - 2*listHalfSize, listUnitHeight * 4, 2 * listHalfSize, 3 * listHalfSize,
+            clientWidth - 2*listHalfSize, listUnitHeight * 5, 2 * listHalfSize, 3 * listHalfSize,
             hWnd, NULL, NULL, NULL
         );
         SendMessage(hBmpStatic, STM_SETIMAGE, (WPARAM)IMAGE_BITMAP, (LPARAM)hBmp);// 关联 BMP 图片到静态控件       
@@ -233,16 +255,20 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
             listUnitHeight * 2, 50, 30, TRUE);
         MoveWindow(cellsizeBotton, clientWidth - listHalfSize,
             listUnitHeight * 2, 50, 30, TRUE);
+        MoveWindow(timeEdit, clientWidth - 50 - listHalfSize,
+            listUnitHeight * 3, 50, 30, TRUE);
+        MoveWindow(timeBotton, clientWidth - listHalfSize,
+            listUnitHeight * 3, 50, 30, TRUE);
         MoveWindow(hBmpStatic, clientWidth - 2 * listHalfSize,
-            listUnitHeight * 4, 2 * listHalfSize, 3 * listHalfSize, TRUE);
+            listUnitHeight * 5, 2 * listHalfSize, 3 * listHalfSize, TRUE);
     }
         break;
     case WM_PAINT:
         {
             PAINTSTRUCT ps;
             HDC hdc = BeginPaint(hWnd, &ps);
-            HBRUSH hBrushLive = CreateSolidBrush(RGBwhite);
-            HBRUSH hBrushDead = CreateSolidBrush(RGBblue);
+            HBRUSH hBrushLive = CreateSolidBrush(RGBpurple);
+            HBRUSH hBrushDead = CreateSolidBrush(RGBwhite);
             for (int y = 0; y <tableY; y++) {
                 for (int x = 0; x < tableX; x++) {
                     RECT rect = { x * cellSize, y * cellSize,
@@ -299,6 +325,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         lastX = lastY = -1;   // 清除上次处理的格子记录
         break;
     case WM_DESTROY:
+        KillTimer(hWnd, ID_TIMER);
         PostQuitMessage(0);
         break;
     default:
