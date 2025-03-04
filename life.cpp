@@ -1,6 +1,7 @@
 #include "framework.h"
 
-void myLife(std::unordered_map<INT, std::unordered_map<INT, BOOL>>& grid) {
+void myLife(std::unordered_map<INT, std::unordered_map<INT, BOOL>>& grid,
+	std::unordered_map<INT, std::unordered_map<INT, BOOL>>& ans) {
 	unsigned int bitmap = 0; int x, y;
 	static enum { DEAD, LIVE } state[1 << 9];
 	if (state[007] == DEAD) {							//读活例子，避免重复初始化
@@ -22,6 +23,7 @@ void myLife(std::unordered_map<INT, std::unordered_map<INT, BOOL>>& grid) {
 			}
 		}
 	}
+	INT prev = 0; INT that = 1; INT next = 2;
 
 }
 

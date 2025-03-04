@@ -90,10 +90,10 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 {
    hInst = hInstance; // 将实例句柄存储在全局变量中
    ifRun = FALSE;
-   cellSize = 7;
+   cellSize = 10;
    ifCreate = FALSE;
    ifMouseDown = FALSE;
-   lastX = lastY = -1;//TODO:
+   lastX = lastY = -1;//TODO: done
    listHalfSize = 150;
    listUnitHeight = 40;
 
@@ -126,15 +126,21 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
                 DialogBox(hInst, MAKEINTRESOURCE(IDD_ABOUTBOX), hWnd, About);
                 break;
             case ID_START:
+            {
                 ifRun = !ifRun;
+                std::unordered_map<INT, std::unordered_map<INT, BOOL>> ans;
+                myLife(grid, ans);
+                grid = std::move(ans);
+                InvalidateRect(hWnd, NULL, TRUE);
+            }                
                 break;
             case ID_STOP:
-                grid.clear();
+                grid.clear(); ifCreate = FALSE;
                 InvalidateRect(hWnd, NULL, TRUE);
                 break;
             case ID_EDIT1OK:
             {
-                BOOL success;
+                BOOL success; ifCreate = FALSE;
                 INT x = GetDlgItemInt(hWnd, ID_EDIT1, &success, TRUE);
                 if (success) { 
                     cellSize = x;
@@ -176,7 +182,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
             hWnd, (HMENU)ID_STOP, NULL, NULL
         );
 
-        cellsizeEdit = CreateWindowEx(WS_EX_CLIENTEDGE, L"EDIT", L"7",
+        cellsizeEdit = CreateWindowEx(WS_EX_CLIENTEDGE, L"EDIT", L"10",
             WS_CHILD | WS_VISIBLE | WS_BORDER | ES_AUTOHSCROLL,
             clientWidth - 50 - listHalfSize, listUnitHeight * 2, 50, 30,
             hWnd, (HMENU)ID_EDIT1, (HINSTANCE)GetWindowLongPtr(hWnd, GWLP_HINSTANCE), NULL
@@ -204,6 +210,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         int clientHeight = HIWORD(lParam);
         tableX = (clientWidth - 2 * listHalfSize - 10) / cellSize;
         tableY = clientHeight / cellSize;
+        ifCreate = FALSE;
         MoveWindow(startBotton, clientWidth - 50 - listHalfSize,
             listUnitHeight * 0, 100, 30, TRUE);
         MoveWindow(stopBotton, clientWidth - 50 - listHalfSize,
@@ -230,9 +237,11 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
                     else FillRect(hdc, &rect, hBrushDead);                                     
                 }
             }
-            Gdiplus::Graphics graphics(hdc);
-            myPaintFrame(graphics, 0, 0, tableX * cellSize, tableY * cellSize, cellSize);
-            
+            if (!ifCreate) {
+                Gdiplus::Graphics graphics(hdc);
+                myPaintFrame(graphics, 0, 0, tableX * cellSize, tableY * cellSize, cellSize);
+                ifCreate = TRUE;
+            }            
             DeleteObject(hBrushLive);
             DeleteObject(hBrushDead);
             EndPaint(hWnd, &ps);
