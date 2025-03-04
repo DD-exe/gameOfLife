@@ -24,7 +24,35 @@ void myLife(std::unordered_map<INT, std::unordered_map<INT, BOOL>>& grid,
 		}
 	}
 	INT prev = 0; INT that = 1; INT next = 2;
-
+	INT size = (INT)grid.size();
+	for (INT done = 0; done < size; done += grid.count(prev)) {
+		INT jump = grid.count(prev) + grid.count(that) + grid.count(next);
+		if (jump > 0) {
+			INT max = (INT)grid[prev].size() + (INT)grid[that].size() + (INT)grid[next].size();
+			INT xdone = 0;
+			for (INT x = 0; xdone < max;x++) {
+				if (findLife(grid, x, prev)) {
+					bitmap |= 0100;
+					++xdone;
+				}
+				if (findLife(grid, x, that)) {
+					bitmap |= 0200;
+					++xdone;
+				}
+				if (findLife(grid, x, next)) {
+					bitmap |= 0400;
+					++xdone;
+				}
+				if (x - 1 >= 0) {
+					if (state[bitmap] == LIVE) {
+						ans[that][x - 1] = TRUE;
+					}
+				}
+				bitmap >>= 3;
+			}
+		}
+		++prev; ++that; ++next;
+	}
 }
 
 BOOL findLife(std::unordered_map<INT, std::unordered_map<INT, BOOL>> &grid,INT x, INT y) {
@@ -32,7 +60,12 @@ BOOL findLife(std::unordered_map<INT, std::unordered_map<INT, BOOL>> &grid,INT x
 }
 
 void exchangeLife(std::unordered_map<INT, std::unordered_map<INT, BOOL>>& grid, INT x, INT y) {
-	if (findLife(grid, x, y))grid[y].erase(x);
+	if (findLife(grid, x, y)) { 
+		grid[y].erase(x);
+		if (grid[y].empty()) {
+			grid.erase(y);
+		}
+	}
 	else grid[y][x] = TRUE;
 }
 

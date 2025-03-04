@@ -15,3 +15,12 @@ void myPaintFrame(Gdiplus::Graphics& graphics, int x, int y, int w, int h, int c
         graphics.DrawLine(&pen, x, y + i, x + w, y + i);
     }
 }
+
+INT getMax(INT x, INT y, INT z) {
+    if (x > y) {
+        return x > z ? x : z;
+    }
+    else {
+        return y > z ? y : z;
+    }
+}
