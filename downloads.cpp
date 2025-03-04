@@ -31,11 +31,11 @@ void saveBmp(HWND hWnd, INT x, INT y, INT dx, INT dy) {
     BITMAPINFOHEADER bitInfoHeader;
     bfhWrite(bitFileHeader, file, dx, dy);
     bihWrite(bitInfoHeader, file, dx, dy);
-    BYTE* pixels = (BYTE*)malloc(dx * dy * 3);
-    GetDIBits(hdcMem, hBitmap, 0, dy, pixels, (BITMAPINFO*)&bitInfoHeader, DIB_RGB_COLORS);
+    BYTE* pixels = new BYTE[dx * dy * 3];
     if (pixels != nullptr) {
+        GetDIBits(hdcMem, hBitmap, 0, dy, pixels, (BITMAPINFO*)&bitInfoHeader, DIB_RGB_COLORS);
         fwrite(pixels, bitInfoHeader.biSizeImage, 1, file);
-        free(pixels);
+        delete[]pixels;
     }
     fclose(file);
     DeleteObject(hBitmap);

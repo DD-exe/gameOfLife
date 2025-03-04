@@ -13,7 +13,7 @@ void myLife(std::unordered_map<INT, std::unordered_map<INT, BOOL>>& grid,
 				if (bitmap & 1 << y)					// 读第y个是否为1
 					x += 1;								// 计数
 			if (bitmap & 020) {
-				if (x == 2 || x == 3)
+				if (x == 3 || x == 4)
 					state[bitmap] = LIVE;  
 				else
 					state[bitmap] = DEAD;
@@ -29,12 +29,12 @@ void myLife(std::unordered_map<INT, std::unordered_map<INT, BOOL>>& grid,
 	INT prev = 0; INT that = 1; INT next = 2;
 	INT size = (INT)grid.size();
 	bitmap = 0; // debug1
-	for (INT done = 0; done < size; done += grid.count(prev)) {
+	for (INT done = 0; done < size + 3; done += grid.count(prev)) {
 		INT jump = grid.count(prev) + grid.count(that) + grid.count(next);
 		if (jump > 0) {
-			INT max = (INT)grid[prev].size() + (INT)grid[that].size() + (INT)grid[next].size();
+			INT max = getAll(grid, prev, that, next);
 			INT xdone = 0;
-			for (INT x = 0; xdone < max;x++) {
+			for (INT x = 0; xdone < max + 3; x++) {
 				if (findLife(grid, x, prev)) {
 					bitmap |= 0100;
 					++xdone;
@@ -53,9 +53,13 @@ void myLife(std::unordered_map<INT, std::unordered_map<INT, BOOL>>& grid,
 					}
 				}
 				bitmap >>= 3;
+				if (xdone >= max)xdone++;
 			}
 		}
 		++prev; ++that; ++next;
+		if (done >= size) { 
+			done++; 
+		}
 	}
 }
 

@@ -16,11 +16,17 @@ void myPaintFrame(Gdiplus::Graphics& graphics, int x, int y, int w, int h, int c
     }
 }
 
-INT getMax(INT x, INT y, INT z) {
-    if (x > y) {
-        return x > z ? x : z;
+INT getAll(std::unordered_map<INT, std::unordered_map<INT, BOOL>>& grid,INT x, INT y, INT z) {
+    INT ans = 0;
+    if (grid.count(x)) {
+        ans += (INT)grid[x].size();
     }
-    else {
-        return y > z ? y : z;
+    if (grid.count(y)) {
+        ans += (INT)grid[y].size();
     }
+    if (grid.count(z)) {
+        ans += (INT)grid[z].size();
+    }
+
+    return ans;
 }
