@@ -33,7 +33,7 @@ void saveBmp(HWND hWnd, INT x, INT y, INT dx, INT dy) {
     bihWrite(bitInfoHeader, file, dx, dy);
     BYTE* pixels = new BYTE[dx * dy * 3];
     if (pixels != nullptr) {
-        GetDIBits(hdcMem, hBitmap, 0, 0, NULL, (BITMAPINFO*)&bitInfoHeader, DIB_RGB_COLORS);
+        // GetDIBits(hdcMem, hBitmap, 0, 0, NULL, (BITMAPINFO*)&bitInfoHeader, DIB_RGB_COLORS);
         GetDIBits(hdcMem, hBitmap, 0, dy, pixels, (BITMAPINFO*)&bitInfoHeader, DIB_RGB_COLORS);
         fwrite(pixels, bitInfoHeader.biSizeImage, 1, file);
         delete[]pixels;

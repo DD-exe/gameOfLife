@@ -14,6 +14,7 @@ WCHAR       szWindowClass[MAX_LOADSTRING];        // 主窗口类名
 BOOL        ifRun;
 BOOL        ifCreate;
 INT         cellSize;
+INT         speed;
 INT         tableX;
 INT         tableY;         
 std::unordered_map<INT, std::unordered_map<INT, BOOL>> grid;
@@ -24,10 +25,13 @@ BOOL        ifMouseDown;    // 释放鼠标按下状态
 INT         lastX;
 INT         lastY;
 // 控制栏问题
-HWND        startBotton, stopBotton, cellsizeEdit, cellsizeBotton, timeEdit, timeBotton;
+HWND        startBotton, stopBotton,doingInfo,
+            cellsizeEdit, cellsizeBotton, cellsizeInfo, cellsizeTitle,
+            timeEdit, timeBotton, timeInfo, timeTitle;
 static HWND hBmpStatic;
 INT         listHalfSize;   // 控制栏半宽度
 INT         listUnitHeight;
+INT         titleSize;
 // 函数前向声明
 ATOM                MyRegisterClass(HINSTANCE hInstance);
 BOOL                InitInstance(HINSTANCE, int);
@@ -92,11 +96,13 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
    hInst = hInstance; // 将实例句柄存储在全局变量中
    ifRun = FALSE;
    cellSize = 10;
+   speed = 10;
    ifCreate = FALSE;
    ifMouseDown = FALSE;
    lastX = lastY = -1;//TODO: done
    listHalfSize = 150;
    listUnitHeight = 40;
+   titleSize = 80;
 
    HWND hWnd = CreateWindowW(szWindowClass, szTitle, WS_OVERLAPPEDWINDOW,
       CW_USEDEFAULT, 0, CW_USEDEFAULT, 0, nullptr, nullptr, hInstance, nullptr);
@@ -128,7 +134,13 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
                 break;
             case ID_START:
             {
-                ifRun = !ifRun;                
+                ifRun = !ifRun;
+                if (ifRun) {
+                    SetWindowText(doingInfo, L"||");
+                }
+                else {
+                    SetWindowText(doingInfo, L">");
+                }
             }                
                 break;
             case ID_STOP:
@@ -153,6 +165,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
                     oX = tableX * cellSize > oX ? tableX * cellSize : oX;
                     oY = tableY * cellSize > oY ? tableY * cellSize : oY;
                     RECT rect = { 0,0,oX,oY };
+                    COLORREF it=SetTextColor(GetDC(cellsizeInfo), RGB(255, 255, 0));
+                    SetWindowText(cellsizeInfo, std::to_wstring(cellSize).c_str());
                     InvalidateRect(hWnd, &rect, TRUE);
                 }
             }                
@@ -160,10 +174,11 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
             case ID_EDIT2OK:
             {
                 BOOL success;
-                INT x = GetDlgItemInt(hWnd, ID_EDIT2, &success, TRUE);
+                speed = GetDlgItemInt(hWnd, ID_EDIT2, &success, TRUE);
                 if (success) {
                     KillTimer(hWnd, ID_TIMER);
-                    SetTimer(hWnd, ID_TIMER, 100 * x, NULL);
+                    SetTimer(hWnd, ID_TIMER, 100 * speed, NULL);
+                    SetWindowText(timeInfo, std::to_wstring(speed).c_str());
                 }
             }
             break;
@@ -189,11 +204,12 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         break;
     case WM_CREATE:
     {
-        SetTimer(hWnd, ID_TIMER, 1000, NULL);
+        SetTimer(hWnd, ID_TIMER, 100 * speed, NULL); // 初始化计时器，WM_TIMER需要
         INT clientWidth,clientHeight;
         getClientXY(hWnd, &clientWidth, &clientHeight);
         tableX = (clientWidth - 2 * listHalfSize - 10) / cellSize;
-        tableY = clientHeight / cellSize;
+        tableY = clientHeight / cellSize; // 计算右边控制栏位置
+        // 插入一系列控件
         startBotton = CreateWindow(
             L"BUTTON", L"启动/暂停(O)",
             WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON,
@@ -206,7 +222,15 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
             clientWidth - 50 - listHalfSize, listUnitHeight * 1, 100, 30,
             hWnd, (HMENU)ID_STOP, NULL, NULL
         );
+        doingInfo = CreateWindow(TEXT("STATIC"), TEXT(">"),
+            WS_CHILD | WS_VISIBLE | SS_CENTERIMAGE | SS_CENTER,
+            clientWidth - listHalfSize + 50, listUnitHeight * 0, 30, 30,
+            hWnd, (HMENU)ID_DOING, hInst, NULL);
 
+        cellsizeTitle = CreateWindow(TEXT("STATIC"), TEXT("设置网格："),
+            WS_CHILD | WS_VISIBLE | SS_CENTER,
+            clientWidth - 50 - listHalfSize-titleSize, listUnitHeight * 2, titleSize, 30,
+            hWnd, (HMENU)ID_TITLE1, hInst, NULL);
         cellsizeEdit = CreateWindowEx(WS_EX_CLIENTEDGE, L"EDIT", L"10",
             WS_CHILD | WS_VISIBLE | WS_BORDER | ES_AUTOHSCROLL,
             clientWidth - 50 - listHalfSize, listUnitHeight * 2, 50, 30,
@@ -218,6 +242,16 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
             clientWidth - listHalfSize, listUnitHeight * 2, 50, 30,
             hWnd, (HMENU)ID_EDIT1OK, NULL, NULL
         );
+        cellsizeInfo = CreateWindow(TEXT("STATIC"), TEXT(""),
+            WS_CHILD | WS_VISIBLE | SS_CENTERIMAGE| SS_CENTER,
+            clientWidth - listHalfSize + 50, listUnitHeight * 2 , 30, 30,
+            hWnd, (HMENU)ID_OUTPUT1, hInst, NULL);
+        SetWindowText(cellsizeInfo, std::to_wstring(cellSize).c_str());
+
+        timeTitle = CreateWindow(TEXT("STATIC"), TEXT("迭代用时："),
+            WS_CHILD | WS_VISIBLE | SS_CENTER,
+            clientWidth - 50 - listHalfSize - titleSize, listUnitHeight * 3, titleSize, 30,
+            hWnd, (HMENU)ID_TITLE2, hInst, NULL);
         timeEdit = CreateWindowEx(WS_EX_CLIENTEDGE, L"EDIT", L"10",
             WS_CHILD | WS_VISIBLE | WS_BORDER | ES_AUTOHSCROLL,
             clientWidth - 50 - listHalfSize, listUnitHeight * 3, 50, 30,
@@ -229,6 +263,11 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
             clientWidth - listHalfSize, listUnitHeight * 3, 50, 30,
             hWnd, (HMENU)ID_EDIT2OK, NULL, NULL
         );
+        timeInfo = CreateWindow(TEXT("STATIC"), TEXT(""),
+            WS_CHILD | WS_VISIBLE | SS_CENTERIMAGE | SS_CENTER,
+            clientWidth - listHalfSize + 50, listUnitHeight * 3, 30, 30,
+            hWnd, (HMENU)ID_OUTPUT2, hInst, NULL);
+        SetWindowText(timeInfo, std::to_wstring(speed).c_str());
 
         HBITMAP hBmp = LoadBitmap(GetModuleHandle(NULL), MAKEINTRESOURCE(IDB_LINbmpPro));
         hBmpStatic = CreateWindow(
@@ -251,14 +290,25 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
             listUnitHeight * 0, 100, 30, TRUE);
         MoveWindow(stopBotton, clientWidth - 50 - listHalfSize,
             listUnitHeight * 1, 100, 30, TRUE);
+
+        MoveWindow(cellsizeTitle, clientWidth - 50 - listHalfSize - titleSize,
+            listUnitHeight * 2, titleSize, 30, TRUE);
         MoveWindow(cellsizeEdit, clientWidth - 50 - listHalfSize,
             listUnitHeight * 2, 50, 30, TRUE);
         MoveWindow(cellsizeBotton, clientWidth - listHalfSize,
             listUnitHeight * 2, 50, 30, TRUE);
+        MoveWindow(cellsizeInfo, clientWidth - listHalfSize + 50,
+            listUnitHeight * 2, 30, 30, TRUE);
+
+        MoveWindow(timeTitle, clientWidth - 50 - listHalfSize - titleSize,
+            listUnitHeight * 3, titleSize, 30, TRUE);
         MoveWindow(timeEdit, clientWidth - 50 - listHalfSize,
             listUnitHeight * 3, 50, 30, TRUE);
         MoveWindow(timeBotton, clientWidth - listHalfSize,
             listUnitHeight * 3, 50, 30, TRUE);
+        MoveWindow(timeInfo, clientWidth - listHalfSize + 50,
+            listUnitHeight * 3, 30, 30, TRUE);
+
         MoveWindow(hBmpStatic, clientWidth - 2 * listHalfSize,
             listUnitHeight * 5, 2 * listHalfSize, 3 * listHalfSize, TRUE);
     }

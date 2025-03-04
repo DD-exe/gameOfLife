@@ -13,6 +13,7 @@
 #include <stdio.h>
 // stl
 #include <unordered_map>
+#include <string>
                                                           
 BOOL findLife(std::unordered_map<INT, std::unordered_map<INT, BOOL>> &grid, INT x, INT y);      // life
 void exchangeLife(std::unordered_map<INT, std::unordered_map<INT, BOOL>>& grid, INT x, INT y);
