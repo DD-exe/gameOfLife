@@ -69,8 +69,8 @@ void exchangeLife(std::unordered_map<INT, std::unordered_map<INT, BOOL>>& grid, 
 	else grid[y][x] = TRUE;
 }
 
-void lifeOrigin(int *that, int *newi) // 此函数学习于https://dotat.at/prog/life/life.html
-								// List Life algorithm(by Tony Finch)
+void lifeOrigin(int *that, int *newi)	// 此函数学习于https://dotat.at/prog/life/life.html
+										// List Life algorithm(by Tony Finch) 作为原型算法参考
 {
 	unsigned int bitmap; // notice
 	int *next, *prev;

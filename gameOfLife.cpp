@@ -127,28 +127,32 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
                 break;
             case ID_START:
             {
-                ifRun = !ifRun;
-                std::unordered_map<INT, std::unordered_map<INT, BOOL>> ans;
-                myLife(grid, ans);
-                grid = std::move(ans);
-                InvalidateRect(hWnd, NULL, TRUE);
+                ifRun = !ifRun;                
             }                
                 break;
             case ID_STOP:
+            {
                 grid.clear(); ifCreate = FALSE;
-                InvalidateRect(hWnd, NULL, TRUE);
+                RECT rect = { 0,0,tableX * cellSize,tableY * cellSize };
+                InvalidateRect(hWnd, &rect, TRUE);
+            }
                 break;
             case ID_EDIT1OK:
             {
                 BOOL success; ifCreate = FALSE;
                 INT x = GetDlgItemInt(hWnd, ID_EDIT1, &success, TRUE);
+                INT oX = tableX * cellSize;
+                INT oY = tableY * cellSize;
                 if (success) { 
                     cellSize = x;
                     INT clientWidth, clientHeight;
                     getClientXY(hWnd, &clientWidth, &clientHeight);
                     tableX = (clientWidth - 2 * listHalfSize - 10) / cellSize;
                     tableY = clientHeight / cellSize;
-                    InvalidateRect(hWnd, NULL, TRUE);
+                    oX = tableX * cellSize > oX ? tableX * cellSize : oX;
+                    oY = tableY * cellSize > oY ? tableY * cellSize : oY;
+                    RECT rect = { 0,0,oX,oY };
+                    InvalidateRect(hWnd, &rect, TRUE);
                 }
             }                
                 break;
@@ -163,8 +167,18 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
             }
         }
         break;
+    case WM_TIMER:
+        if (ifRun) {
+            std::unordered_map<INT, std::unordered_map<INT, BOOL>> ans;
+            myLife(grid, ans);
+            grid = std::move(ans);
+            RECT rect = { 0,0,tableX * cellSize,tableY * cellSize };
+            InvalidateRect(hWnd, &rect, TRUE);
+        }
+        break;
     case WM_CREATE:
     {
+        SetTimer(hWnd, ID_TIMER, 100, NULL);
         INT clientWidth,clientHeight;
         getClientXY(hWnd, &clientWidth, &clientHeight);
         tableX = (clientWidth - 2 * listHalfSize - 10) / cellSize;

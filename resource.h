@@ -15,7 +15,7 @@
 #define IDI_LINico                      132
 #define IDB_BITMAP1                     133
 #define IDB_LINbmpPro                   133
-#define ID_32772                        32772
+#define ID_TIMER                        32772
 #define ID_SAVE                         32773
 #define ID_EDIT1						32774
 #define ID_START                        32775
