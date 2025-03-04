@@ -13,9 +13,8 @@
 #include <stdio.h>
 // stl
 #include <unordered_map>
-
-void lifeOrigin(int* that, int* newi);                                                          // life
-BOOL findLife(std::unordered_map<INT, std::unordered_map<INT, BOOL>> &grid, INT x, INT y);
+                                                          
+BOOL findLife(std::unordered_map<INT, std::unordered_map<INT, BOOL>> &grid, INT x, INT y);      // life
 void exchangeLife(std::unordered_map<INT, std::unordered_map<INT, BOOL>>& grid, INT x, INT y);
 void myLife(std::unordered_map<INT, std::unordered_map<INT, BOOL>>& grid,
     std::unordered_map<INT, std::unordered_map<INT, BOOL>>& ans);
@@ -29,7 +28,7 @@ INT getAll(std::unordered_map<INT, std::unordered_map<INT, BOOL>>& grid,INT x, I
 // inline
 inline void getClientXY(HWND hWnd, INT* x, INT* y) {
     RECT clientRect;
-    GetClientRect(hWnd, &clientRect);  // 获取客户区区域
-    *x = clientRect.right - clientRect.left;   // 客户区宽度
-    *y = clientRect.bottom - clientRect.top;  // 客户区高度
+    GetClientRect(hWnd, &clientRect);           // 获取客户区区域
+    *x = clientRect.right - clientRect.left;    // 客户区宽度
+    *y = clientRect.bottom - clientRect.top;    // 客户区高度
 }
