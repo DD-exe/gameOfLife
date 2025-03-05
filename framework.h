@@ -14,17 +14,23 @@
 // stl
 #include <unordered_map>
 #include <string>
-                                                          
+
+
+enum STATE {
+    DEAD, LIVE
+};
 BOOL findLife(std::unordered_map<INT, std::unordered_map<INT, BOOL>> &grid, INT x, INT y);      // life
 void exchangeLife(std::unordered_map<INT, std::unordered_map<INT, BOOL>>& grid, INT x, INT y);
 void myLife(std::unordered_map<INT, std::unordered_map<INT, BOOL>>& grid,
-    std::unordered_map<INT, std::unordered_map<INT, BOOL>>& ans);
+    std::unordered_map<INT, std::unordered_map<INT, BOOL>>& ans,
+    INT xux, INT xuy, INT rex, INT rey,STATE** state);
 void saveBmp(HWND hWnd, INT x, INT y, INT dx, INT dy);                                          //downloads
 BOOL ofnRead(HWND hWnd, OPENFILENAME& ofn, WCHAR* szFile, DWORD bufSize);
 void bfhWrite(BITMAPFILEHEADER& bfh, FILE* file, INT dx, INT dy);
 void bihWrite(BITMAPINFOHEADER& bfh, FILE* file, INT dx, INT dy);
 INT_PTR CALLBACK About(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam);                  // about
 INT getAll(std::unordered_map<INT, std::unordered_map<INT, BOOL>>& grid,INT x, INT y, INT z);   // tools
+void delState(STATE** x);
 
 // inline
 inline void getClientXY(HWND hWnd, INT* x, INT* y) {

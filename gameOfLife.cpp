@@ -18,6 +18,8 @@ INT         speed;
 INT         tableX;
 INT         tableY;         
 std::unordered_map<INT, std::unordered_map<INT, BOOL>> grid;
+STATE                                                **state;
+INT                                                    xux, xuy, rex, rey;
 
 ULONG_PTR   gdiplusToken;
 // 鼠标问题
@@ -96,6 +98,9 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
    hInst = hInstance; // 将实例句柄存储在全局变量中
    ifRun = FALSE;
    cellSize = 10;
+   state = new STATE * [9 * 9 * 9 * 9];
+   for (int i = 0; i < 9 * 9 * 9 * 9; ++i)state[i] = nullptr;
+   xux = 2; xuy = 3; rex = 3; rey = 3;
    speed = 10;
    ifCreate = FALSE;
    ifMouseDown = FALSE;
@@ -196,7 +201,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
     case WM_TIMER:
         if (ifRun) {
             std::unordered_map<INT, std::unordered_map<INT, BOOL>> ans;
-            myLife(grid, ans);
+            myLife(grid, ans,xux,xuy,rex,rey,state);
             grid = std::move(ans);
             RECT rect = { 0,0,tableX * cellSize,tableY * cellSize };
             InvalidateRect(hWnd, &rect, TRUE);
@@ -269,11 +274,32 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
             hWnd, (HMENU)ID_OUTPUT2, hInst, NULL);
         SetWindowText(timeInfo, std::to_wstring(speed).c_str());
 
+        timeTitle = CreateWindow(TEXT("STATIC"), TEXT("迭代用时："),
+            WS_CHILD | WS_VISIBLE | SS_CENTER,
+            clientWidth - 50 - listHalfSize - titleSize, listUnitHeight * 4, titleSize, 30,
+            hWnd, (HMENU)ID_TITLE2, hInst, NULL);
+        timeEdit = CreateWindowEx(WS_EX_CLIENTEDGE, L"EDIT", L"10",
+            WS_CHILD | WS_VISIBLE | WS_BORDER | ES_AUTOHSCROLL,
+            clientWidth - 50 - listHalfSize, listUnitHeight * 4, 50, 30,
+            hWnd, (HMENU)ID_EDIT2, (HINSTANCE)GetWindowLongPtr(hWnd, GWLP_HINSTANCE), NULL
+        );
+        timeBotton = CreateWindow(
+            L"BUTTON", L"确认",
+            WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON,
+            clientWidth - listHalfSize, listUnitHeight * 4, 50, 30,
+            hWnd, (HMENU)ID_EDIT2OK, NULL, NULL
+        );
+        timeInfo = CreateWindow(TEXT("STATIC"), TEXT(""),
+            WS_CHILD | WS_VISIBLE | SS_CENTERIMAGE | SS_CENTER,
+            clientWidth - listHalfSize + 50, listUnitHeight * 4, 30, 30,
+            hWnd, (HMENU)ID_OUTPUT2, hInst, NULL);
+        SetWindowText(timeInfo, std::to_wstring(speed).c_str());
+
         HBITMAP hBmp = LoadBitmap(GetModuleHandle(NULL), MAKEINTRESOURCE(IDB_LINbmpPro));
         hBmpStatic = CreateWindow(
             L"STATIC", NULL,
             WS_CHILD | WS_VISIBLE | SS_BITMAP,
-            clientWidth - 2*listHalfSize, listUnitHeight * 5, 2 * listHalfSize, 3 * listHalfSize,
+            clientWidth - 2 * listHalfSize, listUnitHeight * 5, 2 * listHalfSize, 3 * listHalfSize,
             hWnd, NULL, NULL, NULL
         );
         SendMessage(hBmpStatic, STM_SETIMAGE, (WPARAM)IMAGE_BITMAP, (LPARAM)hBmp);// 关联 BMP 图片到静态控件       
@@ -290,6 +316,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
             listUnitHeight * 0, 100, 30, TRUE);
         MoveWindow(stopBotton, clientWidth - 50 - listHalfSize,
             listUnitHeight * 1, 100, 30, TRUE);
+        MoveWindow(doingInfo, clientWidth - listHalfSize + 50,
+            listUnitHeight * 0, 30, 30, TRUE);
 
         MoveWindow(cellsizeTitle, clientWidth - 50 - listHalfSize - titleSize,
             listUnitHeight * 2, titleSize, 30, TRUE);
@@ -374,8 +402,15 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         ifMouseDown = FALSE;  // 释放鼠标按下状态
         lastX = lastY = -1;   // 清除上次处理的格子记录
         break;
+    case WM_KEYDOWN:
+        if (wParam == VK_RETURN) {
+            SendMessage(GetDlgItem(hWnd, ID_EDIT1OK), BM_CLICK, 0, 0);
+            SendMessage(GetDlgItem(hWnd, ID_EDIT2OK), BM_CLICK, 0, 0);
+        }
+        break;
     case WM_DESTROY:
         KillTimer(hWnd, ID_TIMER);
+        delState(state);
         PostQuitMessage(0);
         break;
     default:

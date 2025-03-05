@@ -28,3 +28,12 @@ INT getAll(std::unordered_map<INT, std::unordered_map<INT, BOOL>>& grid,INT x, I
 
     return ans;
 }
+
+void delState(STATE** x) {
+    for (int i = 0; i < 9 * 9 * 9 * 9; ++i) {
+        if (x[i] != nullptr) {
+            delete[]x[i];
+        }
+    }
+    delete[]x;
+}
