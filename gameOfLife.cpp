@@ -27,9 +27,11 @@ BOOL        ifMouseDown;    // 释放鼠标按下状态
 INT         lastX;
 INT         lastY;
 // 控制栏问题
-HWND        startBotton, stopBotton,doingInfo,
+HWND        startBotton, stopBotton, doingInfo,
             cellsizeEdit, cellsizeBotton, cellsizeInfo, cellsizeTitle,
-            timeEdit, timeBotton, timeInfo, timeTitle;
+            timeEdit, timeBotton, timeInfo, timeTitle,
+            modXuTitle, modXuEditX, modXuEditY, modXuBotton, modXuInfo,
+            modReTitle, modReEditX, modReEditY, modReBotton, modReInfo;
 static HWND hBmpStatic;
 INT         listHalfSize;   // 控制栏半宽度
 INT         listUnitHeight;
@@ -187,6 +189,40 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
                 }
             }
             break;
+            case ID_EDIT3OK:
+            {
+                BOOL success1,success2;
+                INT x = GetDlgItemInt(hWnd, ID_EDIT3X, &success1, TRUE);
+                INT y = GetDlgItemInt(hWnd, ID_EDIT3Y, &success2, TRUE);
+                if (success1&&success2) {
+                    if (x < y) {
+                        xux = x; xuy = y;
+                        SetWindowText(modXuInfo, (std::to_wstring(x)+L"-"+ std::to_wstring(y)).c_str());
+                    }
+                    else if (x == y) {
+                        xux = x; xuy = y;
+                        SetWindowText(modXuInfo, std::to_wstring(x).c_str());
+                    }                     
+                }
+            }
+                break;
+            case ID_EDIT4OK:
+            {
+                BOOL success1, success2;
+                INT x = GetDlgItemInt(hWnd, ID_EDIT4X, &success1, TRUE);
+                INT y = GetDlgItemInt(hWnd, ID_EDIT4Y, &success2, TRUE);
+                if (success1 && success2) {
+                    if (x < y) {
+                        rex = x; rey = y;
+                        SetWindowText(modReInfo, (std::to_wstring(x) + L"-" + std::to_wstring(y)).c_str());
+                    }
+                    else if (x == y) {
+                        rex = x; rey = y;
+                        SetWindowText(modReInfo, std::to_wstring(x).c_str());
+                    }
+                }
+            }
+                break;
             case ID_SAVE:
                 saveBmp(hWnd, 0, 0, cellSize * tableX, cellSize * tableY);
                 break;
@@ -274,32 +310,61 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
             hWnd, (HMENU)ID_OUTPUT2, hInst, NULL);
         SetWindowText(timeInfo, std::to_wstring(speed).c_str());
 
-        timeTitle = CreateWindow(TEXT("STATIC"), TEXT("迭代用时："),
+        modXuTitle = CreateWindow(TEXT("STATIC"), TEXT("存活需求："),
             WS_CHILD | WS_VISIBLE | SS_CENTER,
             clientWidth - 50 - listHalfSize - titleSize, listUnitHeight * 4, titleSize, 30,
-            hWnd, (HMENU)ID_TITLE2, hInst, NULL);
-        timeEdit = CreateWindowEx(WS_EX_CLIENTEDGE, L"EDIT", L"10",
+            hWnd, (HMENU)ID_TITLE3, hInst, NULL);
+        modXuEditX = CreateWindowEx(WS_EX_CLIENTEDGE, L"EDIT", L"2",
             WS_CHILD | WS_VISIBLE | WS_BORDER | ES_AUTOHSCROLL,
-            clientWidth - 50 - listHalfSize, listUnitHeight * 4, 50, 30,
-            hWnd, (HMENU)ID_EDIT2, (HINSTANCE)GetWindowLongPtr(hWnd, GWLP_HINSTANCE), NULL
+            clientWidth - 50 - listHalfSize, listUnitHeight * 4, 25, 30,
+            hWnd, (HMENU)ID_EDIT3X, (HINSTANCE)GetWindowLongPtr(hWnd, GWLP_HINSTANCE), NULL
         );
-        timeBotton = CreateWindow(
+        modXuEditY = CreateWindowEx(WS_EX_CLIENTEDGE, L"EDIT", L"3",
+            WS_CHILD | WS_VISIBLE | WS_BORDER | ES_AUTOHSCROLL,
+            clientWidth - 25 - listHalfSize, listUnitHeight * 4, 25, 30,
+            hWnd, (HMENU)ID_EDIT3Y, (HINSTANCE)GetWindowLongPtr(hWnd, GWLP_HINSTANCE), NULL
+        );
+        modXuBotton = CreateWindow(
             L"BUTTON", L"确认",
             WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON,
             clientWidth - listHalfSize, listUnitHeight * 4, 50, 30,
-            hWnd, (HMENU)ID_EDIT2OK, NULL, NULL
+            hWnd, (HMENU)ID_EDIT3OK, NULL, NULL
         );
-        timeInfo = CreateWindow(TEXT("STATIC"), TEXT(""),
+        modXuInfo = CreateWindow(TEXT("STATIC"), TEXT("2-3"),
             WS_CHILD | WS_VISIBLE | SS_CENTERIMAGE | SS_CENTER,
-            clientWidth - listHalfSize + 50, listUnitHeight * 4, 30, 30,
-            hWnd, (HMENU)ID_OUTPUT2, hInst, NULL);
-        SetWindowText(timeInfo, std::to_wstring(speed).c_str());
+            clientWidth - listHalfSize + 50, listUnitHeight * 4, 50, 30,
+            hWnd, (HMENU)ID_OUTPUT3, hInst, NULL);
+
+        modReTitle = CreateWindow(TEXT("STATIC"), TEXT("繁殖需求："),
+            WS_CHILD | WS_VISIBLE | SS_CENTER,
+            clientWidth - 50 - listHalfSize - titleSize, listUnitHeight * 5, titleSize, 30,
+            hWnd, (HMENU)ID_TITLE4, hInst, NULL);
+        modReEditX = CreateWindowEx(WS_EX_CLIENTEDGE, L"EDIT", L"3",
+            WS_CHILD | WS_VISIBLE | WS_BORDER | ES_AUTOHSCROLL,
+            clientWidth - 50 - listHalfSize, listUnitHeight * 5, 25, 30,
+            hWnd, (HMENU)ID_EDIT4X, (HINSTANCE)GetWindowLongPtr(hWnd, GWLP_HINSTANCE), NULL
+        );
+        modReEditY = CreateWindowEx(WS_EX_CLIENTEDGE, L"EDIT", L"3",
+            WS_CHILD | WS_VISIBLE | WS_BORDER | ES_AUTOHSCROLL,
+            clientWidth - 25 - listHalfSize, listUnitHeight * 5, 25, 30,
+            hWnd, (HMENU)ID_EDIT4Y, (HINSTANCE)GetWindowLongPtr(hWnd, GWLP_HINSTANCE), NULL
+        );
+        modReBotton = CreateWindow(
+            L"BUTTON", L"确认",
+            WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON,
+            clientWidth - listHalfSize, listUnitHeight * 5, 50, 30,
+            hWnd, (HMENU)ID_EDIT4OK, NULL, NULL
+        );
+        modReInfo = CreateWindow(TEXT("STATIC"), TEXT("3"),
+            WS_CHILD | WS_VISIBLE | SS_CENTERIMAGE | SS_CENTER,
+            clientWidth - listHalfSize + 50, listUnitHeight * 5, 50, 30,
+            hWnd, (HMENU)ID_OUTPUT4, hInst, NULL);
 
         HBITMAP hBmp = LoadBitmap(GetModuleHandle(NULL), MAKEINTRESOURCE(IDB_LINbmpPro));
         hBmpStatic = CreateWindow(
             L"STATIC", NULL,
             WS_CHILD | WS_VISIBLE | SS_BITMAP,
-            clientWidth - 2 * listHalfSize, listUnitHeight * 5, 2 * listHalfSize, 3 * listHalfSize,
+            clientWidth - 2 * listHalfSize, listUnitHeight * 6, 2 * listHalfSize, 3 * listHalfSize,
             hWnd, NULL, NULL, NULL
         );
         SendMessage(hBmpStatic, STM_SETIMAGE, (WPARAM)IMAGE_BITMAP, (LPARAM)hBmp);// 关联 BMP 图片到静态控件       
@@ -337,8 +402,30 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         MoveWindow(timeInfo, clientWidth - listHalfSize + 50,
             listUnitHeight * 3, 30, 30, TRUE);
 
+        MoveWindow(modXuTitle, clientWidth - 50 - listHalfSize - titleSize,
+            listUnitHeight * 4, titleSize, 30, TRUE);
+        MoveWindow(modXuEditX, clientWidth - 50 - listHalfSize,
+            listUnitHeight * 4, 25, 30, TRUE);
+        MoveWindow(modXuEditY, clientWidth - 25 - listHalfSize,
+            listUnitHeight * 4, 25, 30, TRUE);
+        MoveWindow(modXuBotton, clientWidth - listHalfSize,
+            listUnitHeight * 4, 50, 30, TRUE);
+        MoveWindow(modXuInfo, clientWidth - listHalfSize + 50, 
+            listUnitHeight * 4, 50, 30, TRUE);
+
+        MoveWindow(modReTitle, clientWidth - 50 - listHalfSize - titleSize,
+            listUnitHeight * 5, titleSize, 30, TRUE);
+        MoveWindow(modReEditX, clientWidth - 50 - listHalfSize,
+            listUnitHeight * 5, 25, 30, TRUE);
+        MoveWindow(modReEditY, clientWidth - 25 - listHalfSize,
+            listUnitHeight * 5, 25, 30, TRUE);
+        MoveWindow(modReBotton, clientWidth - listHalfSize,
+            listUnitHeight * 5, 50, 30, TRUE);
+        MoveWindow(modReInfo, clientWidth - listHalfSize + 50,
+            listUnitHeight * 5, 50, 30, TRUE);
+
         MoveWindow(hBmpStatic, clientWidth - 2 * listHalfSize,
-            listUnitHeight * 5, 2 * listHalfSize, 3 * listHalfSize, TRUE);
+            listUnitHeight * 6, 2 * listHalfSize, 3 * listHalfSize, TRUE);
     }
         break;
     case WM_PAINT:

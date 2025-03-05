@@ -28,6 +28,16 @@
 #define ID_OUTPUT1                      32782
 #define ID_OUTPUT2                      32783
 #define ID_DOING						32784
+#define ID_TITLE3                       32785
+#define ID_EDIT3X                       32786
+#define ID_EDIT3Y                       32787
+#define ID_EDIT3OK                      32788
+#define ID_OUTPUT3                      32789
+#define ID_TITLE4                       32790
+#define ID_EDIT4X                       32791
+#define ID_EDIT4Y                       32792
+#define ID_EDIT4OK                      32793
+#define ID_OUTPUT4                      32794
 #define IDC_STATIC                      -1
 
 // Next default values for new objects
@@ -36,7 +46,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NO_MFC                     1
 #define _APS_NEXT_RESOURCE_VALUE        134
-#define _APS_NEXT_COMMAND_VALUE         32785
+#define _APS_NEXT_COMMAND_VALUE         32795
 #define _APS_NEXT_CONTROL_VALUE         1000
 #define _APS_NEXT_SYMED_VALUE           110
 #endif
