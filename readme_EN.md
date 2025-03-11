@@ -1,5 +1,5 @@
 ## gameOfLife
-<a href="https://github.com/DD-exe/gameOfLife/blob/master/readme.md_">中文版</a><br>
+<a href="https://github.com/DD-exe/gameOfLife/blob/master/readme.md">中文版</a><br>
 This project aims to implement a graphical Windows application for the visual simulation of Conway's Game of Life with adjustable parameters.<br>
 In traditional discussions of Conway's Game of Life, the importance of initial parameters is often emphasized. If the survival conditions are too lenient, chaotic expansion occurs; if too strict, the simulation quickly dies out. However, most available Game of Life simulators do not allow free adjustment of these parameters, limiting users' ability to explore and understand the system's behavior.<br>
 In this project, we introduce adjustable game parameters while maintaining a reasonable computational cost. Now, the simulation is no longer restricted to the classic "optimal" parameters—you can modify them at any time, even mid-simulation.<br>
