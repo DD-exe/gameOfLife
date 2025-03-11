@@ -1,4 +1,8 @@
-﻿#include "framework.h"
+﻿/*
+    程序主框架
+    用于创建主窗口和维护消息循环
+*/
+#include "framework.h"
 #include "gameOfLife.h"
 #define MAX_LOADSTRING 100
 

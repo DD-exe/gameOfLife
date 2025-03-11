@@ -1,3 +1,6 @@
+/*
+    用于实现其他部分用到的小工具
+*/
 #include "framework.h"
 #include "gameOfLife.h"
 

@@ -1,3 +1,6 @@
+/*
+    用于实现内置的运行结果保存功能
+*/
 #include "framework.h"
 
 void saveBmp(HWND hWnd, INT x, INT y, INT dx, INT dy) {
@@ -29,13 +32,11 @@ void saveBmp(HWND hWnd, INT x, INT y, INT dx, INT dy) {
     
     BITMAPFILEHEADER bitFileHeader;
     BITMAPINFOHEADER bitInfoHeader;
-    INT duiqiX = (dx * 3 + 3) & ~3;
+    INT duiqiX = (dx * 3 + 3) & ~3; // 堆错误解决方案:内存对齐问题
     bfhWrite(bitFileHeader, file, dx, dy, duiqiX);
     bihWrite(bitInfoHeader, file, dx, dy, duiqiX);
-    BYTE* pixels = new BYTE[dy * duiqiX]; // 堆错误解决方案
+    BYTE* pixels = new BYTE[dy * duiqiX]; 
     if (pixels != nullptr) {
-        GetDIBits(hdcMem, hBitmap, 0, 0, NULL, (BITMAPINFO*)&bitInfoHeader, DIB_RGB_COLORS);
-        //bitFileHeader.bfSize = bitFileHeader.bfOffBits + bitInfoHeader.biSizeImage;
         GetDIBits(hdcMem, hBitmap, 0, dy, pixels, (BITMAPINFO*)&bitInfoHeader, DIB_RGB_COLORS);
         fwrite(pixels, bitInfoHeader.biSizeImage, 1, file);
         delete[]pixels;
