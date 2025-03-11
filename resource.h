@@ -8,12 +8,11 @@
 #define IDD_ABOUTBOX                    103
 #define IDM_ABOUT                       104
 #define IDM_EXIT                        105
-#define IDI_SMALL                       108
+#define IDI_LINico                      108
 #define IDC_GAMEOFLIFE                  109
 #define IDR_MAINFRAME                   128
 #define IDB_LINbmp                      131
-#define IDI_LINico                      132
-#define IDB_BITMAP1                     133
+#define IDI_SMALL                       132
 #define IDB_LINbmpPro                   133
 #define ID_TIMER                        32772
 #define ID_SAVE                         32773
