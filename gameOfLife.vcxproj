@@ -151,6 +151,7 @@
   <ItemGroup>
     <None Include=".gitignore" />
     <None Include="readme.md" />
+    <None Include="readme_EN.md" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
