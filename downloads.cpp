@@ -29,11 +29,13 @@ void saveBmp(HWND hWnd, INT x, INT y, INT dx, INT dy) {
     
     BITMAPFILEHEADER bitFileHeader;
     BITMAPINFOHEADER bitInfoHeader;
-    bfhWrite(bitFileHeader, file, dx, dy);
-    bihWrite(bitInfoHeader, file, dx, dy);
-    BYTE* pixels = new BYTE[dx * dy * 3];
+    INT duiqiX = (dx * 3 + 3) & ~3;
+    bfhWrite(bitFileHeader, file, dx, dy, duiqiX);
+    bihWrite(bitInfoHeader, file, dx, dy, duiqiX);
+    BYTE* pixels = new BYTE[dy * duiqiX]; // 堆错误解决方案
     if (pixels != nullptr) {
-        // GetDIBits(hdcMem, hBitmap, 0, 0, NULL, (BITMAPINFO*)&bitInfoHeader, DIB_RGB_COLORS);
+        GetDIBits(hdcMem, hBitmap, 0, 0, NULL, (BITMAPINFO*)&bitInfoHeader, DIB_RGB_COLORS);
+        //bitFileHeader.bfSize = bitFileHeader.bfOffBits + bitInfoHeader.biSizeImage;
         GetDIBits(hdcMem, hBitmap, 0, dy, pixels, (BITMAPINFO*)&bitInfoHeader, DIB_RGB_COLORS);
         fwrite(pixels, bitInfoHeader.biSizeImage, 1, file);
         delete[]pixels;
@@ -62,23 +64,23 @@ BOOL ofnRead(HWND hWnd,OPENFILENAME& ofn, WCHAR* szFile,DWORD bufSize) {
     return GetSaveFileName(&ofn);
 }
 
-void bfhWrite(BITMAPFILEHEADER& bfh, FILE* file,INT dx,INT dy) {
+void bfhWrite(BITMAPFILEHEADER& bfh, FILE* file,INT dx,INT dy,INT duiqiX) {
     bfh.bfType = 0x4D42; // bmp
     bfh.bfReserved1 = 0;
     bfh.bfReserved2 = 0;
     bfh.bfOffBits = sizeof(BITMAPFILEHEADER) + sizeof(BITMAPINFOHEADER);
-    bfh.bfSize = bfh.bfOffBits + (dx * dy * 3);  // 每个像素占用3字节
+    bfh.bfSize = bfh.bfOffBits + (dy * duiqiX);  // 每个像素占用3字节
     fwrite(&bfh, sizeof(BITMAPFILEHEADER), 1, file);
 }
 
-void bihWrite(BITMAPINFOHEADER& bih, FILE* file, INT dx, INT dy) {
+void bihWrite(BITMAPINFOHEADER& bih, FILE* file, INT dx, INT dy, INT duiqiX) {
     bih.biSize = sizeof(BITMAPINFOHEADER);
     bih.biWidth = dx;
     bih.biHeight = dy;
     bih.biPlanes = 1;
     bih.biBitCount = 24;
     bih.biCompression = 0;
-    bih.biSizeImage = dx * dy * 3;
+    bih.biSizeImage = dy * duiqiX;
     bih.biXPelsPerMeter = 0;
     bih.biYPelsPerMeter = 0;
     bih.biClrUsed = 0;
