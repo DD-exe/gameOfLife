@@ -7,7 +7,7 @@ void myLife(std::unordered_map<INT, std::unordered_map<INT, BOOL>>& grid,
 	std::unordered_map<INT, std::unordered_map<INT, BOOL>>& ans,
 	INT4& rule,STATE** state) {
 	unsigned int bitmap = 0; int x, y;
-	INT stateCode = rule.x * 9 * 9 * 9 + rule.xuy * 9 * 9 + rule.rex * 9 + rule.rey;
+	INT stateCode = rule.x * 9 * 9 * 9 + rule.y * 9 * 9 + rule.z * 9 + rule.t;
 	if (state[stateCode] == nullptr) {
 		state[stateCode] = new STATE[1 << 9];
 		for (bitmap = 0; bitmap < 1 << 9; bitmap++) {
@@ -15,13 +15,13 @@ void myLife(std::unordered_map<INT, std::unordered_map<INT, BOOL>>& grid,
 				if (bitmap & 1 << y)					// 读第y个是否为1
 					x += 1;								// 计数
 			if (bitmap & 020) {
-				if (x >= rule.x+1 && x <= rule.xuy+1)
+				if (x >= rule.x+1 && x <= rule.y+1)
 					state[stateCode][bitmap] = LIVE;  
 				else
 					state[stateCode][bitmap] = DEAD;
 			}
 			else {
-				if (x >= rule.rex && x <= rule.rey)
+				if (x >= rule.z && x <= rule.t)
 					state[stateCode][bitmap] = LIVE;
 				else
 					state[stateCode][bitmap] = DEAD;

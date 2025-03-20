@@ -3,6 +3,7 @@
 */
 #include "framework.h"
 #include "gameOfLife.h"
+#include <random>
 
 void myPaintFrame(Gdiplus::Graphics& graphics, int x, int y, int w, int h, int cellSize)
 {
@@ -39,4 +40,11 @@ void delState(STATE** x) {
         }
     }
     delete[]x;
+}
+
+int getRandomNum(int min, int max) {
+    std::random_device rd;  // 随机种子
+    std::mt19937 gen(rd()); // Mersenne Twister 19937 生成器
+    std::uniform_int_distribution<int> distrib(min, max);
+    return distrib(gen);
 }

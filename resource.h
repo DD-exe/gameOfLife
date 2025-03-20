@@ -6,6 +6,9 @@
 #define IDOKvsSPEED                     3
 #define IDP1OK                          4
 #define IDP2OK                          5
+#define IDvsSTART                       6
+#define IDP2OK3                         7
+#define IDvsSTOP                        7
 #define IDD_GAMEOFLIFE_DIALOG           102
 #define IDS_APP_TITLE                   103
 #define IDD_ABOUTBOX                    103
