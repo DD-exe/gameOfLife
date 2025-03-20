@@ -188,16 +188,16 @@ INT_PTR CALLBACK VSdot(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
                     (x + 1) * data->cellSize, (y + 1) * data->cellSize };
                 if (findLife(data->gridP1,x,y)) {
                     if (findLife(data->gridP2, x, y)) {
-                        INT p1vs = data->gridP1[x][y] ? data->attP1 : data->defP1;
-                        INT p2vs = data->gridP2[x][y] ? data->attP2 : data->defP2;
+                        INT p1vs = data->gridP1[y][x] ? data->attP1 : data->defP1;
+                        INT p2vs = data->gridP2[y][x] ? data->attP2 : data->defP2;
                         INT ans = getRandomNum(1, p1vs + p2vs);
                         if (ans <= p1vs) { 
-                            FillRect(hdc, &rect, hBrushP1);
                             exchangeLife(data->gridP2, x, y);
+                            FillRect(hdc, &rect, hBrushP1);
                         }
                         else {
-                            FillRect(hdc, &rect, hBrushP2);
                             exchangeLife(data->gridP1, x, y);
+                            FillRect(hdc, &rect, hBrushP2);
                         }
                     }
                     else {
@@ -270,7 +270,6 @@ INT_PTR CALLBACK VSdot(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
         {
             std::unordered_map<INT, std::unordered_map<INT, BOOL>> ans1;
             std::unordered_map<INT, std::unordered_map<INT, BOOL>> ans2;
-            // INT4 rectx;
             myLife(data->gridP1, ans1, data->ruleP1, state);
             myLife(data->gridP2, ans2, data->ruleP2, state);
             RECT rect = { 0, 0,data->tableX * data->cellSize, data->tableY * data->cellSize };

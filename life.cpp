@@ -61,7 +61,7 @@ void myLife(std::unordered_map<INT, std::unordered_map<INT, BOOL>>& grid,
 				}
 				bitmap >>= 3;
 				if (xdone >= max)xdone++;
-				old2=old1;
+				old2 = old1;
 			}
 			// if (x > maxx)maxx = x;
 		}
