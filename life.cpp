@@ -5,9 +5,9 @@
 
 void myLife(std::unordered_map<INT, std::unordered_map<INT, BOOL>>& grid,
 	std::unordered_map<INT, std::unordered_map<INT, BOOL>>& ans,
-	INT xux,INT xuy,INT rex,INT rey,STATE** state) {
+	INT4& rule,STATE** state) {
 	unsigned int bitmap = 0; int x, y;
-	INT stateCode = xux * 9 * 9 * 9 + xuy * 9 * 9 + rex * 9 + rey;
+	INT stateCode = rule.x * 9 * 9 * 9 + rule.xuy * 9 * 9 + rule.rex * 9 + rule.rey;
 	if (state[stateCode] == nullptr) {
 		state[stateCode] = new STATE[1 << 9];
 		for (bitmap = 0; bitmap < 1 << 9; bitmap++) {
@@ -15,13 +15,13 @@ void myLife(std::unordered_map<INT, std::unordered_map<INT, BOOL>>& grid,
 				if (bitmap & 1 << y)					// 读第y个是否为1
 					x += 1;								// 计数
 			if (bitmap & 020) {
-				if (x >= xux+1 && x <= xuy+1)
+				if (x >= rule.x+1 && x <= rule.xuy+1)
 					state[stateCode][bitmap] = LIVE;  
 				else
 					state[stateCode][bitmap] = DEAD;
 			}
 			else {
-				if (x >= rex && x <= rey)
+				if (x >= rule.rex && x <= rule.rey)
 					state[stateCode][bitmap] = LIVE;
 				else
 					state[stateCode][bitmap] = DEAD;
@@ -31,13 +31,16 @@ void myLife(std::unordered_map<INT, std::unordered_map<INT, BOOL>>& grid,
 	INT prev = 0; INT that = 1; INT next = 2;
 	INT size = (INT)grid.size();
 	bitmap = 0; // debug1
+	// HRGN xy = CreateRectRgn(0, 0, 0, 0);
+	// INT maxx = 0;
 	for (INT done = 0; done < size + 3; done += grid.count(prev-1)) {
 		INT jump = grid.count(prev) + grid.count(that) + grid.count(next);
 		if (jump > 0) {
 			INT max = getAll(grid, prev, that, next);
-			INT xdone = 0;
-			for (INT x = 0; xdone < max + 3; x++) {
+			INT xdone = 0; INT x = 0;
+			for (x = 0; xdone < max + 3; x++) {
 				if (findLife(grid, x, prev)) {
+					// addXY(rectXY, xy, x, prev, cellSize);
 					bitmap |= 0100;
 					++xdone;
 				}
@@ -52,17 +55,20 @@ void myLife(std::unordered_map<INT, std::unordered_map<INT, BOOL>>& grid,
 				if (x - 1 >= 0) {
 					if (state[stateCode][bitmap] == LIVE) {
 						ans[that][x - 1] = TRUE;
+						// addXY(rectXY, xy, x-1, that, cellSize);
 					}
 				}
 				bitmap >>= 3;
 				if (xdone >= max)xdone++;
 			}
+			// if (x > maxx)maxx = x;
 		}
 		++prev; ++that; ++next;
 		if (done >= size) { 
 			done++; 
 		}
 	}
+	// DeleteObject(xy);
 }
 
 BOOL findLife(std::unordered_map<INT, std::unordered_map<INT, BOOL>> &grid,INT x, INT y) {
@@ -78,3 +84,9 @@ void exchangeLife(std::unordered_map<INT, std::unordered_map<INT, BOOL>>& grid, 
 	}
 	else grid[y][x] = TRUE;
 }
+/*
+void addXY(HRGN origin,HRGN tmp,INT x,INT y,INT cellSize) {
+	SetRectRgn(tmp, x * cellSize, (x + 1) * cellSize, y * cellSize, (y + 1) * cellSize);
+	CombineRgn(origin, origin, tmp, RGN_OR);
+}
+*/

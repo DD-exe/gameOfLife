@@ -23,7 +23,7 @@ INT         tableX;
 INT         tableY;         
 std::unordered_map<INT, std::unordered_map<INT, BOOL>> grid;
 STATE                                                **state;
-INT                                                    xux, xuy, rex, rey;
+INT4                                                   rule;
 
 ULONG_PTR   gdiplusToken;
 // 鼠标问题
@@ -106,7 +106,7 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
    cellSize = 10;
    state = new STATE * [9 * 9 * 9 * 9];
    for (int i = 0; i < 9 * 9 * 9 * 9; ++i)state[i] = nullptr;
-   xux = 2; xuy = 3; rex = 3; rey = 3;
+   rule.x = 2; rule.y = 3; rule.z = 3; rule.t = 3;
    speed = 10;
    ifCreate = FALSE;
    ifMouseDown = FALSE;
@@ -200,11 +200,11 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
                 INT y = GetDlgItemInt(hWnd, ID_EDIT3Y, &success2, TRUE);
                 if (success1&&success2) {
                     if (x < y) {
-                        xux = x; xuy = y;
+                        rule.x = x; rule.y = y;
                         SetWindowText(modXuInfo, (std::to_wstring(x)+L"-"+ std::to_wstring(y)).c_str());
                     }
                     else if (x == y) {
-                        xux = x; xuy = y;
+                        rule.x = x; rule.y = y;
                         SetWindowText(modXuInfo, std::to_wstring(x).c_str());
                     }                     
                 }
@@ -217,11 +217,11 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
                 INT y = GetDlgItemInt(hWnd, ID_EDIT4Y, &success2, TRUE);
                 if (success1 && success2) {
                     if (x < y) {
-                        rex = x; rey = y;
+                        rule.z = x; rule.t = y;
                         SetWindowText(modReInfo, (std::to_wstring(x) + L"-" + std::to_wstring(y)).c_str());
                     }
                     else if (x == y) {
-                        rex = x; rey = y;
+                        rule.z = x; rule.t = y;
                         SetWindowText(modReInfo, std::to_wstring(x).c_str());
                     }
                 }
@@ -229,6 +229,12 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
                 break;
             case ID_SAVE:
                 saveBmp(hWnd, 0, 0, cellSize * tableX, cellSize * tableY);
+                break;
+            case ID_VS:
+            {
+                HWND neoDialog = CreateDialog(hInst, MAKEINTRESOURCE(IDD_VS), hWnd, VSdot);
+                ShowWindow(neoDialog, SW_SHOW);
+            }                
                 break;
             case IDM_EXIT:
                 DestroyWindow(hWnd);
@@ -239,11 +245,12 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         }
         break;
     case WM_TIMER:
-        if (ifRun) {
+        if (ifRun&& wParam == ID_TIMER) {
             std::unordered_map<INT, std::unordered_map<INT, BOOL>> ans;
-            myLife(grid, ans,xux,xuy,rex,rey,state);
+            // INT4 rectx;
+            myLife(grid, ans, rule, state);
+            RECT rect = { 0, 0,tableX* cellSize, tableY* cellSize };
             grid = std::move(ans);
-            RECT rect = { 0,0,tableX * cellSize,tableY * cellSize };
             InvalidateRect(hWnd, &rect, TRUE);
         }
         break;
