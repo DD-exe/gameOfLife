@@ -169,7 +169,6 @@ INT_PTR CALLBACK VSdot(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
         }
         case IDCANCEL:
             EndDialog(hDlg, LOWORD(wParam));
-            delete data;
             return (INT_PTR)TRUE;
         default:
             break;
@@ -281,6 +280,11 @@ INT_PTR CALLBACK VSdot(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
             break;
         }
         return (INT_PTR)TRUE;
+    case WM_DESTROY:
+        delete data;
+        EndDialog(hDlg, LOWORD(wParam));
+        return (INT_PTR)TRUE;
     }
+    
     return (INT_PTR)FALSE;
 }
