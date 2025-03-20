@@ -15,6 +15,9 @@ INT_PTR CALLBACK VSdot(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
     {
         vsData* data = new vsData();
         data->ifCreate = FALSE;
+        data->ifRun = FALSE;
+        data->ifMouseDown = FALSE;
+        data->lastX = data->lastY = -1;
         data->speed = 10;
         data->cellSize = 10;
         data->listHalfSize = 80;
@@ -25,7 +28,11 @@ INT_PTR CALLBACK VSdot(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
         INT clientWidth, clientHeight;
         getClientXY(hDlg, &clientWidth, &clientHeight);
         data->tableX = (clientWidth - 2 * data->listHalfSize) / data->cellSize;
-        data->tableY = clientHeight / data->cellSize; // 计算右边控制栏位置
+        data->tableY = clientHeight / data->cellSize;                           // 计算右边控制栏位置
+        HWND hCombo = GetDlgItem(hDlg, IDC_CHARA);                             
+        SendMessage(hCombo, CB_ADDSTRING, 0, (LPARAM)L"绿色");
+        SendMessage(hCombo, CB_ADDSTRING, 0, (LPARAM)L"紫色");
+        SendMessage(hCombo, CB_SETCURSEL, 0, 0);                                // 选择第一个选项
         SetTimer(hDlg, ID_TIMER2, 100*data->speed, NULL);
         SetWindowLongPtr(hDlg, GWLP_USERDATA, (LONG_PTR)data);
         return (INT_PTR)TRUE;
@@ -146,6 +153,20 @@ INT_PTR CALLBACK VSdot(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
             }
             break;
         }
+        case IDvsSTART:
+        {
+            data->ifRun = !data->ifRun;
+            break;
+        }
+        case IDvsSTOP:
+        {
+            data->gridP1.clear();
+            data->gridP2.clear();
+            data->ifCreate = FALSE;
+            RECT rect = { 0,0,data->tableX * data->cellSize,data->tableY * data->cellSize };
+            InvalidateRect(hDlg, &rect, TRUE);
+            break;
+        }
         case IDCANCEL:
             EndDialog(hDlg, LOWORD(wParam));
             delete data;
@@ -171,8 +192,14 @@ INT_PTR CALLBACK VSdot(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
                         INT p1vs = data->gridP1[x][y] ? data->attP1 : data->defP1;
                         INT p2vs = data->gridP2[x][y] ? data->attP2 : data->defP2;
                         INT ans = getRandomNum(1, p1vs + p2vs);
-                        if (ans <= p1vs) FillRect(hdc, &rect, hBrushP1);
-                        else FillRect(hdc, &rect, hBrushP2);
+                        if (ans <= p1vs) { 
+                            FillRect(hdc, &rect, hBrushP1);
+                            exchangeLife(data->gridP2, x, y);
+                        }
+                        else {
+                            FillRect(hdc, &rect, hBrushP2);
+                            exchangeLife(data->gridP1, x, y);
+                        }
                     }
                     else {
                         FillRect(hdc, &rect, hBrushP1);
@@ -197,9 +224,60 @@ INT_PTR CALLBACK VSdot(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
         EndPaint(hDlg, &ps);
         return (INT_PTR)TRUE;
     }
+    case WM_LBUTTONDOWN:
+    {
+        data->ifMouseDown = TRUE;  // 标记鼠标按下
+        int x = LOWORD(lParam) / data->cellSize;
+        int y = HIWORD(lParam) / data->cellSize;
+        if (x < data->tableX && y < data->tableY) {
+            HWND hChara = GetDlgItem(hDlg, IDC_CHARA);
+            int index = SendMessage(hChara, CB_GETCURSEL, 0, 0); // 获取选中索引
+            if (index == 0) exchangeLife(data->gridP1, x, y);
+            else exchangeLife(data->gridP2, x, y);
+            RECT rect = { x * data->cellSize, y * data->cellSize,
+                        (x + 1) * data->cellSize, (y + 1) * data->cellSize };
+            InvalidateRect(hDlg, &rect, TRUE);  // 仅重绘该区域
+            data->lastX = x; data->lastY = y;  // 记录上次处理的格子，避免 `WM_MOUSEMOVE` 立即重复处理
+        }
+        return (INT_PTR)TRUE;
+    }
+    case WM_MOUSEMOVE:
+    {
+        if (data->ifMouseDown) {  // 仅在鼠标按住时处理
+            int x = LOWORD(lParam) / data->cellSize;
+            int y = HIWORD(lParam) / data->cellSize;
+
+            if (x < data->tableX && y < data->tableY && (x != data->lastX || y != data->lastY)) {
+                // 只有当鼠标进入新格子时才处理，防止重复
+                HWND hChara = GetDlgItem(hDlg, IDC_CHARA);
+                int index = SendMessage(hChara, CB_GETCURSEL, 0, 0); // 获取选中索引
+                if (index == 0) exchangeLife(data->gridP1, x, y);
+                else exchangeLife(data->gridP2, x, y);
+                RECT rect = { x * data->cellSize, y * data->cellSize, (x + 1) * data->cellSize, (y + 1) * data->cellSize };
+                InvalidateRect(hDlg, &rect, TRUE);
+
+                data->lastX = x;
+                data->lastY = y;  // 记录上次处理的格子
+            }
+        }
+        return (INT_PTR)TRUE;
+    }
+    case WM_LBUTTONUP:
+        data->ifMouseDown = FALSE;  // 释放鼠标按下状态
+        data->lastX = data->lastY = -1;   // 清除上次处理的格子记录
+        return (INT_PTR)TRUE;
     case WM_TIMER:
-        if (wParam == ID_TIMER2)
+        if (data->ifRun&&wParam == ID_TIMER2)
         {
+            std::unordered_map<INT, std::unordered_map<INT, BOOL>> ans1;
+            std::unordered_map<INT, std::unordered_map<INT, BOOL>> ans2;
+            // INT4 rectx;
+            myLife(data->gridP1, ans1, data->ruleP1, state);
+            myLife(data->gridP2, ans2, data->ruleP2, state);
+            RECT rect = { 0, 0,data->tableX * data->cellSize, data->tableY * data->cellSize };
+            data->gridP1 = std::move(ans1);
+            data->gridP2 = std::move(ans2);
+            InvalidateRect(hDlg, &rect, TRUE);
             break;
         }
         return (INT_PTR)TRUE;

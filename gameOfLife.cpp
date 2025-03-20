@@ -22,7 +22,7 @@ INT         speed;
 INT         tableX;
 INT         tableY;         
 std::unordered_map<INT, std::unordered_map<INT, BOOL>> grid;
-STATE                                                **state;
+STATE**                                                state;
 INT4                                                   rule;
 
 ULONG_PTR   gdiplusToken;

@@ -37,14 +37,15 @@ void myLife(std::unordered_map<INT, std::unordered_map<INT, BOOL>>& grid,
 		INT jump = grid.count(prev) + grid.count(that) + grid.count(next);
 		if (jump > 0) {
 			INT max = getAll(grid, prev, that, next);
-			INT xdone = 0; INT x = 0;
+			INT xdone = 0; INT x = 0; 
+			BOOL old1 = FALSE; BOOL old2 = FALSE;
 			for (x = 0; xdone < max + 3; x++) {
 				if (findLife(grid, x, prev)) {
 					// addXY(rectXY, xy, x, prev, cellSize);
 					bitmap |= 0100;
 					++xdone;
 				}
-				if (findLife(grid, x, that)) {
+				if (old1=findLife(grid, x, that)) {
 					bitmap |= 0200;
 					++xdone;
 				}
@@ -54,12 +55,13 @@ void myLife(std::unordered_map<INT, std::unordered_map<INT, BOOL>>& grid,
 				}
 				if (x - 1 >= 0) {
 					if (state[stateCode][bitmap] == LIVE) {
-						ans[that][x - 1] = TRUE;
-						// addXY(rectXY, xy, x-1, that, cellSize);
+						if (old2)ans[that][x - 1] = FALSE;
+						else ans[that][x - 1] = TRUE;		// 区分进攻和防御
 					}
 				}
 				bitmap >>= 3;
 				if (xdone >= max)xdone++;
+				old2=old1;
 			}
 			// if (x > maxx)maxx = x;
 		}

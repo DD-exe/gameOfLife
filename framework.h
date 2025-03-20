@@ -19,6 +19,7 @@
 enum STATE {
     DEAD, LIVE
 };
+extern STATE** state;
 struct INT4 {
     int x, y, z, t;
 };
@@ -26,6 +27,9 @@ struct vsData{
     std::unordered_map<INT, std::unordered_map<INT, BOOL>> gridP1;
     std::unordered_map<INT, std::unordered_map<INT, BOOL>> gridP2;
     BOOL ifCreate;
+    BOOL ifRun;
+    BOOL ifMouseDown;
+    INT lastX, lastY;
     INT speed;
     INT cellSize; INT tableX; INT tableY; INT listHalfSize;
     INT4 ruleP1; INT4 ruleP2;

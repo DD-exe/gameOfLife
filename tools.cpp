@@ -7,6 +7,7 @@
 
 void myPaintFrame(Gdiplus::Graphics& graphics, int x, int y, int w, int h, int cellSize)
 {
+    if (cellSize <= 0)return;
     Gdiplus::Pen pen(Gdiplus::Color(255, 200, 200, 200), 0.1f);
     // »æÖÆ´¹Ö±Ïß
     for (int i = 0; i <= w; i += cellSize) {
