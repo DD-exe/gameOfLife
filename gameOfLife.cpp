@@ -176,7 +176,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
                     oX = tableX * cellSize > oX ? tableX * cellSize : oX;
                     oY = tableY * cellSize > oY ? tableY * cellSize : oY;
                     RECT rect = { 0,0,oX,oY };
-                    COLORREF it=SetTextColor(GetDC(cellsizeInfo), RGB(255, 255, 0));
+                    // COLORREF it=SetTextColor(GetDC(cellsizeInfo), RGB(255, 255, 0));
                     SetWindowText(cellsizeInfo, std::to_wstring(cellSize).c_str());
                     InvalidateRect(hWnd, &rect, TRUE);
                 }
