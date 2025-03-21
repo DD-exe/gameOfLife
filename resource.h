@@ -1,7 +1,6 @@
 ﻿//{{NO_DEPENDENCIES}}
 // Microsoft Visual C++ 生成的包含文件。
 // 供 gameOfLife.rc 使用
-//
 #define IDC_MYICON                      2
 #define IDOKvsSPEED                     3
 #define IDP1OK                          4
