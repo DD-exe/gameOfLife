@@ -55,8 +55,8 @@ void myLife(std::unordered_map<INT, std::unordered_map<INT, BOOL>>& grid,
 				}
 				if (x - 1 >= 0) {
 					if (state[stateCode][bitmap] == LIVE) {
-						if (old2)ans[that][x - 1] = FALSE;
-						else ans[that][x - 1] = TRUE;		// 区分进攻和防御
+						if (old2)ans[that][x - 1] = FALSE;		// 区分进攻和防御
+						else ans[that][x - 1] = TRUE;		
 					}
 				}
 				bitmap >>= 3;

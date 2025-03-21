@@ -284,6 +284,5 @@ INT_PTR CALLBACK VSdot(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
         EndDialog(hDlg, LOWORD(wParam));
         return (INT_PTR)TRUE;
     }
-    
     return (INT_PTR)FALSE;
 }

@@ -230,7 +230,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
             case ID_SAVE:
                 saveBmp(hWnd, 0, 0, cellSize * tableX, cellSize * tableY);
                 break;
-            case ID_VS:
+            case ID_VS:                     // 单机对战
             {
                 HWND neoDialog = CreateDialog(hInst, MAKEINTRESOURCE(IDD_VS), hWnd, VSdot);
                 ShowWindow(neoDialog, SW_SHOW);

@@ -15,7 +15,6 @@
 #include <unordered_map>
 #include <string>
 
-
 enum STATE {
     DEAD, LIVE
 };
