@@ -44,7 +44,7 @@
     <ClCompile Include="tools.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="vs.cpp">
+    <ClCompile Include="vsdot.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>

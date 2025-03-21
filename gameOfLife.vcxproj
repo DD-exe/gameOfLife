@@ -138,7 +138,7 @@
     <ClCompile Include="gameOfLife.cpp" />
     <ClCompile Include="life.cpp" />
     <ClCompile Include="tools.cpp" />
-    <ClCompile Include="vs.cpp" />
+    <ClCompile Include="vsdot.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="gameOfLife.rc" />
