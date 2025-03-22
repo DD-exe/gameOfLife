@@ -445,12 +445,13 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
             HDC hdc = BeginPaint(hWnd, &ps);
             HBRUSH hBrushLive = CreateSolidBrush(RGBpurple);
             HBRUSH hBrushDead = CreateSolidBrush(RGBwhite);
+            RECT rectFull = { 0,0,tableX * cellSize, tableY * cellSize };
+            FillRect(hdc, &rectFull, hBrushDead);
             for (int y = 0; y <tableY; y++) {
                 for (int x = 0; x < tableX; x++) {
                     RECT rect = { x * cellSize, y * cellSize,
                         (x + 1) * cellSize, (y + 1) * cellSize };
-                    if (findLife(grid,x,y)) FillRect(hdc, &rect, hBrushLive);
-                    else FillRect(hdc, &rect, hBrushDead);                                     
+                    if (findLife(grid,x,y)) FillRect(hdc, &rect, hBrushLive);                                   
                 }
             }
             if (!ifCreate) {

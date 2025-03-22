@@ -182,6 +182,8 @@ INT_PTR CALLBACK VSdot(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
         HBRUSH hBrushP1 = CreateSolidBrush(RGBgreen);
         HBRUSH hBrushP2 = CreateSolidBrush(RGBpurple);
         HBRUSH hBrushDead = CreateSolidBrush(RGBwhite);
+        RECT rectFull = { 0,0,data->tableX * data->cellSize, data->tableY * data->cellSize };
+        FillRect(hdc, &rectFull, hBrushDead);
         for (int y = 0; y < data->tableY; y++) {
             for (int x = 0; x < data->tableX; x++) {
                 RECT rect = { x * data->cellSize, y * data->cellSize,
@@ -206,9 +208,6 @@ INT_PTR CALLBACK VSdot(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
                 }
                 else if (findLife(data->gridP2, x, y)) {
                     FillRect(hdc, &rect, hBrushP2);
-                }
-                else {
-                    FillRect(hdc, &rect, hBrushDead);
                 }
             }
         }
