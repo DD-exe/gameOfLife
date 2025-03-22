@@ -261,10 +261,13 @@ INT_PTR CALLBACK VSdot(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
         return (INT_PTR)TRUE;
     }
     case WM_LBUTTONUP:
+    {
         data->ifMouseDown = FALSE;  // 释放鼠标按下状态
         data->lastX = data->lastY = -1;   // 清除上次处理的格子记录
         return (INT_PTR)TRUE;
+    }        
     case WM_TIMER:
+    {
         if (data->ifRun&&wParam == ID_TIMER2)
         {
             std::unordered_map<INT, std::unordered_map<INT, BOOL>> ans1;
@@ -278,10 +281,13 @@ INT_PTR CALLBACK VSdot(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
             break;
         }
         return (INT_PTR)TRUE;
+    }        
     case WM_DESTROY:
+    {
         delete data;
         EndDialog(hDlg, LOWORD(wParam));
         return (INT_PTR)TRUE;
+    }        
     }
     return (INT_PTR)FALSE;
 }
