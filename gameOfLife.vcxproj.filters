@@ -47,6 +47,9 @@
     <ClCompile Include="vs.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="single.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="gameOfLife.rc">

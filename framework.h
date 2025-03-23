@@ -22,6 +22,32 @@ extern STATE** state;
 struct INT4 {
     int x, y, z, t;
 };
+struct siData {
+    // 表格问题
+    BOOL        ifRun;
+    BOOL        ifCreate;
+    INT         cellSize;
+    INT         speed;
+    INT         tableX;
+    INT         tableY;
+    std::unordered_map<INT, std::unordered_map<INT, BOOL>> grid;
+    INT4                                                   rule;
+    ULONG_PTR   gdiplusToken;
+    // 鼠标问题
+    BOOL        ifMouseDown;    // 释放鼠标按下状态
+    INT         lastX;
+    INT         lastY;
+    // 控制栏问题
+    HWND        startBotton, stopBotton, doingInfo,
+        cellsizeEdit, cellsizeBotton, cellsizeInfo, cellsizeTitle,
+        timeEdit, timeBotton, timeInfo, timeTitle,
+        modXuTitle, modXuEditX, modXuEditY, modXuBotton, modXuInfo,
+        modReTitle, modReEditX, modReEditY, modReBotton, modReInfo;
+    HWND        hBmpStatic;
+    INT         listHalfSize;   // 控制栏半宽度
+    INT         listUnitHeight;
+    INT         titleSize;
+};
 struct vsData{
     std::unordered_map<INT, std::unordered_map<INT, BOOL>> gridP1;
     std::unordered_map<INT, std::unordered_map<INT, BOOL>> gridP2;
@@ -50,6 +76,9 @@ void delState(STATE** x);
 int getRandomNum(int min, int max);
 INT_PTR CALLBACK About(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam);                  // about
 INT_PTR CALLBACK VSdot(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam);                  // vs
+INT_PTR CALLBACK single(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam);                 // single
+void SetSingleWindows(HWND hDlg, siData* data);
+void moveSingleWindows(HWND hDlg, siData* data, INT clientWidth);
 
 // inline
 inline void getClientXY(HWND hWnd, INT* x, INT* y) {

@@ -312,8 +312,9 @@ INT_PTR CALLBACK VSdot(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
         return (INT_PTR)TRUE;
     }        
     case WM_DESTROY:
-    {
+    {  
         delete data;
+        KillTimer(hDlg, ID_TIMER2);
         EndDialog(hDlg, LOWORD(wParam));
         return (INT_PTR)TRUE;
     }        

@@ -236,6 +236,12 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
                 ShowWindow(neoDialog, SW_SHOW);
             }                
                 break;
+            case ID_SINGLE:                     // 单机模拟
+            {
+                HWND neoDialog = CreateDialog(hInst, MAKEINTRESOURCE(IDD_SINGLE), hWnd, single);
+                ShowWindow(neoDialog, SW_SHOW);
+            }
+            break;
             case IDM_EXIT:
                 DestroyWindow(hWnd);
                 break;

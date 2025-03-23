@@ -8,7 +8,6 @@
 #define IDP2OK                          5
 #define IDvsSTART                       6
 #define IDvsSTOP                        7
-#define IDOKvsSPEED2                    8
 #define IDlizi                          8
 #define IDD_GAMEOFLIFE_DIALOG           102
 #define IDS_APP_TITLE                   103
@@ -22,6 +21,7 @@
 #define IDI_SMALL                       132
 #define IDB_LINbmpPro                   133
 #define IDD_VS                          134
+#define IDD_SINGLE                      135
 #define IDC_EDITvsSIZE                  1000
 #define IDC_EDITvsSPEED                 1001
 #define IDC_P1ATT                       1002
@@ -63,6 +63,8 @@
 #define ID_EDIT4OK                      32793
 #define ID_OUTPUT4                      32794
 #define ID_VS                           32795
+#define ID_TIMER3                       32796
+#define ID_SINGLE                       32797
 #define IDC_STATIC                      -1
 
 // Next default values for new objects
@@ -70,8 +72,8 @@
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NO_MFC                     1
-#define _APS_NEXT_RESOURCE_VALUE        135
-#define _APS_NEXT_COMMAND_VALUE         32796
+#define _APS_NEXT_RESOURCE_VALUE        136
+#define _APS_NEXT_COMMAND_VALUE         32798
 #define _APS_NEXT_CONTROL_VALUE         1013
 #define _APS_NEXT_SYMED_VALUE           110
 #endif
