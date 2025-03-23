@@ -1,12 +1,15 @@
 ﻿//{{NO_DEPENDENCIES}}
 // Microsoft Visual C++ 生成的包含文件。
 // 供 gameOfLife.rc 使用
+//
 #define IDC_MYICON                      2
 #define IDOKvsSPEED                     3
 #define IDP1OK                          4
 #define IDP2OK                          5
 #define IDvsSTART                       6
 #define IDvsSTOP                        7
+#define IDOKvsSPEED2                    8
+#define IDlizi                          8
 #define IDD_GAMEOFLIFE_DIALOG           102
 #define IDS_APP_TITLE                   103
 #define IDD_ABOUTBOX                    103
@@ -31,6 +34,10 @@
 #define IDC_P2DEF                       1009
 #define IDC_P2MUV                       1010
 #define IDC_P2SUV                       1011
+#define IDvsUP                          1012
+#define IDvsDOWN                        1013
+#define IDvsLEFT                        1014
+#define IDvsRIGHT                       1015
 #define ID_TIMER                        32771
 #define ID_TIMER2                       32772
 #define ID_SAVE                         32773
@@ -65,7 +72,7 @@
 #define _APS_NO_MFC                     1
 #define _APS_NEXT_RESOURCE_VALUE        135
 #define _APS_NEXT_COMMAND_VALUE         32796
-#define _APS_NEXT_CONTROL_VALUE         1008
+#define _APS_NEXT_CONTROL_VALUE         1013
 #define _APS_NEXT_SYMED_VALUE           110
 #endif
 #endif

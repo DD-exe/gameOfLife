@@ -34,6 +34,7 @@ struct vsData{
     INT4 ruleP1; INT4 ruleP2;
     INT attP1; INT defP1;
     INT attP2; INT defP2;
+    INT moveX, moveY;
 };
 BOOL findLife(std::unordered_map<INT, std::unordered_map<INT, BOOL>> &grid, INT x, INT y);      // life
 void exchangeLife(std::unordered_map<INT, std::unordered_map<INT, BOOL>>& grid, INT x, INT y);

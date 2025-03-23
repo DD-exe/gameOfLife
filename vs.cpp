@@ -25,6 +25,7 @@ INT_PTR CALLBACK VSdot(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
         data->ruleP2.x = 2; data->ruleP2.y = 3; data->ruleP2.z = 3; data->ruleP2.t = 3;
         data->attP1 = 3; data->attP2 = 3;
         data->defP1 = 3; data->defP2 = 3;
+        data->moveX = data->moveY = 0;
         INT clientWidth, clientHeight;
         getClientXY(hDlg, &clientWidth, &clientHeight);
         data->tableX = (clientWidth - 2 * data->listHalfSize) / data->cellSize;
@@ -166,6 +167,34 @@ INT_PTR CALLBACK VSdot(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
             RECT rect = { 0,0,data->tableX * data->cellSize,data->tableY * data->cellSize };
             InvalidateRect(hDlg, &rect, TRUE);
             break;
+        }
+        case IDvsUP:
+        {
+            if (data->moveX > 0)--(data->moveX);
+            RECT rect = { 0,0,data->tableX * data->cellSize,data->tableY * data->cellSize };
+            InvalidateRect(hDlg, &rect, TRUE);
+            return (INT_PTR)TRUE;
+        }
+        case IDvsDOWN:
+        {
+            ++(data->moveX);
+            RECT rect = { 0,0,data->tableX * data->cellSize,data->tableY * data->cellSize };
+            InvalidateRect(hDlg, &rect, TRUE);
+            return (INT_PTR)TRUE;
+        }
+        case IDvsLEFT:
+        {
+            if (data->moveY > 0)--(data->moveY);
+            RECT rect = { 0,0,data->tableX * data->cellSize,data->tableY * data->cellSize };
+            InvalidateRect(hDlg, &rect, TRUE);
+            return (INT_PTR)TRUE;
+        }
+        case IDvsRIGHT:
+        {
+            ++(data->moveY);
+            RECT rect = { 0,0,data->tableX * data->cellSize,data->tableY * data->cellSize };
+            InvalidateRect(hDlg, &rect, TRUE);
+            return (INT_PTR)TRUE;
         }
         case IDCANCEL:
             EndDialog(hDlg, LOWORD(wParam));

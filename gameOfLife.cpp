@@ -245,7 +245,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         }
         break;
     case WM_TIMER:
-        if (ifRun&& wParam == ID_TIMER) {
+        if (ifRun && wParam == ID_TIMER) {
             std::unordered_map<INT, std::unordered_map<INT, BOOL>> ans;
             // INT4 rectx;
             myLife(grid, ans, rule, state);

@@ -13,11 +13,14 @@ INT_PTR CALLBACK About(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
         return (INT_PTR)TRUE;
 
     case WM_COMMAND:
-        if (LOWORD(wParam) == IDOK || LOWORD(wParam) == IDCANCEL)
+        int wmId = LOWORD(wParam);
+        switch (wmId)
         {
+        case IDOK:
+        case IDCANCEL:
             EndDialog(hDlg, LOWORD(wParam));
             return (INT_PTR)TRUE;
-        }
+        } 
         break;
     }
     return (INT_PTR)FALSE;
