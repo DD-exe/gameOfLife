@@ -148,36 +148,19 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
                 DialogBox(hInst, MAKEINTRESOURCE(IDD_ABOUTBOX), hWnd, About);
             break;
             //功能菜单下内容
-            case ID_SINGLEBUTTON:                     // 单机模式
+            case ID_SINGLE:                    // 单机模式
             {
                 HWND SingleDialog = CreateDialog(hInst, MAKEINTRESOURCE(IDD_SINGLE), hWnd, single);
                 ShowWindow(SingleDialog, SW_SHOW);
             }
             break;
-            case ID_VSBUTTON:                    // 联机模式
-            {
-                
+            case ID_VSMODE:                    // 联机模式
+            {                
                 if (!VSbuttonsVisible) {
                     // 显示按钮 A 和 B
                     ShowWindow(VSButtonA, SW_SHOW);
                     ShowWindow(VSButtonB, SW_SHOW);
-                    VSbuttonsVisible = FALSE;
-                    VSButtonA = CreateWindow(
-                        L"BUTTON", L"本地对抗",
-                        WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON,
-                        clientWidth / 2 - 50, clientHeight * 3 / 5 + 80, 100, 30,
-                        hWnd, (HMENU)ID_VS, NULL, NULL
-                    );
-
-                    VSButtonB = CreateWindow(
-                        L"BUTTON", L"联机对抗",
-                        WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON,
-                        clientWidth / 2 - 50, clientHeight * 3 / 5 + 120, 100, 30,
-                        hWnd, (HMENU)ID_BUTTON_B, NULL, NULL
-                    );
-
                     VSbuttonsVisible = TRUE; // 更新状态
-
                 }
                 else {
                     ShowWindow(VSButtonA, SW_HIDE);
@@ -217,15 +200,30 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
             L"BUTTON", L"单机模式",
             WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON,
             clientWidth / 2 - 50, clientHeight * 3 / 5, 100, 30,
-            hWnd, (HMENU)ID_SINGLEBUTTON, NULL, NULL
+            hWnd, (HMENU)ID_SINGLE, NULL, NULL
         );
         VSBotton = CreateWindow(
             L"BUTTON", L"对抗模式",
             WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON,
             clientWidth / 2 - 50, clientHeight * 3 / 5 + 40, 100, 30,
-            hWnd, (HMENU)ID_VSBUTTON, NULL, NULL
+            hWnd, (HMENU)ID_VSMODE, NULL, NULL
+        );
+        VSButtonA = CreateWindow(
+            L"BUTTON", L"本地对抗",
+            WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON,
+            clientWidth / 2 - 50, clientHeight * 3 / 5 + 80, 100, 30,
+            hWnd, (HMENU)ID_VS, NULL, NULL
         );
 
+        VSButtonB = CreateWindow(
+            L"BUTTON", L"联机对抗",
+            WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON,
+            clientWidth / 2 - 50, clientHeight * 3 / 5 + 120, 100, 30,
+            hWnd, (HMENU)ID_BUTTON_B, NULL, NULL
+        );
+        ShowWindow(VSButtonA, SW_HIDE);
+        ShowWindow(VSButtonB, SW_HIDE);
+        VSbuttonsVisible = FALSE;
         HBITMAP hBmp = LoadBitmap(GetModuleHandle(NULL), MAKEINTRESOURCE(IDB_LINbmpPro));
         hBmpStatic = CreateWindow(
             L"STATIC", NULL,
