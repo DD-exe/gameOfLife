@@ -31,7 +31,7 @@ BOOL        ifMouseDown;    // 释放鼠标按下状态
 INT         lastX;
 INT         lastY;
 // 控制栏问题
-HWND        startBotton, stopBotton, doingInfo,
+HWND        singleBotton, VSBotton, VSButtonA, VSButtonB, doingInfo,
             cellsizeEdit, cellsizeBotton, cellsizeInfo, cellsizeTitle,
             timeEdit, timeBotton, timeInfo, timeTitle,
             modXuTitle, modXuEditX, modXuEditY, modXuBotton, modXuInfo,
@@ -40,6 +40,7 @@ static HWND hBmpStatic;
 INT         listHalfSize;   // 控制栏半宽度
 INT         listUnitHeight;
 INT         titleSize;
+BOOL        VSbuttonsVisible = FALSE;  //对抗按钮可见性
 // 函数前向声明
 ATOM                MyRegisterClass(HINSTANCE hInstance);
 BOOL                InitInstance(HINSTANCE, int);
@@ -143,111 +144,67 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
             case IDM_ABOUT:
                 DialogBox(hInst, MAKEINTRESOURCE(IDD_ABOUTBOX), hWnd, About);
                 break;
-            case ID_START:
+            break;
+            //功能菜单下内容
+            case ID_SAVE:
+                //保存功能
+                saveBmp(hWnd, 0, 0, cellSize * tableX, cellSize * tableY);
+                break;              
+                break;
+            case ID_SINGLEBUTTON:                     // 单机模式
             {
-                ifRun = !ifRun;
-                if (ifRun) {
-                    SetWindowText(doingInfo, L"||");
+                HWND SingleDialog = CreateDialog(hInst, MAKEINTRESOURCE(IDD_SINGLE), hWnd, single);
+                ShowWindow(SingleDialog, SW_SHOW);
+            }
+            break;
+            case ID_VSBUTTON:                    // 联机模式
+            {
+                
+                if (!VSbuttonsVisible) {
+                    // 显示按钮 A 和 B
+                    VSButtonA = CreateWindow(
+                        L"BUTTON", L"本地对抗",
+                        WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON,
+                        100, 150, 100, 30,
+                        hWnd, (HMENU)ID_VS, NULL, NULL
+                    );
+
+                    VSButtonB = CreateWindow(
+                        L"BUTTON", L"联机对抗",
+                        WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON,
+                        220, 150, 100, 30,
+                        hWnd, (HMENU)ID_BUTTON_B, NULL, NULL
+                    );
+
+                    VSbuttonsVisible = TRUE; // 更新状态
+
                 }
                 else {
-                    SetWindowText(doingInfo, L">");
-                }
-            }                
-                break;
-            case ID_STOP:
-            {
-                grid.clear(); ifCreate = FALSE;
-                RECT rect = { 0,0,tableX * cellSize,tableY * cellSize };
-                InvalidateRect(hWnd, &rect, TRUE);
-            }
-                break;
-            case ID_EDIT1OK:
-            {
-                BOOL success; ifCreate = FALSE;
-                INT x = GetDlgItemInt(hWnd, ID_EDIT1, &success, TRUE);
-                INT oX = tableX * cellSize;
-                INT oY = tableY * cellSize;
-                if (success) { 
-                    cellSize = x;
-                    INT clientWidth, clientHeight;
-                    getClientXY(hWnd, &clientWidth, &clientHeight);
-                    tableX = (clientWidth - 2 * listHalfSize - 10) / cellSize;
-                    tableY = clientHeight / cellSize;
-                    oX = tableX * cellSize > oX ? tableX * cellSize : oX;
-                    oY = tableY * cellSize > oY ? tableY * cellSize : oY;
-                    RECT rect = { 0,0,oX,oY };
-                    // COLORREF it=SetTextColor(GetDC(cellsizeInfo), RGB(255, 255, 0));
-                    SetWindowText(cellsizeInfo, std::to_wstring(cellSize).c_str());
-                    InvalidateRect(hWnd, &rect, TRUE);
-                }
-            }                
-                break;
-            case ID_EDIT2OK:
-            {
-                BOOL success;
-                speed = GetDlgItemInt(hWnd, ID_EDIT2, &success, TRUE);
-                if (success) {
-                    KillTimer(hWnd, ID_TIMER);
-                    SetTimer(hWnd, ID_TIMER, 100 * speed, NULL);
-                    SetWindowText(timeInfo, std::to_wstring(speed).c_str());
+                    ShowWindow(VSButtonA, SW_HIDE);
+                    ShowWindow(VSButtonB, SW_HIDE);
+                    VSbuttonsVisible = FALSE;
                 }
             }
             break;
-            case ID_EDIT3OK:
+            case ID_VS:
             {
-                BOOL success1,success2;
-                INT x = GetDlgItemInt(hWnd, ID_EDIT3X, &success1, TRUE);
-                INT y = GetDlgItemInt(hWnd, ID_EDIT3Y, &success2, TRUE);
-                if (success1&&success2) {
-                    if (x < y) {
-                        rule.x = x; rule.y = y;
-                        SetWindowText(modXuInfo, (std::to_wstring(x)+L"-"+ std::to_wstring(y)).c_str());
-                    }
-                    else if (x == y) {
-                        rule.x = x; rule.y = y;
-                        SetWindowText(modXuInfo, std::to_wstring(x).c_str());
-                    }                     
-                }
+                HWND VSDialog = CreateDialog(hInst, MAKEINTRESOURCE(IDD_VS), hWnd, VSdot);
+                ShowWindow(VSDialog, SW_SHOW);
             }
-                break;
-            case ID_EDIT4OK:
+            break;
+            case ID_BUTTON_B:
             {
-                BOOL success1, success2;
-                INT x = GetDlgItemInt(hWnd, ID_EDIT4X, &success1, TRUE);
-                INT y = GetDlgItemInt(hWnd, ID_EDIT4Y, &success2, TRUE);
-                if (success1 && success2) {
-                    if (x < y) {
-                        rule.z = x; rule.t = y;
-                        SetWindowText(modReInfo, (std::to_wstring(x) + L"-" + std::to_wstring(y)).c_str());
-                    }
-                    else if (x == y) {
-                        rule.z = x; rule.t = y;
-                        SetWindowText(modReInfo, std::to_wstring(x).c_str());
-                    }
-                }
-            }
-                break;
-            case ID_SAVE:
-                saveBmp(hWnd, 0, 0, cellSize * tableX, cellSize * tableY);
-                break;
-            case ID_VS:                     // 单机对战
-            {
-                HWND neoDialog = CreateDialog(hInst, MAKEINTRESOURCE(IDD_VS), hWnd, VSdot);
-                ShowWindow(neoDialog, SW_SHOW);
-            }                
-                break;
-            case ID_SINGLE:                     // 单机模拟
-            {
-                HWND neoDialog = CreateDialog(hInst, MAKEINTRESOURCE(IDD_SINGLE), hWnd, single);
-                ShowWindow(neoDialog, SW_SHOW);
+                MessageBox(hWnd, L"打开页面 B", L"信息", MB_OK);
             }
             break;
             case IDM_EXIT:
+                //退出
                 DestroyWindow(hWnd);
                 break;
             default:
                 return DefWindowProc(hWnd, message, wParam, lParam);
             }
+                break;
         }
         break;
     case WM_TIMER:
@@ -262,121 +219,25 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         break;
     case WM_CREATE:
     {
+        //创建右侧菜单栏
         SetTimer(hWnd, ID_TIMER, 100 * speed, NULL); // 初始化计时器，WM_TIMER需要
         INT clientWidth,clientHeight;
         getClientXY(hWnd, &clientWidth, &clientHeight);
         tableX = (clientWidth - 2 * listHalfSize - 10) / cellSize;
         tableY = clientHeight / cellSize; // 计算右边控制栏位置
         // 插入一系列控件
-        startBotton = CreateWindow(
-            L"BUTTON", L"启动/暂停(O)",
+        singleBotton = CreateWindow(
+            L"BUTTON", L"单机模式",
             WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON,
-            clientWidth - 50 - listHalfSize, listUnitHeight * 0, 100, 30,
-            hWnd, (HMENU)ID_START, NULL, NULL
+            tableX * cellSize/2, listUnitHeight * 3, 100, 30,
+            hWnd, (HMENU)ID_SINGLEBUTTON, NULL, NULL
         );
-        stopBotton = CreateWindow(
-            L"BUTTON", L"重置(U)",
+        VSBotton = CreateWindow(
+            L"BUTTON", L"对抗模式",
             WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON,
             clientWidth - 50 - listHalfSize, listUnitHeight * 1, 100, 30,
-            hWnd, (HMENU)ID_STOP, NULL, NULL
+            hWnd, (HMENU)ID_VSBUTTON, NULL, NULL
         );
-        doingInfo = CreateWindow(TEXT("STATIC"), TEXT(">"),
-            WS_CHILD | WS_VISIBLE | SS_CENTERIMAGE | SS_CENTER,
-            clientWidth - listHalfSize + 50, listUnitHeight * 0, 30, 30,
-            hWnd, (HMENU)ID_DOING, hInst, NULL);
-
-        cellsizeTitle = CreateWindow(TEXT("STATIC"), TEXT("设置网格："),
-            WS_CHILD | WS_VISIBLE | SS_CENTER,
-            clientWidth - 50 - listHalfSize-titleSize, listUnitHeight * 2, titleSize, 30,
-            hWnd, (HMENU)ID_TITLE1, hInst, NULL);
-        cellsizeEdit = CreateWindowEx(WS_EX_CLIENTEDGE, L"EDIT", L"10",
-            WS_CHILD | WS_VISIBLE | WS_BORDER | ES_AUTOHSCROLL,
-            clientWidth - 50 - listHalfSize, listUnitHeight * 2, 50, 30,
-            hWnd, (HMENU)ID_EDIT1, (HINSTANCE)GetWindowLongPtr(hWnd, GWLP_HINSTANCE), NULL
-        );
-        cellsizeBotton = CreateWindow(
-            L"BUTTON", L"确认",
-            WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON,
-            clientWidth - listHalfSize, listUnitHeight * 2, 50, 30,
-            hWnd, (HMENU)ID_EDIT1OK, NULL, NULL
-        );
-        cellsizeInfo = CreateWindow(TEXT("STATIC"), TEXT(""),
-            WS_CHILD | WS_VISIBLE | SS_CENTERIMAGE| SS_CENTER,
-            clientWidth - listHalfSize + 50, listUnitHeight * 2 , 30, 30,
-            hWnd, (HMENU)ID_OUTPUT1, hInst, NULL);
-        SetWindowText(cellsizeInfo, std::to_wstring(cellSize).c_str());
-
-        timeTitle = CreateWindow(TEXT("STATIC"), TEXT("迭代用时："),
-            WS_CHILD | WS_VISIBLE | SS_CENTER,
-            clientWidth - 50 - listHalfSize - titleSize, listUnitHeight * 3, titleSize, 30,
-            hWnd, (HMENU)ID_TITLE2, hInst, NULL);
-        timeEdit = CreateWindowEx(WS_EX_CLIENTEDGE, L"EDIT", L"10",
-            WS_CHILD | WS_VISIBLE | WS_BORDER | ES_AUTOHSCROLL,
-            clientWidth - 50 - listHalfSize, listUnitHeight * 3, 50, 30,
-            hWnd, (HMENU)ID_EDIT2, (HINSTANCE)GetWindowLongPtr(hWnd, GWLP_HINSTANCE), NULL
-        );
-        timeBotton = CreateWindow(
-            L"BUTTON", L"确认",
-            WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON,
-            clientWidth - listHalfSize, listUnitHeight * 3, 50, 30,
-            hWnd, (HMENU)ID_EDIT2OK, NULL, NULL
-        );
-        timeInfo = CreateWindow(TEXT("STATIC"), TEXT(""),
-            WS_CHILD | WS_VISIBLE | SS_CENTERIMAGE | SS_CENTER,
-            clientWidth - listHalfSize + 50, listUnitHeight * 3, 30, 30,
-            hWnd, (HMENU)ID_OUTPUT2, hInst, NULL);
-        SetWindowText(timeInfo, std::to_wstring(speed).c_str());
-
-        modXuTitle = CreateWindow(TEXT("STATIC"), TEXT("存活需求："),
-            WS_CHILD | WS_VISIBLE | SS_CENTER,
-            clientWidth - 50 - listHalfSize - titleSize, listUnitHeight * 4, titleSize, 30,
-            hWnd, (HMENU)ID_TITLE3, hInst, NULL);
-        modXuEditX = CreateWindowEx(WS_EX_CLIENTEDGE, L"EDIT", L"2",
-            WS_CHILD | WS_VISIBLE | WS_BORDER | ES_AUTOHSCROLL,
-            clientWidth - 50 - listHalfSize, listUnitHeight * 4, 25, 30,
-            hWnd, (HMENU)ID_EDIT3X, (HINSTANCE)GetWindowLongPtr(hWnd, GWLP_HINSTANCE), NULL
-        );
-        modXuEditY = CreateWindowEx(WS_EX_CLIENTEDGE, L"EDIT", L"3",
-            WS_CHILD | WS_VISIBLE | WS_BORDER | ES_AUTOHSCROLL,
-            clientWidth - 25 - listHalfSize, listUnitHeight * 4, 25, 30,
-            hWnd, (HMENU)ID_EDIT3Y, (HINSTANCE)GetWindowLongPtr(hWnd, GWLP_HINSTANCE), NULL
-        );
-        modXuBotton = CreateWindow(
-            L"BUTTON", L"确认",
-            WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON,
-            clientWidth - listHalfSize, listUnitHeight * 4, 50, 30,
-            hWnd, (HMENU)ID_EDIT3OK, NULL, NULL
-        );
-        modXuInfo = CreateWindow(TEXT("STATIC"), TEXT("2-3"),
-            WS_CHILD | WS_VISIBLE | SS_CENTERIMAGE | SS_CENTER,
-            clientWidth - listHalfSize + 50, listUnitHeight * 4, 50, 30,
-            hWnd, (HMENU)ID_OUTPUT3, hInst, NULL);
-
-        modReTitle = CreateWindow(TEXT("STATIC"), TEXT("繁殖需求："),
-            WS_CHILD | WS_VISIBLE | SS_CENTER,
-            clientWidth - 50 - listHalfSize - titleSize, listUnitHeight * 5, titleSize, 30,
-            hWnd, (HMENU)ID_TITLE4, hInst, NULL);
-        modReEditX = CreateWindowEx(WS_EX_CLIENTEDGE, L"EDIT", L"3",
-            WS_CHILD | WS_VISIBLE | WS_BORDER | ES_AUTOHSCROLL,
-            clientWidth - 50 - listHalfSize, listUnitHeight * 5, 25, 30,
-            hWnd, (HMENU)ID_EDIT4X, (HINSTANCE)GetWindowLongPtr(hWnd, GWLP_HINSTANCE), NULL
-        );
-        modReEditY = CreateWindowEx(WS_EX_CLIENTEDGE, L"EDIT", L"3",
-            WS_CHILD | WS_VISIBLE | WS_BORDER | ES_AUTOHSCROLL,
-            clientWidth - 25 - listHalfSize, listUnitHeight * 5, 25, 30,
-            hWnd, (HMENU)ID_EDIT4Y, (HINSTANCE)GetWindowLongPtr(hWnd, GWLP_HINSTANCE), NULL
-        );
-        modReBotton = CreateWindow(
-            L"BUTTON", L"确认",
-            WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON,
-            clientWidth - listHalfSize, listUnitHeight * 5, 50, 30,
-            hWnd, (HMENU)ID_EDIT4OK, NULL, NULL
-        );
-        modReInfo = CreateWindow(TEXT("STATIC"), TEXT("3"),
-            WS_CHILD | WS_VISIBLE | SS_CENTERIMAGE | SS_CENTER,
-            clientWidth - listHalfSize + 50, listUnitHeight * 5, 50, 30,
-            hWnd, (HMENU)ID_OUTPUT4, hInst, NULL);
-
         HBITMAP hBmp = LoadBitmap(GetModuleHandle(NULL), MAKEINTRESOURCE(IDB_LINbmpPro));
         hBmpStatic = CreateWindow(
             L"STATIC", NULL,
@@ -394,82 +255,40 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         tableX = (clientWidth - 2 * listHalfSize - 10) / cellSize;
         tableY = clientHeight / cellSize;
         ifCreate = FALSE;
-        MoveWindow(startBotton, clientWidth - 50 - listHalfSize,
-            listUnitHeight * 0, 100, 30, TRUE);
-        MoveWindow(stopBotton, clientWidth - 50 - listHalfSize,
+        MoveWindow(singleBotton, tableX* cellSize / 2, listUnitHeight * 3, 100, 30, TRUE);
+        MoveWindow(VSBotton, clientWidth - 50 - listHalfSize,
             listUnitHeight * 1, 100, 30, TRUE);
-        MoveWindow(doingInfo, clientWidth - listHalfSize + 50,
-            listUnitHeight * 0, 30, 30, TRUE);
-
-        MoveWindow(cellsizeTitle, clientWidth - 50 - listHalfSize - titleSize,
-            listUnitHeight * 2, titleSize, 30, TRUE);
-        MoveWindow(cellsizeEdit, clientWidth - 50 - listHalfSize,
-            listUnitHeight * 2, 50, 30, TRUE);
-        MoveWindow(cellsizeBotton, clientWidth - listHalfSize,
-            listUnitHeight * 2, 50, 30, TRUE);
-        MoveWindow(cellsizeInfo, clientWidth - listHalfSize + 50,
-            listUnitHeight * 2, 30, 30, TRUE);
-
-        MoveWindow(timeTitle, clientWidth - 50 - listHalfSize - titleSize,
-            listUnitHeight * 3, titleSize, 30, TRUE);
-        MoveWindow(timeEdit, clientWidth - 50 - listHalfSize,
-            listUnitHeight * 3, 50, 30, TRUE);
-        MoveWindow(timeBotton, clientWidth - listHalfSize,
-            listUnitHeight * 3, 50, 30, TRUE);
-        MoveWindow(timeInfo, clientWidth - listHalfSize + 50,
-            listUnitHeight * 3, 30, 30, TRUE);
-
-        MoveWindow(modXuTitle, clientWidth - 50 - listHalfSize - titleSize,
-            listUnitHeight * 4, titleSize, 30, TRUE);
-        MoveWindow(modXuEditX, clientWidth - 50 - listHalfSize,
-            listUnitHeight * 4, 25, 30, TRUE);
-        MoveWindow(modXuEditY, clientWidth - 25 - listHalfSize,
-            listUnitHeight * 4, 25, 30, TRUE);
-        MoveWindow(modXuBotton, clientWidth - listHalfSize,
-            listUnitHeight * 4, 50, 30, TRUE);
-        MoveWindow(modXuInfo, clientWidth - listHalfSize + 50, 
-            listUnitHeight * 4, 50, 30, TRUE);
-
-        MoveWindow(modReTitle, clientWidth - 50 - listHalfSize - titleSize,
-            listUnitHeight * 5, titleSize, 30, TRUE);
-        MoveWindow(modReEditX, clientWidth - 50 - listHalfSize,
-            listUnitHeight * 5, 25, 30, TRUE);
-        MoveWindow(modReEditY, clientWidth - 25 - listHalfSize,
-            listUnitHeight * 5, 25, 30, TRUE);
-        MoveWindow(modReBotton, clientWidth - listHalfSize,
-            listUnitHeight * 5, 50, 30, TRUE);
-        MoveWindow(modReInfo, clientWidth - listHalfSize + 50,
-            listUnitHeight * 5, 50, 30, TRUE);
 
         MoveWindow(hBmpStatic, clientWidth - 2 * listHalfSize,
             listUnitHeight * 6, 2 * listHalfSize, 3 * listHalfSize, TRUE);
     }
         break;
-    case WM_PAINT:
-        {
-            PAINTSTRUCT ps;
-            HDC hdc = BeginPaint(hWnd, &ps);
-            HBRUSH hBrushLive = CreateSolidBrush(RGBpurple);
-            HBRUSH hBrushDead = CreateSolidBrush(RGBwhite);
-            RECT rectFull = { 0,0,tableX * cellSize, tableY * cellSize };
-            FillRect(hdc, &rectFull, hBrushDead);
-            for (int y = 0; y <tableY; y++) {
-                for (int x = 0; x < tableX; x++) {
-                    RECT rect = { x * cellSize, y * cellSize,
-                        (x + 1) * cellSize, (y + 1) * cellSize };
-                    if (findLife(grid,x,y)) FillRect(hdc, &rect, hBrushLive);                                   
-                }
-            }
-            if (!ifCreate) {
-                Gdiplus::Graphics graphics(hdc);
-                myPaintFrame(graphics, 0, 0, tableX * cellSize, tableY * cellSize, cellSize);
-                ifCreate = TRUE;
-            }            
-            DeleteObject(hBrushLive);
-            DeleteObject(hBrushDead);
-            EndPaint(hWnd, &ps);
-        }
-        break;
+    //case WM_PAINT:
+    //    {
+    //        //绘制网格
+    //        PAINTSTRUCT ps;
+    //        HDC hdc = BeginPaint(hWnd, &ps);
+    //        HBRUSH hBrushLive = CreateSolidBrush(RGBpurple);
+    //        HBRUSH hBrushDead = CreateSolidBrush(RGBwhite);
+    //        RECT rectFull = { 0,0,tableX * cellSize, tableY * cellSize };
+    //        FillRect(hdc, &rectFull, hBrushDead);
+    //        for (int y = 0; y <tableY; y++) {
+    //            for (int x = 0; x < tableX; x++) {
+    //                RECT rect = { x * cellSize, y * cellSize,
+    //                    (x + 1) * cellSize, (y + 1) * cellSize };
+    //                if (findLife(grid,x,y)) FillRect(hdc, &rect, hBrushLive);                                   
+    //            }
+    //        }
+    //        if (!ifCreate) {
+    //            Gdiplus::Graphics graphics(hdc);
+    //            myPaintFrame(graphics, 0, 0, tableX * cellSize, tableY * cellSize, cellSize);
+    //            ifCreate = TRUE;
+    //        }            
+    //        DeleteObject(hBrushLive);
+    //        DeleteObject(hBrushDead);
+    //        EndPaint(hWnd, &ps);
+    //    }
+    //    break;
     case WM_LBUTTONDOWN:
     {
         ifMouseDown = TRUE;  // 标记鼠标按下
