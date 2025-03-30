@@ -65,6 +65,10 @@
 #define ID_VS                           32795
 #define ID_TIMER3                       32796
 #define ID_SINGLE                       32797
+#define ID_SINGLEBUTTON                 32798
+#define ID_VSBUTTON                     32799
+#define ID_BUTTON_A                     32800
+#define ID_BUTTON_B                     32801
 #define IDC_STATIC                      -1
 
 // Next default values for new objects
