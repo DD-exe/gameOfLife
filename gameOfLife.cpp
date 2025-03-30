@@ -41,6 +41,7 @@ INT         listHalfSize;   // 控制栏半宽度
 INT         listUnitHeight;
 INT         titleSize;
 BOOL        VSbuttonsVisible = FALSE;  //对抗按钮可见性
+
 // 函数前向声明
 ATOM                MyRegisterClass(HINSTANCE hInstance);
 BOOL                InitInstance(HINSTANCE, int);
@@ -133,6 +134,8 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 // 处理主窗口消息。
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
+    INT clientWidth, clientHeight;
+    getClientXY(hWnd, &clientWidth, &clientHeight);
     switch (message)
     {
     case WM_COMMAND:
@@ -143,14 +146,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
             {
             case IDM_ABOUT:
                 DialogBox(hInst, MAKEINTRESOURCE(IDD_ABOUTBOX), hWnd, About);
-                break;
             break;
             //功能菜单下内容
-            case ID_SAVE:
-                //保存功能
-                saveBmp(hWnd, 0, 0, cellSize * tableX, cellSize * tableY);
-                break;              
-                break;
             case ID_SINGLEBUTTON:                     // 单机模式
             {
                 HWND SingleDialog = CreateDialog(hInst, MAKEINTRESOURCE(IDD_SINGLE), hWnd, single);
@@ -162,17 +159,20 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
                 
                 if (!VSbuttonsVisible) {
                     // 显示按钮 A 和 B
+                    ShowWindow(VSButtonA, SW_SHOW);
+                    ShowWindow(VSButtonB, SW_SHOW);
+                    VSbuttonsVisible = FALSE;
                     VSButtonA = CreateWindow(
                         L"BUTTON", L"本地对抗",
                         WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON,
-                        100, 150, 100, 30,
+                        clientWidth / 2 - 50, clientHeight * 3 / 5 + 80, 100, 30,
                         hWnd, (HMENU)ID_VS, NULL, NULL
                     );
 
                     VSButtonB = CreateWindow(
                         L"BUTTON", L"联机对抗",
                         WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON,
-                        220, 150, 100, 30,
+                        clientWidth / 2 - 50, clientHeight * 3 / 5 + 120, 100, 30,
                         hWnd, (HMENU)ID_BUTTON_B, NULL, NULL
                     );
 
@@ -204,40 +204,28 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
             default:
                 return DefWindowProc(hWnd, message, wParam, lParam);
             }
-                break;
-        }
-        break;
-    case WM_TIMER:
-        if (ifRun && wParam == ID_TIMER) {
-            std::unordered_map<INT, std::unordered_map<INT, BOOL>> ans;
-            // INT4 rectx;
-            myLife(grid, ans, rule, state);
-            RECT rect = { 0, 0,tableX* cellSize, tableY* cellSize };
-            grid = std::move(ans);
-            InvalidateRect(hWnd, &rect, TRUE);
+            break;
         }
         break;
     case WM_CREATE:
     {
         //创建右侧菜单栏
-        SetTimer(hWnd, ID_TIMER, 100 * speed, NULL); // 初始化计时器，WM_TIMER需要
         INT clientWidth,clientHeight;
         getClientXY(hWnd, &clientWidth, &clientHeight);
-        tableX = (clientWidth - 2 * listHalfSize - 10) / cellSize;
-        tableY = clientHeight / cellSize; // 计算右边控制栏位置
         // 插入一系列控件
         singleBotton = CreateWindow(
             L"BUTTON", L"单机模式",
             WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON,
-            tableX * cellSize/2, listUnitHeight * 3, 100, 30,
+            clientWidth / 2 - 50, clientHeight * 3 / 5, 100, 30,
             hWnd, (HMENU)ID_SINGLEBUTTON, NULL, NULL
         );
         VSBotton = CreateWindow(
             L"BUTTON", L"对抗模式",
             WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON,
-            clientWidth - 50 - listHalfSize, listUnitHeight * 1, 100, 30,
+            clientWidth / 2 - 50, clientHeight * 3 / 5 + 40, 100, 30,
             hWnd, (HMENU)ID_VSBUTTON, NULL, NULL
         );
+
         HBITMAP hBmp = LoadBitmap(GetModuleHandle(NULL), MAKEINTRESOURCE(IDB_LINbmpPro));
         hBmpStatic = CreateWindow(
             L"STATIC", NULL,
@@ -255,9 +243,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         tableX = (clientWidth - 2 * listHalfSize - 10) / cellSize;
         tableY = clientHeight / cellSize;
         ifCreate = FALSE;
-        MoveWindow(singleBotton, tableX* cellSize / 2, listUnitHeight * 3, 100, 30, TRUE);
-        MoveWindow(VSBotton, clientWidth - 50 - listHalfSize,
-            listUnitHeight * 1, 100, 30, TRUE);
+        MoveWindow(singleBotton, clientWidth / 2 - 50, clientHeight * 3 / 5, 100, 30, TRUE);
+        MoveWindow(VSBotton, clientWidth / 2 - 50, clientHeight * 3 / 5 + 40, 100, 30, TRUE);
 
         MoveWindow(hBmpStatic, clientWidth - 2 * listHalfSize,
             listUnitHeight * 6, 2 * listHalfSize, 3 * listHalfSize, TRUE);
