@@ -171,13 +171,14 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
             break;
             case ID_VS:
             {
-                HWND VSDialog = CreateDialog(hInst, MAKEINTRESOURCE(IDD_VS), hWnd, VSdot);
-                ShowWindow(VSDialog, SW_SHOW);
+                HWND VSOnlineDialog = CreateDialog(hInst, MAKEINTRESOURCE(IDD_VS), hWnd, VSdot);
+                ShowWindow(VSOnlineDialog, SW_SHOW);
             }
             break;
-            case ID_BUTTON_B:
+            case ID_VSOnline:
             {
-                MessageBox(hWnd, L"打开页面 B", L"信息", MB_OK);
+                HWND VSDialog = CreateDialog(hInst, MAKEINTRESOURCE(IDD_VSONLINE), hWnd, VSOnline);
+                ShowWindow(VSDialog, SW_SHOW);
             }
             break;
             case IDM_EXIT:
@@ -219,7 +220,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
             L"BUTTON", L"联机对抗",
             WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON,
             clientWidth / 2 - 50, clientHeight * 3 / 5 + 120, 100, 30,
-            hWnd, (HMENU)ID_BUTTON_B, NULL, NULL
+            hWnd, (HMENU)ID_VSOnline, NULL, NULL
         );
         ShowWindow(VSButtonA, SW_HIDE);
         ShowWindow(VSButtonB, SW_HIDE);

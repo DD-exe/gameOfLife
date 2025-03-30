@@ -140,6 +140,7 @@
     <ClCompile Include="single.cpp" />
     <ClCompile Include="tools.cpp" />
     <ClCompile Include="vs.cpp" />
+    <ClCompile Include="vsOnline.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="gameOfLife.rc" />

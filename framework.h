@@ -79,6 +79,7 @@ INT_PTR CALLBACK VSdot(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam);  
 INT_PTR CALLBACK single(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam);                 // single
 void SetSingleWindows(HWND hDlg, siData* data);
 void moveSingleWindows(HWND hDlg, siData* data, INT clientWidth);
+INT_PTR CALLBACK VSOnline(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam);               // vsOnline
 
 // inline
 inline void getClientXY(HWND hWnd, INT* x, INT* y) {
