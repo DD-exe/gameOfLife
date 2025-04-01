@@ -1,6 +1,7 @@
 #include "framework.h"
 #include "gameOfLife.h"
 #define RGBgrey     RGB(200,200,200)
+#define RGBblack    RGB(0,0,0)
 #define RGBwhite    RGB(255,255,255)
 #define RGBgreen    RGB(60,255,176)
 #define RGBpurple   RGB(180,150,255)
@@ -21,18 +22,28 @@ INT_PTR CALLBACK VSdot(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
         data->speed = 10;
         data->cellSize = 10;
         data->listHalfSize = 80;
-        data->ruleP1.x = 2; data->ruleP1.y = 3; data->ruleP1.z = 3; data->ruleP1.t = 3;
-        data->ruleP2.x = 2; data->ruleP2.y = 3; data->ruleP2.z = 3; data->ruleP2.t = 3;
-        data->attP1 = 3; data->attP2 = 3;
-        data->defP1 = 3; data->defP2 = 3;
+        data->rule[0].x = 2; data->rule[0].y = 3; data->rule[0].z = 3; data->rule[0].t = 3;
+        data->rule[1].x = 2; data->rule[1].y = 3; data->rule[1].z = 3; data->rule[1].t = 3;
+        // data->rule[2].x = 2; data->rule[2].y = 3; data->rule[2].z = 3; data->rule[2].t = 3;
+        // data->rule[3].x = 2; data->rule[3].y = 3; data->rule[3].z = 3; data->rule[3].t = 3;
+        data->att[0] = 3; data->def[0] = 3;
+        data->att[1] = 3; data->def[1] = 3;
+        // data->att[2] = 3; data->def[2] = 3;
+        // data->att[3] = 3; data->def[3] = 3;
         data->moveX = data->moveY = 0;
         INT clientWidth, clientHeight;
         getClientXY(hDlg, &clientWidth, &clientHeight);
         data->tableX = (clientWidth - 2 * data->listHalfSize) / data->cellSize;
         data->tableY = clientHeight / data->cellSize;                           // 计算右边控制栏位置
+        data->player[0] = RGBgreen;
+        data->player[1] = RGBpurple;
+        // data->player[2] = RGBgrey;
+        // data->player[3] = RGBblack;
         HWND hCombo = GetDlgItem(hDlg, IDC_CHARA);                             
-        SendMessage(hCombo, CB_ADDSTRING, 0, (LPARAM)L"绿色");
-        SendMessage(hCombo, CB_ADDSTRING, 0, (LPARAM)L"紫色");
+        SendMessage(hCombo, CB_ADDSTRING, 0, (LPARAM)L"阵营一");
+        SendMessage(hCombo, CB_ADDSTRING, 0, (LPARAM)L"阵营二");
+        // SendMessage(hCombo, CB_ADDSTRING, 0, (LPARAM)L"阵营三");
+        // SendMessage(hCombo, CB_ADDSTRING, 0, (LPARAM)L"阵营四");
         SendMessage(hCombo, CB_SETCURSEL, 0, 0);                                // 选择第一个选项
         SetTimer(hDlg, ID_TIMER2, 100*data->speed, NULL);
         SetWindowLongPtr(hDlg, GWLP_USERDATA, (LONG_PTR)data);
@@ -72,26 +83,28 @@ INT_PTR CALLBACK VSdot(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
             }
             break;
         }
-        case IDP1OK:
+        case IDPlayerOK:
         {
             BOOL success1, success2,success3,success4;
             INT p1att = GetDlgItemInt(hDlg, IDC_P1ATT, &success1, TRUE);
             INT p1def = GetDlgItemInt(hDlg, IDC_P1DEF, &success2, TRUE);
             INT p1muv = GetDlgItemInt(hDlg, IDC_P1MUV, &success3, TRUE);
             INT p1suv = GetDlgItemInt(hDlg, IDC_P1SUV, &success4, TRUE);
+            HWND hChara = GetDlgItem(hDlg, IDC_CHARA);
+            int index = SendMessage(hChara, CB_GETCURSEL, 0, 0);
             if (success1&&success2&&success3&&success4) {
-                data->attP1 = p1att;
-                data->defP1 = p1def;
+                data->att[index] = p1att;
+                data->def[index] = p1def;
                 switch (p1muv)
                 {
                 case 1:
-                    data->ruleP1.z = 3; data->ruleP1.t = 3;
+                    data->rule[index].z = 3; data->rule[index].t = 3;
                     break;
                 case 2:
-                    data->ruleP1.z = 3; data->ruleP1.t = 4;
+                    data->rule[index].z = 3; data->rule[index].t = 4;
                     break;
                 case 3:
-                    data->ruleP1.z = 2; data->ruleP1.t = 4;
+                    data->rule[index].z = 2; data->rule[index].t = 4;
                     break;
                 default:
                     break;
@@ -99,54 +112,13 @@ INT_PTR CALLBACK VSdot(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
                 switch (p1suv)
                 {
                 case 1:
-                    data->ruleP1.x = 2; data->ruleP1.y = 3;
+                    data->rule[index].x = 2; data->rule[index].y = 3;
                     break;
                 case 2:
-                    data->ruleP1.x = 2; data->ruleP1.y = 4;
+                    data->rule[index].x = 2; data->rule[index].y = 4;
                     break;
                 case 3:
-                    data->ruleP1.x = 1; data->ruleP1.y = 4;
-                    break;
-                default:
-                    break;
-                }
-            }
-            break;
-        }
-        case IDP2OK:
-        {
-            BOOL success1, success2, success3, success4;
-            INT p2att = GetDlgItemInt(hDlg, IDC_P2ATT, &success1, TRUE);
-            INT p2def = GetDlgItemInt(hDlg, IDC_P2DEF, &success2, TRUE);
-            INT p2muv = GetDlgItemInt(hDlg, IDC_P2MUV, &success3, TRUE);
-            INT p2suv = GetDlgItemInt(hDlg, IDC_P2SUV, &success4, TRUE);
-            if (success1 && success2 && success3 && success4) {
-                data->attP2 = p2att;
-                data->defP2 = p2def;
-                switch (p2muv)
-                {
-                case 1:
-                    data->ruleP2.z = 3; data->ruleP2.t = 3;
-                    break;
-                case 2:
-                    data->ruleP2.z = 3; data->ruleP2.t = 4;
-                    break;
-                case 3:
-                    data->ruleP2.z = 2; data->ruleP2.t = 4;
-                    break;
-                default:
-                    break;
-                }
-                switch (p2suv)
-                {
-                case 1:
-                    data->ruleP2.x = 2; data->ruleP2.y = 3;
-                    break;
-                case 2:
-                    data->ruleP2.x = 2; data->ruleP2.y = 4;
-                    break;
-                case 3:
-                    data->ruleP2.x = 1; data->ruleP2.y = 4;
+                    data->rule[index].x = 1; data->rule[index].y = 4;
                     break;
                 default:
                     break;
@@ -161,8 +133,8 @@ INT_PTR CALLBACK VSdot(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
         }
         case IDvsSTOP:
         {
-            data->gridP1.clear();
-            data->gridP2.clear();
+            data->grid[0].clear();
+            data->grid[1].clear();
             data->ifCreate = FALSE;
             RECT rect = { 0,0,data->tableX * data->cellSize,data->tableY * data->cellSize };
             InvalidateRect(hDlg, &rect, TRUE);
@@ -196,6 +168,15 @@ INT_PTR CALLBACK VSdot(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
             InvalidateRect(hDlg, &rect, TRUE);
             return (INT_PTR)TRUE;
         }
+        case ID_COLOR:
+        {
+            // HINSTANCE hInst = (HINSTANCE)GetWindowLongPtr(hDlg, GWLP_HINSTANCE);
+            HWND hChara = GetDlgItem(hDlg, IDC_CHARA);
+            int index = SendMessage(hChara, CB_GETCURSEL, 0, 0);
+            data->player[index]=DialogBoxParam(GetModuleHandle(NULL), MAKEINTRESOURCE(IDD_COLOR), hDlg, color,NULL);
+            // DialogBox(hInst, MAKEINTRESOURCE(IDD_COLOR), hDlg, color);
+            return (INT_PTR)TRUE;
+        }
         case IDCANCEL:
             EndDialog(hDlg, LOWORD(wParam));
             return (INT_PTR)TRUE;
@@ -204,12 +185,23 @@ INT_PTR CALLBACK VSdot(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
         }
         return (INT_PTR)TRUE;
     }
+    case WM_SIZE:
+    {
+        int clientWidth = LOWORD(lParam);
+        int clientHeight = HIWORD(lParam);
+        data->tableX = (clientWidth - 2 * data->listHalfSize - 10) / data->cellSize;
+        data->tableY = clientHeight / data->cellSize;
+        data->ifCreate = FALSE;
+        moveVsWindows(hDlg, data, clientWidth);
+        InvalidateRect(hDlg, NULL, TRUE);
+        return (INT_PTR)TRUE;
+    }
     case WM_PAINT: 
     {
         PAINTSTRUCT ps;
         HDC hdc = BeginPaint(hDlg, &ps);
-        HBRUSH hBrushP1 = CreateSolidBrush(RGBgreen);
-        HBRUSH hBrushP2 = CreateSolidBrush(RGBpurple);
+        HBRUSH hBrushP1 = CreateSolidBrush(data->player[0]);
+        HBRUSH hBrushP2 = CreateSolidBrush(data->player[1]);
         HBRUSH hBrushDead = CreateSolidBrush(RGBwhite);
         RECT rectFull = { 0,0,data->tableX * data->cellSize, data->tableY * data->cellSize };
         FillRect(hdc, &rectFull, hBrushDead);
@@ -217,17 +209,17 @@ INT_PTR CALLBACK VSdot(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
             for (int x = 0; x < data->tableX; x++) {
                 RECT rect = { x * data->cellSize, y * data->cellSize,
                     (x + 1) * data->cellSize, (y + 1) * data->cellSize };
-                if (findLife(data->gridP1,x,y)) {
-                    if (findLife(data->gridP2, x, y)) {
-                        INT p1vs = data->gridP1[y][x] ? data->attP1 : data->defP1;
-                        INT p2vs = data->gridP2[y][x] ? data->attP2 : data->defP2;
+                if (findLife(data->grid[0], x, y)) {
+                    if (findLife(data->grid[1], x, y)) {
+                        INT p1vs = data->grid[0][y][x] ? data->att[0] : data->def[0];
+                        INT p2vs = data->grid[1][y][x] ? data->att[1] : data->def[1];
                         INT ans = getRandomNum(1, p1vs + p2vs);
                         if (ans <= p1vs) { 
-                            exchangeLife(data->gridP2, x, y);
+                            exchangeLife(data->grid[1], x, y);
                             FillRect(hdc, &rect, hBrushP1);
                         }
                         else {
-                            exchangeLife(data->gridP1, x, y);
+                            exchangeLife(data->grid[0], x, y);
                             FillRect(hdc, &rect, hBrushP2);
                         }
                     }
@@ -235,7 +227,7 @@ INT_PTR CALLBACK VSdot(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
                         FillRect(hdc, &rect, hBrushP1);
                     }
                 }
-                else if (findLife(data->gridP2, x, y)) {
+                else if (findLife(data->grid[1], x, y)) {
                     FillRect(hdc, &rect, hBrushP2);
                 }
             }
@@ -259,8 +251,7 @@ INT_PTR CALLBACK VSdot(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
         if (x < data->tableX && y < data->tableY) {
             HWND hChara = GetDlgItem(hDlg, IDC_CHARA);
             int index = SendMessage(hChara, CB_GETCURSEL, 0, 0); // 获取选中索引
-            if (index == 0) exchangeLife(data->gridP1, x, y);
-            else exchangeLife(data->gridP2, x, y);
+            exchangeLife(data->grid[index], x, y);
             RECT rect = { x * data->cellSize, y * data->cellSize,
                         (x + 1) * data->cellSize, (y + 1) * data->cellSize };
             InvalidateRect(hDlg, &rect, TRUE);  // 仅重绘该区域
@@ -278,8 +269,7 @@ INT_PTR CALLBACK VSdot(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
                 // 只有当鼠标进入新格子时才处理，防止重复
                 HWND hChara = GetDlgItem(hDlg, IDC_CHARA);
                 int index = SendMessage(hChara, CB_GETCURSEL, 0, 0); // 获取选中索引
-                if (index == 0) exchangeLife(data->gridP1, x, y);
-                else exchangeLife(data->gridP2, x, y);
+                exchangeLife(data->grid[index], x, y);
                 RECT rect = { x * data->cellSize, y * data->cellSize, (x + 1) * data->cellSize, (y + 1) * data->cellSize };
                 InvalidateRect(hDlg, &rect, TRUE);
 
@@ -301,11 +291,11 @@ INT_PTR CALLBACK VSdot(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
         {
             std::unordered_map<INT, std::unordered_map<INT, BOOL>> ans1;
             std::unordered_map<INT, std::unordered_map<INT, BOOL>> ans2;
-            myLife(data->gridP1, ans1, data->ruleP1, state);
-            myLife(data->gridP2, ans2, data->ruleP2, state);
+            myLife(data->grid[0], ans1, data->rule[0], state);
+            myLife(data->grid[1], ans2, data->rule[1], state);
             RECT rect = { 0, 0,data->tableX * data->cellSize, data->tableY * data->cellSize };
-            data->gridP1 = std::move(ans1);
-            data->gridP2 = std::move(ans2);
+            data->grid[0] = std::move(ans1);
+            data->grid[1] = std::move(ans2);
             InvalidateRect(hDlg, &rect, TRUE);
             break;
         }
@@ -320,4 +310,9 @@ INT_PTR CALLBACK VSdot(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
     }        
     }
     return (INT_PTR)FALSE;
+}
+
+void moveVsWindows(HWND hDlg, vsData* data, INT clientWidth) 
+{
+
 }

@@ -134,6 +134,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="about.cpp" />
+    <ClCompile Include="color.cpp" />
     <ClCompile Include="downloads.cpp" />
     <ClCompile Include="gameOfLife.cpp" />
     <ClCompile Include="life.cpp" />

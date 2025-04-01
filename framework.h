@@ -48,19 +48,24 @@ struct siData {
     INT         listUnitHeight;
     INT         titleSize;
 };
-struct vsData{
-    std::unordered_map<INT, std::unordered_map<INT, BOOL>> gridP1;
-    std::unordered_map<INT, std::unordered_map<INT, BOOL>> gridP2;
+struct vsData {
+    std::unordered_map<INT, std::unordered_map<INT, BOOL>> grid[2];
+    // std::unordered_map<INT, std::unordered_map<INT, BOOL>> gridP2;
     BOOL ifCreate;
     BOOL ifRun;
     BOOL ifMouseDown;
     INT lastX, lastY;
     INT speed;
     INT cellSize; INT tableX; INT tableY; INT listHalfSize;
-    INT4 ruleP1; INT4 ruleP2;
-    INT attP1; INT defP1;
-    INT attP2; INT defP2;
+    INT4 rule[2];
+    INT att[2]; INT def[2];
     INT moveX, moveY;
+    COLORREF player[2];
+};
+struct coData {
+    HWND hParent;
+    INT r, g, b;
+    BOOL ifMouseDown;
 };
 BOOL findLife(std::unordered_map<INT, std::unordered_map<INT, BOOL>> &grid, INT x, INT y);      // life
 void exchangeLife(std::unordered_map<INT, std::unordered_map<INT, BOOL>>& grid, INT x, INT y);
@@ -76,10 +81,12 @@ void delState(STATE** x);
 int getRandomNum(int min, int max);
 INT_PTR CALLBACK About(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam);                  // about
 INT_PTR CALLBACK VSdot(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam);                  // vs
+void moveVsWindows(HWND hDlg, vsData* data, INT clientWidth);
 INT_PTR CALLBACK single(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam);                 // single
 void SetSingleWindows(HWND hDlg, siData* data);
 void moveSingleWindows(HWND hDlg, siData* data, INT clientWidth);
 INT_PTR CALLBACK VSOnline(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam);               // vsOnline
+INT_PTR CALLBACK color(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam);                  // color
 
 // inline
 inline void getClientXY(HWND hWnd, INT* x, INT* y) {

@@ -5,6 +5,7 @@
 #define IDC_MYICON                      2
 #define IDOKvsSPEED                     3
 #define IDP1OK                          4
+#define IDPlayerOK                      4
 #define IDP2OK                          5
 #define IDvsSTART                       6
 #define IDvsSTOP                        7
@@ -23,6 +24,7 @@
 #define IDD_VS                          134
 #define IDD_SINGLE                      135
 #define IDD_VSONLINE                    136
+#define IDD_COLOR                       137
 #define IDC_EDITvsSIZE                  1000
 #define IDC_EDITvsSPEED                 1001
 #define IDC_P1ATT                       1002
@@ -32,6 +34,7 @@
 #define IDC_P1SUV                       1006
 #define IDOKvsSIZE                      1007
 #define IDC_P2ATT                       1008
+#define ID_COLOR                        1008
 #define IDC_P2DEF                       1009
 #define IDC_P2MUV                       1010
 #define IDC_P2SUV                       1011
@@ -82,9 +85,9 @@
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NO_MFC                     1
-#define _APS_NEXT_RESOURCE_VALUE        137
+#define _APS_NEXT_RESOURCE_VALUE        138
 #define _APS_NEXT_COMMAND_VALUE         32801
-#define _APS_NEXT_CONTROL_VALUE         1015
+#define _APS_NEXT_CONTROL_VALUE         1017
 #define _APS_NEXT_SYMED_VALUE           110
 #endif
 #endif
