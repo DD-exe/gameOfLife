@@ -87,6 +87,8 @@ void SetSingleWindows(HWND hDlg, siData* data);
 void moveSingleWindows(HWND hDlg, siData* data, INT clientWidth);
 INT_PTR CALLBACK VSOnline(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam);               // vsOnline
 INT_PTR CALLBACK color(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam);                  // color
+INT_PTR CALLBACK CreateRoomProc(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam);         //createRoom
+INT_PTR CALLBACK JoinRoomProc(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam);           //joinRoom
 
 // inline
 inline void getClientXY(HWND hWnd, INT* x, INT* y) {
