@@ -40,8 +40,8 @@ INT_PTR CALLBACK VSdot(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
         // data->player[2] = RGBgrey;
         // data->player[3] = RGBblack;
         HWND hCombo = GetDlgItem(hDlg, IDC_CHARA);                             
-        SendMessage(hCombo, CB_ADDSTRING, 0, (LPARAM)L"阵营一");
-        SendMessage(hCombo, CB_ADDSTRING, 0, (LPARAM)L"阵营二");
+        SendMessage(hCombo, CB_ADDSTRING, 0, (LPARAM)L"阵营1");
+        SendMessage(hCombo, CB_ADDSTRING, 0, (LPARAM)L"阵营2");
         // SendMessage(hCombo, CB_ADDSTRING, 0, (LPARAM)L"阵营三");
         // SendMessage(hCombo, CB_ADDSTRING, 0, (LPARAM)L"阵营四");
         SendMessage(hCombo, CB_SETCURSEL, 0, 0);                                // 选择第一个选项
@@ -126,12 +126,12 @@ INT_PTR CALLBACK VSdot(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
             }
             break;
         }
-        case IDvsSTART:
+        case ID_START:
         {
             data->ifRun = !data->ifRun;
             break;
         }
-        case IDvsSTOP:
+        case ID_STOP:
         {
             data->grid[0].clear();
             data->grid[1].clear();
@@ -140,30 +140,35 @@ INT_PTR CALLBACK VSdot(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
             InvalidateRect(hDlg, &rect, TRUE);
             break;
         }
+        case ID_SAVE:
+        {
+            saveBmp(hDlg, 0, 0, data->cellSize* data->tableX, data->cellSize* data->tableY);
+            return (INT_PTR)TRUE;
+        }
         case IDvsUP:
-        {
-            if (data->moveX > 0)--(data->moveX);
-            RECT rect = { 0,0,data->tableX * data->cellSize,data->tableY * data->cellSize };
-            InvalidateRect(hDlg, &rect, TRUE);
-            return (INT_PTR)TRUE;
-        }
-        case IDvsDOWN:
-        {
-            ++(data->moveX);
-            RECT rect = { 0,0,data->tableX * data->cellSize,data->tableY * data->cellSize };
-            InvalidateRect(hDlg, &rect, TRUE);
-            return (INT_PTR)TRUE;
-        }
-        case IDvsLEFT:
         {
             if (data->moveY > 0)--(data->moveY);
             RECT rect = { 0,0,data->tableX * data->cellSize,data->tableY * data->cellSize };
             InvalidateRect(hDlg, &rect, TRUE);
             return (INT_PTR)TRUE;
         }
-        case IDvsRIGHT:
+        case IDvsDOWN:
         {
             ++(data->moveY);
+            RECT rect = { 0,0,data->tableX * data->cellSize,data->tableY * data->cellSize };
+            InvalidateRect(hDlg, &rect, TRUE);
+            return (INT_PTR)TRUE;
+        }
+        case IDvsLEFT:
+        {
+            if (data->moveX > 0)--(data->moveX);
+            RECT rect = { 0,0,data->tableX * data->cellSize,data->tableY * data->cellSize };
+            InvalidateRect(hDlg, &rect, TRUE);
+            return (INT_PTR)TRUE;
+        }
+        case IDvsRIGHT:
+        {
+            ++(data->moveX);
             RECT rect = { 0,0,data->tableX * data->cellSize,data->tableY * data->cellSize };
             InvalidateRect(hDlg, &rect, TRUE);
             return (INT_PTR)TRUE;
@@ -209,17 +214,19 @@ INT_PTR CALLBACK VSdot(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
             for (int x = 0; x < data->tableX; x++) {
                 RECT rect = { x * data->cellSize, y * data->cellSize,
                     (x + 1) * data->cellSize, (y + 1) * data->cellSize };
-                if (findLife(data->grid[0], x, y)) {
-                    if (findLife(data->grid[1], x, y)) {
-                        INT p1vs = data->grid[0][y][x] ? data->att[0] : data->def[0];
-                        INT p2vs = data->grid[1][y][x] ? data->att[1] : data->def[1];
+                INT mx = x+data->moveX;
+                INT my = y+data->moveY;
+                if (findLife(data->grid[0], mx, my)) {
+                    if (findLife(data->grid[1], mx, my)) {
+                        INT p1vs = data->grid[0][my][mx] ? data->att[0] : data->def[0];
+                        INT p2vs = data->grid[1][my][mx] ? data->att[1] : data->def[1];
                         INT ans = getRandomNum(1, p1vs + p2vs);
                         if (ans <= p1vs) { 
-                            exchangeLife(data->grid[1], x, y);
+                            exchangeLife(data->grid[1], mx, my);
                             FillRect(hdc, &rect, hBrushP1);
                         }
                         else {
-                            exchangeLife(data->grid[0], x, y);
+                            exchangeLife(data->grid[0], mx, my);
                             FillRect(hdc, &rect, hBrushP2);
                         }
                     }
@@ -227,7 +234,7 @@ INT_PTR CALLBACK VSdot(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
                         FillRect(hdc, &rect, hBrushP1);
                     }
                 }
-                else if (findLife(data->grid[1], x, y)) {
+                else if (findLife(data->grid[1], mx, my)) {
                     FillRect(hdc, &rect, hBrushP2);
                 }
             }
@@ -251,7 +258,7 @@ INT_PTR CALLBACK VSdot(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
         if (x < data->tableX && y < data->tableY) {
             HWND hChara = GetDlgItem(hDlg, IDC_CHARA);
             int index = SendMessage(hChara, CB_GETCURSEL, 0, 0); // 获取选中索引
-            exchangeLife(data->grid[index], x, y);
+            exchangeLife(data->grid[index], x+data->moveX, y+data->moveY);
             RECT rect = { x * data->cellSize, y * data->cellSize,
                         (x + 1) * data->cellSize, (y + 1) * data->cellSize };
             InvalidateRect(hDlg, &rect, TRUE);  // 仅重绘该区域
@@ -269,7 +276,7 @@ INT_PTR CALLBACK VSdot(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
                 // 只有当鼠标进入新格子时才处理，防止重复
                 HWND hChara = GetDlgItem(hDlg, IDC_CHARA);
                 int index = SendMessage(hChara, CB_GETCURSEL, 0, 0); // 获取选中索引
-                exchangeLife(data->grid[index], x, y);
+                exchangeLife(data->grid[index], x + data->moveX, y + data->moveY);
                 RECT rect = { x * data->cellSize, y * data->cellSize, (x + 1) * data->cellSize, (y + 1) * data->cellSize };
                 InvalidateRect(hDlg, &rect, TRUE);
 

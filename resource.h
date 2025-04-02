@@ -7,8 +7,8 @@
 #define IDP1OK                          4
 #define IDPlayerOK                      4
 #define IDP2OK                          5
-#define IDvsSTART                       6
-#define IDvsSTOP                        7
+#define ID_START                       6
+#define ID_STOP                        7
 #define IDlizi                          8
 #define IDD_GAMEOFLIFE_DIALOG           102
 #define IDS_APP_TITLE                   103
@@ -25,6 +25,8 @@
 #define IDD_SINGLE                      135
 #define IDD_VSONLINE                    136
 #define IDD_COLOR                       137
+#define IDR_MENU1                       138
+#define IDR_GAME                        138
 #define IDC_EDITvsSIZE                  1000
 #define IDC_EDITvsSPEED                 1001
 #define IDC_P1ATT                       1002
@@ -78,6 +80,10 @@
 #define ID_BUTTON_A                     32800
 #define ID_VSO                          32800
 #define ID_VSOnline                     32801
+#define ID_32801                        32801
+#define ID_                             32802
+#define ID_32803                        32803
+#define ID_32804                        32804
 #define IDC_STATIC                      -1
 
 // Next default values for new objects
@@ -85,8 +91,8 @@
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NO_MFC                     1
-#define _APS_NEXT_RESOURCE_VALUE        138
-#define _APS_NEXT_COMMAND_VALUE         32801
+#define _APS_NEXT_RESOURCE_VALUE        139
+#define _APS_NEXT_COMMAND_VALUE         32805
 #define _APS_NEXT_CONTROL_VALUE         1017
 #define _APS_NEXT_SYMED_VALUE           110
 #endif
