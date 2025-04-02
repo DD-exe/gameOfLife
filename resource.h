@@ -25,6 +25,8 @@
 #define IDD_SINGLE                      135
 #define IDD_VSONLINE                    136
 #define IDD_COLOR                       137
+#define IDD_CREATEROOM                  138
+#define IDD_JOINROOM                    139
 #define IDC_EDITvsSIZE                  1000
 #define IDC_EDITvsSPEED                 1001
 #define IDC_P1ATT                       1002
@@ -44,6 +46,13 @@
 #define IDvsLEFT                        1014
 #define IDvsOnlineJOIN                  1014
 #define IDvsRIGHT                       1015
+#define IDC_PLAYERNUMBERTEXT            1021
+#define IDC_PLAYERNUMBER                1022
+#define IDC_LOCALIPTEXT                 1023
+#define IDC_LOCALIP                     1024
+#define IDC_ROOMIPTEXT                  1025
+#define IDC_IPADDRESS1                  1026
+#define IDC_ROOMIP                      1026
 #define ID_TIMER                        32771
 #define ID_TIMER2                       32772
 #define ID_SAVE                         32773
@@ -85,9 +94,9 @@
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NO_MFC                     1
-#define _APS_NEXT_RESOURCE_VALUE        138
+#define _APS_NEXT_RESOURCE_VALUE        145
 #define _APS_NEXT_COMMAND_VALUE         32801
-#define _APS_NEXT_CONTROL_VALUE         1017
+#define _APS_NEXT_CONTROL_VALUE         1027
 #define _APS_NEXT_SYMED_VALUE           110
 #endif
 #endif
