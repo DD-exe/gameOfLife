@@ -28,6 +28,7 @@ INT_PTR CALLBACK single(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
         data->listHalfSize = 150;
         data->listUnitHeight = 40;
         data->titleSize = 80;
+        data->playerColor = RGBpurple;
         SetTimer(hDlg, ID_TIMER3, 100 * data->speed, NULL);      // 初始化计时器，WM_TIMER需要
         SetWindowLongPtr(hDlg, GWLP_USERDATA, (LONG_PTR)data);
         SetSingleWindows(hDlg, data);
@@ -152,6 +153,7 @@ INT_PTR CALLBACK single(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
         data->tableX = (clientWidth - 2 * data->listHalfSize - 10) / data->cellSize;
         data->tableY = clientHeight / data->cellSize;
         data->ifCreate = FALSE;
+        data->colorBlockX = clientWidth - 50 - data->listHalfSize - data->titleSize;
         moveSingleWindows(hDlg, data,clientWidth);
         InvalidateRect(hDlg, NULL, TRUE);
         return (INT_PTR)TRUE;
@@ -160,7 +162,7 @@ INT_PTR CALLBACK single(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
     {
         PAINTSTRUCT ps;
         HDC hdc = BeginPaint(hDlg, &ps);
-        HBRUSH hBrushLive = CreateSolidBrush(RGBpurple);
+        HBRUSH hBrushLive = CreateSolidBrush(data->playerColor);
         HBRUSH hBrushDead = CreateSolidBrush(RGBwhite);
         RECT rectFull = { 0,0,data->tableX * data->cellSize, data->tableY * data->cellSize };
         FillRect(hdc, &rectFull, hBrushDead);
@@ -171,6 +173,10 @@ INT_PTR CALLBACK single(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
                 if (findLife(data->grid, x, y)) FillRect(hdc, &rect, hBrushLive);
             }
         }
+        RECT rect = { data->colorBlockX,data->colorBlockY,
+            data->colorBlockX + data->colorBlockSize,
+            data->colorBlockY + data->colorBlockSize };
+        FillRect(hdc, &rect, hBrushLive);
         if (!data->ifCreate) {
             Gdiplus::Graphics graphics(hdc);
             myPaintFrame(graphics, 0, 0, data->tableX * data->cellSize, data->tableY * data->cellSize, data->cellSize);
@@ -186,13 +192,20 @@ INT_PTR CALLBACK single(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
         data->ifMouseDown = TRUE;  // 标记鼠标按下
         int x = LOWORD(lParam) / data->cellSize;
         int y = HIWORD(lParam) / data->cellSize;
-
         if (x < data->tableX && y < data->tableY) {
             exchangeLife(data->grid, x, y);
             RECT rect = { x * data->cellSize, y * data->cellSize,
                         (x + 1) * data->cellSize, (y + 1) * data->cellSize };
             InvalidateRect(hDlg, &rect, TRUE);  // 仅重绘该区域
             data->lastX = x; data->lastY = y;  // 记录上次处理的格子，避免 `WM_MOUSEMOVE` 立即重复处理
+        }
+        else if (LOWORD(lParam) >= data->colorBlockX && LOWORD(lParam) < data->colorBlockX + data->colorBlockSize && HIWORD(lParam) < data->colorBlockY + data->colorBlockSize) {
+            data->playerColor = DialogBoxParam(GetModuleHandle(NULL), MAKEINTRESOURCE(IDD_COLOR), hDlg, color, NULL);
+            RECT rect = { data->colorBlockX,data->colorBlockY,
+            data->colorBlockX + data->colorBlockSize,
+            data->colorBlockY + data->colorBlockSize };
+            InvalidateRect(hDlg, &rect, TRUE);
+            return (INT_PTR)TRUE;
         }
         return (INT_PTR)TRUE;
     }
@@ -355,7 +368,9 @@ void SetSingleWindows(HWND hDlg, siData* data) {
         hDlg, NULL, NULL, NULL
     );
     SendMessage(data->hBmpStatic, STM_SETIMAGE, (WPARAM)IMAGE_BITMAP, (LPARAM)hBmp);// 关联 BMP 图片到静态控件       
-
+    data->colorBlockX = clientWidth - 50 - data->listHalfSize - data->titleSize;
+    data->colorBlockY = 0;
+    data->colorBlockSize = 64;
 }
 
 void moveSingleWindows(HWND hDlg, siData* data,INT clientWidth) {

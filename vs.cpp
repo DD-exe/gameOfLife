@@ -35,11 +35,14 @@ INT_PTR CALLBACK VSdot(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
         getClientXY(hDlg, &clientWidth, &clientHeight);
         data->tableX = (clientWidth - 2 * data->listHalfSize) / data->cellSize;
         data->tableY = clientHeight / data->cellSize;                           // 计算右边控制栏位置
-        data->player[0] = RGBgreen;
-        data->player[1] = RGBpurple;
+        data->playerColor[0] = RGBgreen;
+        data->playerColor[1] = RGBpurple;
+        data->colorBlockX = 800;
+        data->colorBlockY = 105;
+        data->colorBlockSize = 16;
         // data->player[2] = RGBgrey;
         // data->player[3] = RGBblack;
-        HWND hCombo = GetDlgItem(hDlg, IDC_CHARA);                             
+        HWND hCombo = GetDlgItem(hDlg, IDC_CHARA);  
         SendMessage(hCombo, CB_ADDSTRING, 0, (LPARAM)L"阵营1");
         SendMessage(hCombo, CB_ADDSTRING, 0, (LPARAM)L"阵营2");
         // SendMessage(hCombo, CB_ADDSTRING, 0, (LPARAM)L"阵营三");
@@ -173,13 +176,10 @@ INT_PTR CALLBACK VSdot(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
             InvalidateRect(hDlg, &rect, TRUE);
             return (INT_PTR)TRUE;
         }
-        case ID_COLOR:
+        case IDC_CHARA: 
         {
-            // HINSTANCE hInst = (HINSTANCE)GetWindowLongPtr(hDlg, GWLP_HINSTANCE);
-            HWND hChara = GetDlgItem(hDlg, IDC_CHARA);
-            int index = SendMessage(hChara, CB_GETCURSEL, 0, 0);
-            data->player[index]=DialogBoxParam(GetModuleHandle(NULL), MAKEINTRESOURCE(IDD_COLOR), hDlg, color,NULL);
-            // DialogBox(hInst, MAKEINTRESOURCE(IDD_COLOR), hDlg, color);
+            RECT rect = { 800,105,816,121 };
+            InvalidateRect(hDlg, &rect, TRUE);
             return (INT_PTR)TRUE;
         }
         case IDCANCEL:
@@ -197,7 +197,6 @@ INT_PTR CALLBACK VSdot(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
         data->tableX = (clientWidth - 2 * data->listHalfSize - 10) / data->cellSize;
         data->tableY = clientHeight / data->cellSize;
         data->ifCreate = FALSE;
-        moveVsWindows(hDlg, data, clientWidth);
         InvalidateRect(hDlg, NULL, TRUE);
         return (INT_PTR)TRUE;
     }
@@ -205,8 +204,8 @@ INT_PTR CALLBACK VSdot(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
     {
         PAINTSTRUCT ps;
         HDC hdc = BeginPaint(hDlg, &ps);
-        HBRUSH hBrushP1 = CreateSolidBrush(data->player[0]);
-        HBRUSH hBrushP2 = CreateSolidBrush(data->player[1]);
+        HBRUSH hBrushP1 = CreateSolidBrush(data->playerColor[0]);
+        HBRUSH hBrushP2 = CreateSolidBrush(data->playerColor[1]);
         HBRUSH hBrushDead = CreateSolidBrush(RGBwhite);
         RECT rectFull = { 0,0,data->tableX * data->cellSize, data->tableY * data->cellSize };
         FillRect(hdc, &rectFull, hBrushDead);
@@ -239,6 +238,12 @@ INT_PTR CALLBACK VSdot(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
                 }
             }
         }
+        HWND hChara = GetDlgItem(hDlg, IDC_CHARA);
+        RECT rect = { data->colorBlockX,data->colorBlockY,
+            data->colorBlockX + data->colorBlockSize,
+            data->colorBlockY + data->colorBlockSize };
+        int index = SendMessage(hChara, CB_GETCURSEL, 0, 0);
+        FillRect(hdc, &rect, CreateSolidBrush(data->playerColor[index]));
         if (!data->ifCreate) {
             Gdiplus::Graphics graphics(hdc);
             myPaintFrame(graphics, 0, 0, data->tableX * data->cellSize, data->tableY * data->cellSize, data->cellSize);
@@ -263,6 +268,17 @@ INT_PTR CALLBACK VSdot(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
                         (x + 1) * data->cellSize, (y + 1) * data->cellSize };
             InvalidateRect(hDlg, &rect, TRUE);  // 仅重绘该区域
             data->lastX = x; data->lastY = y;  // 记录上次处理的格子，避免 `WM_MOUSEMOVE` 立即重复处理
+        }
+        else if (LOWORD(lParam) >= 800 && LOWORD(lParam) < 816 && HIWORD(lParam) >= 105 && HIWORD(lParam) < 121) {
+            HWND hChara = GetDlgItem(hDlg, IDC_CHARA);
+            int index = SendMessage(hChara, CB_GETCURSEL, 0, 0);
+            data->playerColor[index] = DialogBoxParam(GetModuleHandle(NULL), MAKEINTRESOURCE(IDD_COLOR), hDlg, color, NULL);
+            RECT rect = { data->colorBlockX,data->colorBlockY,
+            data->colorBlockX + data->colorBlockSize,
+            data->colorBlockY + data->colorBlockSize };
+            InvalidateRect(hDlg, &rect, TRUE);
+            
+            return (INT_PTR)TRUE;
         }
         return (INT_PTR)TRUE;
     }
@@ -317,9 +333,4 @@ INT_PTR CALLBACK VSdot(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
     }        
     }
     return (INT_PTR)FALSE;
-}
-
-void moveVsWindows(HWND hDlg, vsData* data, INT clientWidth) 
-{
-
 }

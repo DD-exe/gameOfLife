@@ -47,6 +47,10 @@ struct siData {
     INT         listHalfSize;   // 控制栏半宽度
     INT         listUnitHeight;
     INT         titleSize;
+    COLORREF    playerColor;
+    INT         colorBlockX;
+    INT         colorBlockY;
+    INT         colorBlockSize;
 };
 struct vsData {
     std::unordered_map<INT, std::unordered_map<INT, BOOL>> grid[2];
@@ -60,7 +64,10 @@ struct vsData {
     INT4 rule[2];
     INT att[2]; INT def[2];
     INT moveX, moveY;
-    COLORREF player[2];
+    COLORREF playerColor[2];
+    INT colorBlockX;
+    INT colorBlockY;
+    INT colorBlockSize;
 };
 struct coData {
     HWND hParent;
@@ -81,7 +88,6 @@ void delState(STATE** x);
 int getRandomNum(int min, int max);
 INT_PTR CALLBACK About(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam);                  // about
 INT_PTR CALLBACK VSdot(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam);                  // vs
-void moveVsWindows(HWND hDlg, vsData* data, INT clientWidth);
 INT_PTR CALLBACK single(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam);                 // single
 void SetSingleWindows(HWND hDlg, siData* data);
 void moveSingleWindows(HWND hDlg, siData* data, INT clientWidth);
