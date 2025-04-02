@@ -1,0 +1,277 @@
+// Microsoft Visual C++ generated resource script.
+//
+#include "resource.h"
+
+#define APSTUDIO_READONLY_SYMBOLS
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 2 resource.
+//
+#ifndef APSTUDIO_INVOKED
+#include "targetver.h"
+#endif
+#define APSTUDIO_HIDDEN_SYMBOLS
+#include "windows.h"
+#undef APSTUDIO_HIDDEN_SYMBOLS
+
+/////////////////////////////////////////////////////////////////////////////
+#undef APSTUDIO_READONLY_SYMBOLS
+
+/////////////////////////////////////////////////////////////////////////////
+// 中文(简体，中国) resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_CHS)
+LANGUAGE LANG_CHINESE, SUBLANG_CHINESE_SIMPLIFIED
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Icon
+//
+
+// Icon with lowest ID value placed first to ensure application icon
+// remains consistent on all systems.
+IDI_LINico              ICON                    "image\\OIP-C.ico"
+
+IDI_SMALL               ICON                    "image\\small.ico"
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Menu
+//
+
+IDC_GAMEOFLIFE MENU
+BEGIN
+POPUP "功能(&T)"
+BEGIN
+MENUITEM "单机模拟(&D)", ID_SINGLE
+POPUP "对抗(&C)"
+BEGIN
+MENUITEM "本地对抗(&V)", ID_VS
+MENUITEM "在线对抗(&S)", ID_VSOnline
+END
+MENUITEM "退出(&X)", IDM_EXIT
+END
+POPUP "帮助(&H)"
+BEGIN
+MENUITEM "关于(&A) ...", IDM_ABOUT
+END
+END
+
+IDR_GAME MENU
+BEGIN
+MENUITEM "保存(&S)", ID_SAVE
+MENUITEM "启动/暂停(&D)", ID_START
+MENUITEM "重置(&R)", ID_STOP
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Accelerator
+//
+
+IDC_GAMEOFLIFE ACCELERATORS
+BEGIN
+"/", IDM_ABOUT, ASCII, ALT, NOINVERT
+"?", IDM_ABOUT, ASCII, ALT, NOINVERT
+VK_RETURN, ID_START, VIRTKEY, NOINVERT
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Dialog
+//
+
+IDD_ABOUTBOX DIALOGEX 0, 0, 170, 62
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "关于 gameOfLife"
+FONT 9, "MS Shell Dlg", 0, 0, 0x1
+BEGIN
+ICON            IDI_LINico, IDC_STATIC, 14, 14, 20, 20
+LTEXT           "gameOfLife, 版本 1.0", IDC_STATIC, 42, 14, 114, 8, SS_NOPREFIX
+LTEXT           "版权所有ejeasfs(c) 2025", IDC_STATIC, 42, 26, 114, 8
+DEFPUSHBUTTON   "确定", IDOK, 113, 41, 50, 14, WS_GROUP
+END
+
+IDD_VS DIALOGEX 0, 0, 564, 277
+STYLE DS_LOCALEDIT | DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_MINIMIZEBOX | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "gameOfLifeVs."
+MENU IDR_GAME
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+DEFPUSHBUTTON   "确定", IDOKvsSIZE, 507, 16, 50, 14
+EDITTEXT        IDC_EDITvsSIZE, 463, 16, 40, 14, ES_AUTOHSCROLL | ES_NUMBER
+DEFPUSHBUTTON   "确定", IDOKvsSPEED, 507, 44, 50, 14
+LTEXT           "网格大小", IDC_STATIC, 465, 7, 37, 8
+LTEXT           "迭代速度", IDC_STATIC, 467, 35, 39, 8
+EDITTEXT        IDC_EDITvsSPEED, 463, 45, 40, 14, ES_AUTOHSCROLL | ES_NUMBER
+COMBOBOX        IDC_CHARA, 464, 64, 48, 55, CBS_DROPDOWNLIST | CBS_SORT | WS_VSCROLL | WS_TABSTOP
+EDITTEXT        IDC_P1ATT, 464, 96, 40, 14, ES_AUTOHSCROLL
+LTEXT           "攻击", IDC_STATIC, 464, 86, 39, 8
+EDITTEXT        IDC_P1DEF, 508, 96, 40, 14, ES_AUTOHSCROLL
+DEFPUSHBUTTON   "确定", IDPlayerOK, 480, 135, 50, 14
+LTEXT           "防御", IDC_STATIC, 508, 86, 39, 8
+EDITTEXT        IDC_P1MUV, 463, 118, 40, 14, ES_AUTOHSCROLL
+LTEXT           "繁殖等级", IDC_STATIC, 464, 110, 39, 8
+EDITTEXT        IDC_P1SUV, 509, 119, 40, 14, ES_AUTOHSCROLL
+LTEXT           "生存等级", IDC_STATIC, 508, 110, 39, 8
+DEFPUSHBUTTON   "启动/暂停", ID_START, 454, 153, 50, 14
+DEFPUSHBUTTON   "重置", ID_STOP, 507, 153, 50, 14
+DEFPUSHBUTTON   "^", IDvsUP, 494, 175, 19, 14
+DEFPUSHBUTTON   "v", IDvsDOWN, 494, 203, 19, 14
+DEFPUSHBUTTON   "<", IDvsLEFT, 476, 190, 19, 14
+DEFPUSHBUTTON   ">", IDvsRIGHT, 512, 190, 19, 14
+DEFPUSHBUTTON   "选色", ID_COLOR, 519, 64, 38, 10
+END
+
+IDD_SINGLE DIALOGEX 0, 0, 720, 422
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_MINIMIZEBOX | WS_MAXIMIZEBOX | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "gameOfLifeSingle."
+MENU IDR_GAME
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+END
+
+IDD_VSONLINE DIALOGEX 0, 0, 176, 44
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "在线对抗设置"
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+DEFPUSHBUTTON   "创建房间", IDvsOnlineCREATE, 18, 14, 50, 14
+PUSHBUTTON      "加入房间", IDvsOnlineJOIN, 93, 14, 50, 14
+END
+
+IDD_COLOR DIALOGEX 0, 0, 204, 183
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "颜色选择"
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+DEFPUSHBUTTON   "确定", IDOK, 40, 161, 50, 14
+PUSHBUTTON      "取消", IDCANCEL, 114, 161, 50, 14
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// DESIGNINFO
+//
+
+#ifdef APSTUDIO_INVOKED
+GUIDELINES DESIGNINFO
+BEGIN
+IDD_ABOUTBOX, DIALOG
+BEGIN
+LEFTMARGIN, 7
+RIGHTMARGIN, 163
+TOPMARGIN, 7
+BOTTOMMARGIN, 55
+END
+
+IDD_VS, DIALOG
+BEGIN
+LEFTMARGIN, 7
+RIGHTMARGIN, 557
+VERTGUIDE, 7
+VERTGUIDE, 454
+TOPMARGIN, 7
+BOTTOMMARGIN, 270
+HORZGUIDE, 7
+END
+
+IDD_SINGLE, DIALOG
+BEGIN
+LEFTMARGIN, 7
+RIGHTMARGIN, 713
+TOPMARGIN, 7
+BOTTOMMARGIN, 415
+END
+
+IDD_VSONLINE, DIALOG
+BEGIN
+LEFTMARGIN, 7
+RIGHTMARGIN, 169
+TOPMARGIN, 7
+BOTTOMMARGIN, 37
+END
+
+IDD_COLOR, DIALOG
+BEGIN
+LEFTMARGIN, 7
+RIGHTMARGIN, 197
+TOPMARGIN, 7
+BOTTOMMARGIN, 175
+HORZGUIDE, 161
+END
+END
+#endif    // APSTUDIO_INVOKED
+
+
+#ifdef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// TEXTINCLUDE
+//
+
+1 TEXTINCLUDE
+BEGIN
+"resource.h\0"
+END
+
+2 TEXTINCLUDE
+BEGIN
+"#ifndef APSTUDIO_INVOKED\r\n"
+"#include ""targetver.h""\r\n"
+"#endif\r\n"
+"#define APSTUDIO_HIDDEN_SYMBOLS\r\n"
+"#include ""windows.h""\r\n"
+"#undef APSTUDIO_HIDDEN_SYMBOLS\r\n"
+"\0"
+END
+
+3 TEXTINCLUDE
+BEGIN
+"\r\n"
+"\0"
+END
+
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Bitmap
+//
+
+IDB_LINbmp              BITMAP                  "image\\OIP-C.bmp"
+
+IDB_LINbmpPro           BITMAP                  "image\\lin.bmp"
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// String Table
+//
+
+STRINGTABLE
+BEGIN
+IDS_APP_TITLE           "gameOfLife"
+IDC_GAMEOFLIFE          "GAMEOFLIFE"
+END
+
+#endif    // 中文(简体，中国) resources
+/////////////////////////////////////////////////////////////////////////////
+
+
+
+#ifndef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 3 resource.
+//
+
+
+/////////////////////////////////////////////////////////////////////////////
+#endif    // not APSTUDIO_INVOKED
+
