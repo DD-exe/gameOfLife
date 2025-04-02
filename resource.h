@@ -7,8 +7,8 @@
 #define IDP1OK                          4
 #define IDPlayerOK                      4
 #define IDP2OK                          5
-#define ID_START                       6
-#define ID_STOP                        7
+#define ID_START                        6
+#define ID_STOP                         7
 #define IDlizi                          8
 #define IDD_GAMEOFLIFE_DIALOG           102
 #define IDS_APP_TITLE                   103
@@ -58,9 +58,7 @@
 #define ID_TIMER2                       32772
 #define ID_SAVE                         32773
 #define ID_EDIT1                        32774
-#define ID_START                        32775
 #define ID_EDIT1OK                      32776
-#define ID_STOP                         32777
 #define ID_EDIT2                        32778
 #define ID_EDIT2OK                      32779
 #define ID_TITLE1                       32780
@@ -85,11 +83,8 @@
 #define ID_32798                        32798
 #define ID_VSMODE                       32799
 #define ID_32799                        32799
-#define ID_BUTTON_A                     32800
-#define ID_VSO                          32800
 #define ID_VSOnline                     32801
 #define ID_32801                        32801
-#define ID_                             32802
 #define ID_32803                        32803
 #define ID_32804                        32804
 #define IDC_STATIC                      -1
