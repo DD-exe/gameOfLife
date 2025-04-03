@@ -249,32 +249,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
             listUnitHeight * 6, 2 * listHalfSize, 3 * listHalfSize, TRUE);
     }
         break;
-    //case WM_PAINT:
-    //    {
-    //        //绘制网格
-    //        PAINTSTRUCT ps;
-    //        HDC hdc = BeginPaint(hWnd, &ps);
-    //        HBRUSH hBrushLive = CreateSolidBrush(RGBpurple);
-    //        HBRUSH hBrushDead = CreateSolidBrush(RGBwhite);
-    //        RECT rectFull = { 0,0,tableX * cellSize, tableY * cellSize };
-    //        FillRect(hdc, &rectFull, hBrushDead);
-    //        for (int y = 0; y <tableY; y++) {
-    //            for (int x = 0; x < tableX; x++) {
-    //                RECT rect = { x * cellSize, y * cellSize,
-    //                    (x + 1) * cellSize, (y + 1) * cellSize };
-    //                if (findLife(grid,x,y)) FillRect(hdc, &rect, hBrushLive);                                   
-    //            }
-    //        }
-    //        if (!ifCreate) {
-    //            Gdiplus::Graphics graphics(hdc);
-    //            myPaintFrame(graphics, 0, 0, tableX * cellSize, tableY * cellSize, cellSize);
-    //            ifCreate = TRUE;
-    //        }            
-    //        DeleteObject(hBrushLive);
-    //        DeleteObject(hBrushDead);
-    //        EndPaint(hWnd, &ps);
-    //    }
-    //    break;
     case WM_LBUTTONDOWN:
     {
         ifMouseDown = TRUE;  // 标记鼠标按下

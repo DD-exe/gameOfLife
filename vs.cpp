@@ -140,11 +140,19 @@ INT_PTR CALLBACK VSdot(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
             InvalidateRect(hDlg, &rect, TRUE);
             break;
         }
-        case ID_SAVE:
+        case IDM_VSSAVE:
         {
-            saveBmp(hDlg, 0, 0, data->cellSize* data->tableX, data->cellSize* data->tableY);
-            return (INT_PTR)TRUE;
+            saveVSGrid(hDlg, data->grid);
         }
+        break;
+        case IDM_VSLOAD:
+        {
+            loadVSGrid(hDlg, data->grid);
+            RECT rect = { 0, 0,data->tableX * data->cellSize, data->tableY * data->cellSize };
+            InvalidateRect(hDlg, &rect, TRUE);
+            MessageBox(hDlg, L"成功加载文件: " , L"加载成功", MB_ICONINFORMATION);
+        }
+        break;
         case IDvsUP:
         {
             if (data->moveY > 0)--(data->moveY);
