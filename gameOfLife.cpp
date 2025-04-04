@@ -224,15 +224,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         );
         ShowWindow(VSButtonA, SW_HIDE);
         ShowWindow(VSButtonB, SW_HIDE);
-        VSbuttonsVisible = FALSE;
-        HBITMAP hBmp = LoadBitmap(GetModuleHandle(NULL), MAKEINTRESOURCE(IDB_LINbmpPro));
-        hBmpStatic = CreateWindow(
-            L"STATIC", NULL,
-            WS_CHILD | WS_VISIBLE | SS_BITMAP,
-            clientWidth - 2 * listHalfSize, listUnitHeight * 6, 2 * listHalfSize, 3 * listHalfSize,
-            hWnd, NULL, NULL, NULL
-        );
-        SendMessage(hBmpStatic, STM_SETIMAGE, (WPARAM)IMAGE_BITMAP, (LPARAM)hBmp);// 关联 BMP 图片到静态控件       
+        VSbuttonsVisible = FALSE;       
     }
         break;
     case WM_SIZE:
@@ -251,49 +243,17 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
             listUnitHeight * 6, 2 * listHalfSize, 3 * listHalfSize, TRUE);
     }
         break;
-    case WM_LBUTTONDOWN:
+    case WM_PAINT:
     {
-        ifMouseDown = TRUE;  // 标记鼠标按下
-        int x = LOWORD(lParam) / cellSize;
-        int y = HIWORD(lParam) / cellSize;
+        PAINTSTRUCT ps;
+        HDC hdc = BeginPaint(hWnd, &ps); // 什么都不画也行，但必须调用这两个函数——留作教训
+        Gdiplus::Graphics graphics(hdc);
+        Gdiplus::Image image(L"image/main.png");
+        graphics.DrawImage(&image, 0, 0, clientWidth, clientHeight);
 
-        if (x < tableX && y < tableY) {
-            exchangeLife(grid, x, y);
-            RECT rect = { x * cellSize, y * cellSize,
-                        (x + 1) * cellSize, (y + 1) * cellSize };
-            InvalidateRect(hWnd, &rect, TRUE);  // 仅重绘该区域
-            lastX = x; lastY = y;  // 记录上次处理的格子，避免 `WM_MOUSEMOVE` 立即重复处理
-        }
+        EndPaint(hWnd, &ps);
+        break;
     }
-        break;
-    case WM_MOUSEMOVE:
-    {
-        if (ifMouseDown) {  // 仅在鼠标按住时处理
-            int x = LOWORD(lParam) / cellSize;
-            int y = HIWORD(lParam) / cellSize;
-
-            if (x < tableX && y < tableY && (x != lastX || y != lastY)) {
-                // 只有当鼠标进入新格子时才处理，防止重复
-                exchangeLife(grid, x, y);
-                RECT rect = { x * cellSize, y * cellSize, (x + 1) * cellSize, (y + 1) * cellSize };
-                InvalidateRect(hWnd, &rect, TRUE);
-
-                lastX = x;
-                lastY = y;  // 记录上次处理的格子
-            }
-        }
-    }
-        break;
-    case WM_LBUTTONUP:
-        ifMouseDown = FALSE;  // 释放鼠标按下状态
-        lastX = lastY = -1;   // 清除上次处理的格子记录
-        break;
-    case WM_KEYDOWN:
-        if (wParam == VK_RETURN) {
-            SendMessage(GetDlgItem(hWnd, ID_EDIT1OK), BM_CLICK, 0, 0);
-            SendMessage(GetDlgItem(hWnd, ID_EDIT2OK), BM_CLICK, 0, 0);
-        }
-        break;
     case WM_DESTROY:
         KillTimer(hWnd, ID_TIMER);
         delState(state);

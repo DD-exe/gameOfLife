@@ -83,9 +83,9 @@ void myLife(std::unordered_map<INT, std::unordered_map<INT, BOOL>>& grid,
     std::unordered_map<INT, std::unordered_map<INT, BOOL>>& ans,
     INT4& rule, STATE** state);
 // 获取用户文档目录下的应用子目录
-std::wstring getDefaultSaveDirectory();
+std::wstring getDefaultSaveDirectory();                                                         // save
 bool saveGrid(HWND hWnd, 
-    const std::unordered_map<INT, std::unordered_map<INT, BOOL>>& grid);                        // save
+    const std::unordered_map<INT, std::unordered_map<INT, BOOL>>& grid);                        
 bool saveVSGrid(HWND hWnd, 
     const std::unordered_map<INT, std::unordered_map<INT, BOOL>> grid[2]);
 std::unordered_map<INT, std::unordered_map<INT, BOOL>> loadGrid(HWND hWnd);                     // load
