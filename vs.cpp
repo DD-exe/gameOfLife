@@ -148,10 +148,16 @@ INT_PTR CALLBACK VSdot(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
             saveVSGrid(hDlg, data->grid);
             return (INT_PTR)TRUE;
         }
+        case ID_SAVE:
+        {
+            saveBmp(hDlg, 0,0,data->cellSize*data->tableX, data->cellSize* data->tableY);
+            return (INT_PTR)TRUE;
+        }
         case IDM_LOAD:
         {
             loadVSGrid(hDlg, data->grid);
             RECT rect = { 0, 0,data->tableX * data->cellSize, data->tableY * data->cellSize };
+            data->ifCreate = FALSE;
             InvalidateRect(hDlg, &rect, TRUE);
             MessageBox(hDlg, L"成功加载文件: " , L"加载成功", MB_ICONINFORMATION);
             return (INT_PTR)TRUE;

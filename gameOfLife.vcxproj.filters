@@ -65,7 +65,7 @@
     <ClCompile Include="load.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="downloads.cpp">
+    <ClCompile Include="saveBmp.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>

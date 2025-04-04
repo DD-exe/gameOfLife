@@ -63,8 +63,12 @@ IDR_GAME MENU
 BEGIN
     MENUITEM "启动/暂停(&D)",                   ID_START
     MENUITEM "重置(&R)",                      ID_STOP
-    MENUITEM "保存(&S)",                      IDM_SAVE
-    MENUITEM "读取(L)",                       IDM_LOAD
+    POPUP "保存(&S)"
+    BEGIN
+        MENUITEM "保存数据(&D)",                    IDM_SAVE
+        MENUITEM "保存画面(&F)",                    ID_SAVE
+    END
+    MENUITEM "读取数据(L)",                     IDM_LOAD
 END
 
 

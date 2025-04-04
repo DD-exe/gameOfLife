@@ -130,10 +130,16 @@ INT_PTR CALLBACK single(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
             saveGrid(hDlg, data->grid);
         }
         break;
+        case ID_SAVE:
+        {
+            saveBmp(hDlg, 0, 0, data->cellSize * data->tableX, data->cellSize * data->tableY);
+            return (INT_PTR)TRUE;
+        }
         case IDM_LOAD:
         {
             RECT rect = { 0, 0,data->tableX * data->cellSize, data->tableY * data->cellSize };
             data->grid = std::move(loadGrid(hDlg));
+            data->ifCreate = FALSE;
             InvalidateRect(hDlg, &rect, TRUE);
         }
         break;

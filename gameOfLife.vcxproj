@@ -145,7 +145,7 @@
     <ClCompile Include="about.cpp" />
     <ClCompile Include="color.cpp" />
     <ClCompile Include="createRoom.cpp" />
-    <ClCompile Include="downloads.cpp" />
+    <ClCompile Include="saveBmp.cpp" />
     <ClCompile Include="load.cpp" />
     <ClCompile Include="save.cpp" />
     <ClCompile Include="gameOfLife.cpp" />
