@@ -244,6 +244,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         ifCreate = FALSE;
         MoveWindow(singleBotton, clientWidth / 2 - 50, clientHeight * 3 / 5, 100, 30, TRUE);
         MoveWindow(VSBotton, clientWidth / 2 - 50, clientHeight * 3 / 5 + 40, 100, 30, TRUE);
+        MoveWindow(VSButtonA, clientWidth / 2 - 50, clientHeight * 3 / 5 + 80, 100, 30, TRUE);
+        MoveWindow(VSButtonB, clientWidth / 2 - 50, clientHeight * 3 / 5 + 120, 100, 30, TRUE);
 
         MoveWindow(hBmpStatic, clientWidth - 2 * listHalfSize,
             listUnitHeight * 6, 2 * listHalfSize, 3 * listHalfSize, TRUE);
