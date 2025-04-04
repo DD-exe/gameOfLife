@@ -57,13 +57,24 @@ BEGIN
     BEGIN
         MENUITEM "关于(&A) ...",                  IDM_ABOUT
     END
+    MENUITEM "保存(S)",                       IDM_SAVE
+    MENUITEM "读取(L)",                       IDM_LOAD
 END
 
 IDR_GAME MENU
 BEGIN
-    MENUITEM "保存(&S)",                      ID_SAVE
     MENUITEM "启动/暂停(&D)",                   ID_START
     MENUITEM "重置(&R)",                      ID_STOP
+    MENUITEM "保存(&S)",                      IDM_SAVE
+    MENUITEM "读取(L)",                       IDM_LOAD
+END
+
+IDR_VSGAME MENU
+BEGIN
+    MENUITEM "启动/暂停(&D)",                   ID_START
+    MENUITEM "重置(&R)",                      ID_STOP
+    MENUITEM "保存(&S)",                      IDM_VSSAVE
+    MENUITEM "读取(L)",                       IDM_VSLOAD
 END
 
 
@@ -99,7 +110,7 @@ END
 IDD_VS DIALOGEX 0, 0, 564, 277
 STYLE DS_LOCALEDIT | DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_MINIMIZEBOX | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "gameOfLifeVs."
-MENU IDR_GAME
+MENU IDR_VSGAME
 FONT 8, "MS Shell Dlg", 400, 0, 0x1
 BEGIN
     DEFPUSHBUTTON   "确定",IDOKvsSIZE,507,16,50,14,WS_GROUP
@@ -158,12 +169,12 @@ STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSM
 CAPTION "创建房间"
 FONT 8, "MS Shell Dlg", 400, 0, 0x1
 BEGIN
-    DEFPUSHBUTTON   "确定",IDOK,82,55,50,14
-    PUSHBUTTON      "取消",IDCANCEL,175,55,50,14
-    LTEXT           "本机IP：",IDC_LOCALIPTEXT,18,14,29,8
-    LTEXT           "IP地址",IDC_LOCALIP,82,15,98,8
-    LTEXT           "已加入房间的玩家数：",IDC_PLAYERNUMBERTEXT,17,37,72,8
-    LTEXT           "0",IDC_PLAYERNUMBER,107,35,8,8
+    DEFPUSHBUTTON   "确定",IDOK,199,155,50,14
+    PUSHBUTTON      "取消",IDCANCEL,253,155,50,14
+    LTEXT           "本机IP：",IDC_LOCALIPTEXT,67,48,29,8
+    LTEXT           "IP地址",IDC_LOCALIP,131,49,98,8
+    LTEXT           "已加入房间的玩家数：",IDC_PLAYERNUMBERTEXT,66,71,72,8
+    LTEXT           "0",IDC_PLAYERNUMBER,156,69,8,8
 END
 
 IDD_JOINROOM DIALOGEX 0, 0, 216, 65
@@ -171,10 +182,10 @@ STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSM
 CAPTION "Dialog"
 FONT 8, "MS Shell Dlg", 400, 0, 0x1
 BEGIN
-    DEFPUSHBUTTON   "确定",IDOK,73,44,50,14
-    PUSHBUTTON      "取消",IDCANCEL,148,44,50,14
-    LTEXT           "房主IP：",IDC_ROOMIPTEXT,33,17,29,8
-    CONTROL         "",IDC_ROOMIP,"SysIPAddress32",WS_TABSTOP,66,14,100,15
+    DEFPUSHBUTTON   "确定",IDOK,199,155,50,14
+    PUSHBUTTON      "取消",IDCANCEL,253,155,50,14
+    LTEXT           "房主IP：",IDC_ROOMIPTEXT,78,35,29,8
+    CONTROL         "",IDC_ROOMIP,"SysIPAddress32",WS_TABSTOP,111,32,100,15
 END
 
 
@@ -233,17 +244,17 @@ BEGIN
     IDD_CREATEROOM, DIALOG
     BEGIN
         LEFTMARGIN, 7
-        RIGHTMARGIN, 225
+        RIGHTMARGIN, 303
         TOPMARGIN, 7
-        BOTTOMMARGIN, 69
+        BOTTOMMARGIN, 169
     END
 
     IDD_JOINROOM, DIALOG
     BEGIN
         LEFTMARGIN, 7
-        RIGHTMARGIN, 209
+        RIGHTMARGIN, 303
         TOPMARGIN, 7
-        BOTTOMMARGIN, 58
+        BOTTOMMARGIN, 169
     END
 END
 #endif    // APSTUDIO_INVOKED
