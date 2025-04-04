@@ -88,7 +88,3 @@ void bihWrite(BITMAPINFOHEADER& bih, FILE* file, INT dx, INT dy, INT duiqiX) {
     bih.biClrImportant = 0;
     fwrite(&bih, sizeof(BITMAPINFOHEADER), 1, file);
 }
-
-void saveTxt(std::unordered_map<INT, std::unordered_map<INT, BOOL>>& grid) {
-
-}
