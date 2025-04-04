@@ -71,8 +71,9 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IncludePath>D:\visual studio\storage\gameOfLife\gameOfLife\vcpkg_installed\x64-windows\include;$(IncludePath)</IncludePath>
-    <LibraryPath>D:\visual studio\storage\gameOfLife\gameOfLife\vcpkg_installed\x64-windows\lib;$(LibraryPath)</LibraryPath>
+    <IncludePath>D:\visual studio\storage\gameOfLife\gameOfLife\vcpkg_installed\x64-windows\include;D:\HuaweiMoveData\Users\HUAWEI\Desktop\gameOfLife\vcpkg_installed\x64-windows\include;$(IncludePath)</IncludePath>
+    <LibraryPath>D:\visual studio\storage\gameOfLife\gameOfLife\vcpkg_installed\x64-windows\lib;$(LibraryPath);D:\HuaweiMoveData\Users\HUAWEI\Desktop\gameOfLife\vcpkg_installed\x64-windows\lib</LibraryPath>
+    <ReferencePath>$(VC_ReferencesPath_x64);D:\HuaweiMoveData\Users\HUAWEI\Desktop\gameOfLife\vcpkg_installed\x64-windows\include</ReferencePath>
   </PropertyGroup>
   <PropertyGroup Label="Vcpkg">
     <VcpkgEnableManifest>true</VcpkgEnableManifest>
@@ -144,6 +145,7 @@
     <ClCompile Include="about.cpp" />
     <ClCompile Include="color.cpp" />
     <ClCompile Include="createRoom.cpp" />
+    <ClCompile Include="downloads.cpp" />
     <ClCompile Include="load.cpp" />
     <ClCompile Include="save.cpp" />
     <ClCompile Include="gameOfLife.cpp" />

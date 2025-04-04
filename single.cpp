@@ -127,7 +127,6 @@ INT_PTR CALLBACK single(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
         break;
         case IDM_SAVE:
         {
-
             saveGrid(hDlg, data->grid);
         }
         break;
@@ -210,7 +209,8 @@ INT_PTR CALLBACK single(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
             data->lastX = x; data->lastY = y;  // 记录上次处理的格子，避免 `WM_MOUSEMOVE` 立即重复处理
         }
         else if (LOWORD(lParam) >= data->colorBlockX && LOWORD(lParam) < data->colorBlockX + data->colorBlockSize && HIWORD(lParam) < data->colorBlockY + data->colorBlockSize) {
-            data->playerColor = DialogBoxParam(GetModuleHandle(NULL), MAKEINTRESOURCE(IDD_COLOR), hDlg, color, NULL);
+            data->playerColor = DialogBoxParam(GetModuleHandle(NULL),
+                MAKEINTRESOURCE(IDD_COLOR), hDlg, color, (LPARAM)(data->playerColor));
             RECT rect = { data->colorBlockX,data->colorBlockY,
             data->colorBlockX + data->colorBlockSize,
             data->colorBlockY + data->colorBlockSize };

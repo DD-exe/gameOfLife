@@ -57,8 +57,6 @@ BEGIN
     BEGIN
         MENUITEM "关于(&A) ...",                  IDM_ABOUT
     END
-    MENUITEM "保存(S)",                       IDM_SAVE
-    MENUITEM "读取(L)",                       IDM_LOAD
 END
 
 IDR_GAME MENU
@@ -67,14 +65,6 @@ BEGIN
     MENUITEM "重置(&R)",                      ID_STOP
     MENUITEM "保存(&S)",                      IDM_SAVE
     MENUITEM "读取(L)",                       IDM_LOAD
-END
-
-IDR_VSGAME MENU
-BEGIN
-    MENUITEM "启动/暂停(&D)",                   ID_START
-    MENUITEM "重置(&R)",                      ID_STOP
-    MENUITEM "保存(&S)",                      IDM_VSSAVE
-    MENUITEM "读取(L)",                       IDM_VSLOAD
 END
 
 
@@ -110,7 +100,7 @@ END
 IDD_VS DIALOGEX 0, 0, 564, 277
 STYLE DS_LOCALEDIT | DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_MINIMIZEBOX | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "gameOfLifeVs."
-MENU IDR_VSGAME
+MENU IDR_GAME
 FONT 8, "MS Shell Dlg", 400, 0, 0x1
 BEGIN
     DEFPUSHBUTTON   "确定",IDOKvsSIZE,507,16,50,14,WS_GROUP
@@ -244,17 +234,13 @@ BEGIN
     IDD_CREATEROOM, DIALOG
     BEGIN
         LEFTMARGIN, 7
-        RIGHTMARGIN, 303
         TOPMARGIN, 7
-        BOTTOMMARGIN, 169
     END
 
     IDD_JOINROOM, DIALOG
     BEGIN
         LEFTMARGIN, 7
-        RIGHTMARGIN, 303
         TOPMARGIN, 7
-        BOTTOMMARGIN, 169
     END
 END
 #endif    // APSTUDIO_INVOKED

@@ -143,19 +143,19 @@ INT_PTR CALLBACK VSdot(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
             InvalidateRect(hDlg, &rect, TRUE);
             break;
         }
-        case IDM_VSSAVE:
+        case IDM_SAVE:
         {
             saveVSGrid(hDlg, data->grid);
+            return (INT_PTR)TRUE;
         }
-        break;
-        case IDM_VSLOAD:
+        case IDM_LOAD:
         {
             loadVSGrid(hDlg, data->grid);
             RECT rect = { 0, 0,data->tableX * data->cellSize, data->tableY * data->cellSize };
             InvalidateRect(hDlg, &rect, TRUE);
             MessageBox(hDlg, L"成功加载文件: " , L"加载成功", MB_ICONINFORMATION);
+            return (INT_PTR)TRUE;
         }
-        break;
         case IDvsUP:
         {
             if (data->moveY > 0)--(data->moveY);
@@ -280,7 +280,8 @@ INT_PTR CALLBACK VSdot(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
         else if (LOWORD(lParam) >= 800 && LOWORD(lParam) < 816 && HIWORD(lParam) >= 105 && HIWORD(lParam) < 121) {
             HWND hChara = GetDlgItem(hDlg, IDC_CHARA);
             int index = SendMessage(hChara, CB_GETCURSEL, 0, 0);
-            data->playerColor[index] = DialogBoxParam(GetModuleHandle(NULL), MAKEINTRESOURCE(IDD_COLOR), hDlg, color, NULL);
+            data->playerColor[index] = DialogBoxParam(GetModuleHandle(NULL), 
+                MAKEINTRESOURCE(IDD_COLOR), hDlg, color, (LPARAM)(data->playerColor[index]));
             RECT rect = { data->colorBlockX,data->colorBlockY,
             data->colorBlockX + data->colorBlockSize,
             data->colorBlockY + data->colorBlockSize };

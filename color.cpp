@@ -3,6 +3,7 @@
 */
 #include "framework.h"
 #include "gameOfLife.h"
+#define RGBpurple   RGB(180,150,255)
 
 INT_PTR CALLBACK color(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
 {
@@ -12,7 +13,8 @@ INT_PTR CALLBACK color(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
     case WM_INITDIALOG:
     {
         coData* data = new coData();
-        LPCREATESTRUCT lData = (LPCREATESTRUCT)lParam;
+        // LPCREATESTRUCT lData = (LPCREATESTRUCT)lParam;
+        data->oc=(COLORREF)lParam;
         // data->hParent = (HWND)lData->lpCreateParams;
         data->r = 0; data->g = 0; data->b = 0;
         data->ifMouseDown = FALSE;
@@ -30,7 +32,7 @@ INT_PTR CALLBACK color(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
             return (INT_PTR)TRUE;
         }
         case IDCANCEL:
-            EndDialog(hDlg, NULL);
+            EndDialog(hDlg, data->oc);
             return (INT_PTR)TRUE;
         }
         break;
