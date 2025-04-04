@@ -125,9 +125,19 @@ INT_PTR CALLBACK single(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
             }
         }
         break;
-        case ID_SAVE:
-            saveBmp(hDlg, 0, 0, data->cellSize * data->tableX, data->cellSize * data->tableY);
-            break;
+        case IDM_SAVE:
+        {
+
+            saveGrid(hDlg, data->grid);
+        }
+        break;
+        case IDM_LOAD:
+        {
+            RECT rect = { 0, 0,data->tableX * data->cellSize, data->tableY * data->cellSize };
+            data->grid = std::move(loadGrid(hDlg));
+            InvalidateRect(hDlg, &rect, TRUE);
+        }
+        break;
         case IDCANCEL:
             EndDialog(hDlg, LOWORD(wParam));
             return (INT_PTR)TRUE;

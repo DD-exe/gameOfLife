@@ -24,6 +24,8 @@ INT_PTR CALLBACK JoinRoomProc(HWND hDlg, UINT message, WPARAM wParam, LPARAM lPa
             // 这里添加实际加入房间的逻辑
             // 例如：调用网络模块连接指定IP
 
+
+
             // 显示加入结果（实际项目中可以去掉）
             wchar_t msg[256];
             swprintf(msg, 256, L"正在加入房间...\nIP地址: %s\n", roomIP);

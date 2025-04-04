@@ -1,0 +1,8 @@
+{
+  "name": "teanstest",
+  "dependencies": [
+    "enet",
+    "nlohmann-json",
+    "curl"
+  ]
+}

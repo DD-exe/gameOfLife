@@ -11,6 +11,9 @@
 // 文件系统访问
 #include <commdlg.h>
 #include <stdio.h>
+#include <fstream>
+#include <shlobj.h>
+#include <nlohmann/json.hpp>
 // stl
 #include <unordered_map>
 #include <string>
@@ -54,7 +57,6 @@ struct siData {
 };
 struct vsData {
     std::unordered_map<INT, std::unordered_map<INT, BOOL>> grid[2];
-    // std::unordered_map<INT, std::unordered_map<INT, BOOL>> gridP2;
     BOOL ifCreate;
     BOOL ifRun;
     BOOL ifMouseDown;
@@ -79,10 +81,15 @@ void exchangeLife(std::unordered_map<INT, std::unordered_map<INT, BOOL>>& grid, 
 void myLife(std::unordered_map<INT, std::unordered_map<INT, BOOL>>& grid,
     std::unordered_map<INT, std::unordered_map<INT, BOOL>>& ans,
     INT4& rule, STATE** state);
-void saveBmp(HWND hWnd, INT x, INT y, INT dx, INT dy);                                          //downloads
-BOOL ofnRead(HWND hWnd, OPENFILENAME& ofn, WCHAR* szFile, DWORD bufSize);
-void bfhWrite(BITMAPFILEHEADER& bfh, FILE* file, INT dx, INT dy, INT duiqiX);
-void bihWrite(BITMAPINFOHEADER& bfh, FILE* file, INT dx, INT dy, INT duiqiX);
+// 获取用户文档目录下的应用子目录
+std::wstring getDefaultSaveDirectory();
+bool saveGrid(HWND hWnd, 
+    const std::unordered_map<INT, std::unordered_map<INT, BOOL>>& grid);                        //save
+bool saveVSGrid(HWND hWnd, 
+    const std::unordered_map<INT, std::unordered_map<INT, BOOL>> grid[2]);
+std::unordered_map<INT, std::unordered_map<INT, BOOL>> loadGrid(HWND hWnd);            //load
+void loadVSGrid(HWND hWnd, std::unordered_map<INT, std::unordered_map<INT, BOOL>> grid[2]);
+
 INT getAll(std::unordered_map<INT, std::unordered_map<INT, BOOL>>& grid,INT x, INT y, INT z);   // tools
 void delState(STATE** x);
 int getRandomNum(int min, int max);
