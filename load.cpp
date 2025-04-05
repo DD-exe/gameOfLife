@@ -99,18 +99,13 @@ std::unordered_map<INT, std::unordered_map<INT, BOOL>> loadGrid(HWND hWnd) {
     // 显示文件选择对话框
     std::wstring filepath = openFileDialog(hWnd);
     if (filepath.empty()) {
-        throw std::runtime_error("用户取消选择");
+        return std::unordered_map<INT, std::unordered_map<INT, BOOL>>();
     }
 
     try {
         // 读取并解析JSON
         json gridJson = loadJsonFromFile(filepath);
         std::unordered_map<INT, std::unordered_map<INT, BOOL>> grid = deserializeGrid(gridJson);
-
-        // 显示成功消息
-        std::wstring filename = filepath.substr(filepath.find_last_of(L"\\/") + 1);
-        MessageBox(hWnd, (L"成功加载文件: " + filename).c_str(), L"加载成功", MB_ICONINFORMATION);
-
         return grid;
     }
     catch (const std::exception& e) {
@@ -123,7 +118,8 @@ void loadVSGrid(HWND hWnd, std::unordered_map<INT, std::unordered_map<INT, BOOL>
     // 显示文件选择对话框
     std::wstring filepath = openFileDialog(hWnd);
     if (filepath.empty()) {
-        throw std::runtime_error("用户取消选择");
+        MessageBox(hWnd, L"用户取消加载", L"NULL", MB_ICONERROR);
+        return;
     }
 
     try {

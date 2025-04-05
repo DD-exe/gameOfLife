@@ -162,7 +162,6 @@ INT_PTR CALLBACK VSdot(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
             RECT rect = { 0, 0,data->tableX * data->cellSize, data->tableY * data->cellSize };
             data->ifCreate = FALSE;
             InvalidateRect(hDlg, &rect, TRUE);
-            MessageBox(hDlg, L"成功加载文件: " , L"加载成功", MB_ICONINFORMATION);
             return (INT_PTR)TRUE;
         }
         case IDvsUP:

@@ -69,7 +69,7 @@ BEGIN
         MENUITEM "保存数据(&D)",                    IDM_SAVE
         MENUITEM "保存画面(&F)",                    ID_SAVE
     END
-    MENUITEM "读取数据(&L)",                    IDM_LOAD
+    MENUITEM "读取(&L)",                      IDM_LOAD
     MENUITEM "帮助(&H)",                      IDM_ABOUT
 END
 
