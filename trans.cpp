@@ -2,39 +2,34 @@
 #include <unordered_map>
 #include <nlohmann/json.hpp>
 #include <enet/enet.h>
-#include <curl/curl.h>
 #include <cstring>
 #include <cstdlib>
 #include <string>
-#include <array>
+#include <thread>
+#include <chrono>
+#include <atomic>
 #include <stdexcept>
+
+// Windows 平台可能需要包含 winsock2.h 等头文件
 #include <winsock2.h>
 #include <ws2tcpip.h>
 #include <iphlpapi.h>
-#include <thread>
-/*
-使用要求：
-要求主机和客户端处于同一局域网下（能通过ip地址相互访问），远程联机需要使用内网穿透
-内网穿透实现：我使用Zerotier将两台主机处于同一虚拟网络中，并使用虚拟IP实现相互沟通
-使用方法：
-    runServer(GridType& grid)用于服务器端的开始服务，每5s发送心跳包证明在线，并接受客户端的操作和心跳包
-    runClient(const char* IP,GridType& grid,json change)用于客户端的开始服务，每5s发送心跳包证明在线，并接受服务器端的生命状态和心跳包
-    服务器和客户端的接收发送功能皆为在其他线程实现，但会阻塞主线程，调用函数时需要在新线程调用
-    开始服务后，使用send()函数即可实现数据发送
-*/
-using namespace std; 
+
+using namespace std;
 using json = nlohmann::json;
 using INT = int;
 using GridType = std::unordered_map<INT, std::unordered_map<INT, BOOL>>;
-bool go=true;
-bool ifSend = false;
+
+// 全局控制变量（使用原子类型保证线程安全）
+atomic<bool> go(true);
+atomic<bool> ifsend(false);
 
 // 将 grid 转换为 JSON
 static json serializeGrid(const GridType& grid) {
     json j;
     for (const auto& [y, row] : grid) {
         for (const auto& [x, value] : row) {
-            j[std::to_string(y)][std::to_string(x)] = value;
+            j[to_string(y)][to_string(x)] = value;
         }
     }
     return j;
@@ -44,35 +39,32 @@ static json serializeGrid(const GridType& grid) {
 static GridType deserializeGrid(const json& j) {
     GridType grid;
     for (const auto& [yStr, row] : j.items()) {
-        INT y = std::stoi(yStr);
+        INT y = stoi(yStr);
         for (const auto& [xStr, value] : row.items()) {
-            INT x = std::stoi(xStr);
+            INT x = stoi(xStr);
             grid[y][x] = value.get<BOOL>();
         }
     }
     return grid;
 }
 
-void Send()
-{
-    ifSend = true;
+void SendMessage() {
+    ifsend = true;
 }
 
-void serverSendLoop(ENetPeer* peer,GridType &grid) {
+void serverSendLoop(ENetPeer* peer, GridType& grid) {
     while (go) {
-        if (!ifSend)
-        {
-            std::this_thread::sleep_for(std::chrono::seconds(1));
+        if (!ifsend) {
+            this_thread::sleep_for(chrono::seconds(1));
             continue;
         }
         json data = serializeGrid(grid);
-        std::string jsonData = data.dump();
+        string jsonData = data.dump();
         ENetPacket* packet = enet_packet_create(jsonData.c_str(), jsonData.size() + 1, ENET_PACKET_FLAG_RELIABLE);
         enet_peer_send(peer, 0, packet);
         enet_host_flush(peer->host);
-        ifSend = false;
-
-        std::this_thread::sleep_for(std::chrono::seconds(1));
+        ifsend = false;
+        this_thread::sleep_for(chrono::seconds(1));
     }
 }
 
@@ -81,40 +73,43 @@ void serverBeatSendLoop(ENetPeer* peer) {
         ENetPacket* packet = enet_packet_create("go", 3, ENET_PACKET_FLAG_RELIABLE);
         enet_peer_send(peer, 0, packet);
         enet_host_flush(peer->host);
-        std::this_thread::sleep_for(std::chrono::seconds(5));
+        this_thread::sleep_for(chrono::seconds(5));
     }
 }
 
 void serverReceiveLoop(ENetHost* server) {
     ENetEvent event;
-    int waittime;
+    int idleCounter = 0;
     while (go) {
-        while (enet_host_service(server, &event, 100) > 0) {
-            switch (event.type) {
-            case ENET_EVENT_TYPE_RECEIVE: {
-                std::string receivedData(reinterpret_cast<char*>(event.packet->data));
-                std::cout << "收到客户端数据: " << receivedData << std::endl;
-                
-                if (receivedData != "go")
-                {
-                    //添加对客户操作数据包的处理
-
+        int eventCount = enet_host_service(server, &event, 100);
+        if (eventCount > 0) {
+            idleCounter = 0;
+            do {
+                switch (event.type) {
+                case ENET_EVENT_TYPE_RECEIVE: {
+                    string receivedData(reinterpret_cast<char*>(event.packet->data));
+                    cout << "收到客户端数据: " << receivedData << endl;
+                    if (receivedData != "go") {
+                        // 添加对客户端操作数据包的处理
+                    }
+                    enet_packet_destroy(event.packet);
+                    break;
                 }
-                
-                enet_packet_destroy(event.packet);
-                waittime = 0;
-                break;
-            }
-            case ENET_EVENT_TYPE_DISCONNECT:
-
-                std::cout << "客户端断开连接。" << std::endl;
-                return;
-            default:
-                break;
-            }
-            waittime++;
+                case ENET_EVENT_TYPE_DISCONNECT:
+                    cout << "客户端断开连接。" << endl;
+                    go = false;
+                    break;
+                default:
+                    break;
+                }
+            } while (enet_host_service(server, &event, 0) > 0);
         }
-        if (waittime > 200)go=false; //20s未收到数据包则认为断联
+        else {
+            idleCounter++;
+        }
+        if (idleCounter > 200) { // 超过20秒未收到数据包则认为断联
+            go = false;
+        }
     }
 }
 
@@ -125,18 +120,18 @@ void runServer(GridType& grid) {
 
     ENetHost* server = enet_host_create(&address, 1, 2, 0, 0);
     if (server == nullptr) {
-        std::cerr << "服务器初始化失败！" << std::endl;
+        cerr << "服务器初始化失败！" << endl;
         exit(EXIT_FAILURE);
     }
 
-    std::cout << "服务器启动，监听端口 12138，等待客户端连接..." << std::endl;
+    cout << "服务器启动，监听端口 12138，等待客户端连接..." << endl;
 
     ENetEvent event;
     if (enet_host_service(server, &event, 50000) > 0 && event.type == ENET_EVENT_TYPE_CONNECT) {
-        std::cout << "客户端已连接。" << std::endl;
+        cout << "客户端已连接。" << endl;
     }
     else {
-        std::cerr << "客户端连接超时。" << std::endl;
+        cerr << "客户端连接超时。" << endl;
         enet_host_destroy(server);
         return;
     }
@@ -144,9 +139,9 @@ void runServer(GridType& grid) {
     // 等待客户端发送 "准备" 指令
     while (true) {
         if (enet_host_service(server, &event, 10000) > 0 && event.type == ENET_EVENT_TYPE_RECEIVE) {
-            std::string message(reinterpret_cast<char*>(event.packet->data));
+            string message(reinterpret_cast<char*>(event.packet->data));
             if (message == "准备") {
-                std::cout << "收到客户端 '准备' 指令，进入主循环。" << std::endl;
+                cout << "收到客户端 '准备' 指令，进入主循环。" << endl;
                 enet_packet_destroy(event.packet);
                 go = true;
                 break;
@@ -155,9 +150,9 @@ void runServer(GridType& grid) {
     }
 
     // 启动服务器的发送和接收线程
-    std::thread beatThread(serverBeatSendLoop, event.peer);
-    std::thread sendThread(serverSendLoop, event.peer,grid);
-    std::thread receiveThread(serverReceiveLoop, server);
+    thread beatThread(serverBeatSendLoop, event.peer);
+    thread sendThread(serverSendLoop, event.peer, ref(grid));
+    thread receiveThread(serverReceiveLoop, server);
 
     beatThread.join();
     sendThread.join();
@@ -166,20 +161,19 @@ void runServer(GridType& grid) {
     enet_host_destroy(server);
 }
 
-void clientSendLoop(ENetPeer* peer,json& change) {
+void clientSendLoop(ENetPeer* peer, json& change) {
     while (go) {
-        if (!ifSend)
-        {
-            std::this_thread::sleep_for(std::chrono::seconds(1));
+        if (!ifsend) {
+            this_thread::sleep_for(chrono::seconds(1));
             continue;
         }
-
-        std::string jsonData = change.dump(); //用户的设置数据
+        string jsonData = change.dump(); // 用户的设置数据
         ENetPacket* packet = enet_packet_create(jsonData.c_str(), jsonData.size() + 1, ENET_PACKET_FLAG_RELIABLE);
         enet_peer_send(peer, 0, packet);
         enet_host_flush(peer->host);
-        std::cout << "客户端发送操作包。" << std::endl;
-        ifSend = false;
+        cout << "客户端发送操作包。" << endl;
+        ifsend = false;
+        this_thread::sleep_for(chrono::seconds(1)); // 防止忙等待
     }
 }
 
@@ -188,42 +182,53 @@ void clientBeatSendLoop(ENetPeer* peer) {
         ENetPacket* packet = enet_packet_create("go", 3, ENET_PACKET_FLAG_RELIABLE);
         enet_peer_send(peer, 0, packet);
         enet_host_flush(peer->host);
-        std::cout << "客户端发送心跳包。" << std::endl;
-        std::this_thread::sleep_for(std::chrono::seconds(5));
+        cout << "客户端发送心跳包。" << endl;
+        this_thread::sleep_for(chrono::seconds(5));
     }
 }
 
-void clientReceiveLoop(ENetHost* client,GridType& grid) {
+void clientReceiveLoop(ENetHost* client, GridType& grid) {
     ENetEvent event;
-    int waittime;
+    int idleCounter = 0;
     while (go) {
-        while (enet_host_service(client, &event, 100) > 0) {
-            if (event.type == ENET_EVENT_TYPE_RECEIVE) {
-                std::string receivedData(reinterpret_cast<char*>(event.packet->data));
-                if (receivedData != "go")
-                {
-                    json newdata = json::parse(receivedData);
-                    grid = deserializeGrid(newdata);
+        int eventCount = enet_host_service(client, &event, 100);
+        if (eventCount > 0) {
+            idleCounter = 0;
+            do {
+                if (event.type == ENET_EVENT_TYPE_RECEIVE) {
+                    string receivedData(reinterpret_cast<char*>(event.packet->data));
+                    if (receivedData != "go") {
+                        try {
+                            json newdata = json::parse(receivedData);
+                            grid = deserializeGrid(newdata);
+                        }
+                        catch (std::exception& e) {
+                            cerr << "解析JSON数据出错: " << e.what() << endl;
+                        }
+                    }
+                    cout << "收到服务器数据: " << receivedData << endl;
+                    enet_packet_destroy(event.packet);
                 }
-                std::cout << "收到服务器数据: " << receivedData << std::endl;
-                waittime = 0;
-                enet_packet_destroy(event.packet);
-            }
-            else if (event.type == ENET_EVENT_TYPE_DISCONNECT) {
-                go = false;
-                std::cout << "与服务器断开连接。" << std::endl;
-                return;
-            }
+                else if (event.type == ENET_EVENT_TYPE_DISCONNECT) {
+                    go = false;
+                    cout << "与服务器断开连接。" << endl;
+                    break;
+                }
+            } while (enet_host_service(client, &event, 0) > 0);
         }
-        waittime++;
-        if (waittime > 200)go = false;
+        else {
+            idleCounter++;
+        }
+        if (idleCounter > 200) { // 超过20秒无数据认为断联
+            go = false;
+        }
     }
 }
 
-void runClient(const char* serverIP,GridType& grid,json& change) {
+void runClient(const char* serverIP, GridType& grid, json& change) {
     ENetHost* client = enet_host_create(nullptr, 1, 2, 0, 0);
     if (client == nullptr) {
-        std::cerr << "客户端初始化失败！" << std::endl;
+        cerr << "客户端初始化失败！" << endl;
         exit(EXIT_FAILURE);
     }
 
@@ -233,17 +238,17 @@ void runClient(const char* serverIP,GridType& grid,json& change) {
 
     ENetPeer* peer = enet_host_connect(client, &address, 2, 0);
     if (peer == nullptr) {
-        std::cerr << "无法创建连接！" << std::endl;
+        cerr << "无法创建连接！" << endl;
         enet_host_destroy(client);
         exit(EXIT_FAILURE);
     }
 
     ENetEvent event;
     if (enet_host_service(client, &event, 5000) > 0 && event.type == ENET_EVENT_TYPE_CONNECT) {
-        std::cout << "成功连接到服务器: " << serverIP << std::endl;
+        cout << "成功连接到服务器: " << serverIP << endl;
     }
     else {
-        std::cerr << "连接失败或超时。" << std::endl;
+        cerr << "连接失败或超时。" << endl;
         enet_peer_reset(peer);
         enet_host_destroy(client);
         exit(EXIT_FAILURE);
@@ -257,9 +262,9 @@ void runClient(const char* serverIP,GridType& grid,json& change) {
     go = true;
 
     // 启动发送和接收线程
-    std::thread beatThread(clientBeatSendLoop,peer);
-    std::thread sendThread(clientSendLoop, peer,change);
-    std::thread receiveThread(clientReceiveLoop, client,grid);
+    thread beatThread(clientBeatSendLoop, peer);
+    thread sendThread(clientSendLoop, peer, ref(change));
+    thread receiveThread(clientReceiveLoop, client, ref(grid));
 
     beatThread.join();
     sendThread.join();
@@ -268,35 +273,45 @@ void runClient(const char* serverIP,GridType& grid,json& change) {
     enet_host_destroy(client);
 }
 
-/*
 int main(int argc, char* argv[]) {
     // 初始化ENet
     GridType grid;
     json change;
+    change["test"] = "111";
     grid[1][1] = 1;
+
     if (enet_initialize() != 0) {
-        std::cerr << "ENet初始化失败！" << std::endl;
+        cerr << "ENet初始化失败！" << endl;
         return EXIT_FAILURE;
     }
     atexit(enet_deinitialize);
 
     int mode;
-    cout << "输入模式：1主机2客户端：" << endl;
+    cout << "输入模式：1主机 2客户端：" << endl;
     cin >> mode;
+
+    thread networkThread;
     if (mode == 1) {
-        runServer(grid);
+        // 传引用时需使用 std::ref
+        networkThread = thread(runServer, ref(grid));
     }
     else if (mode == 2) {
         string IP;
         cout << "输入连接的IP：" << endl;
         cin >> IP;
-        runClient(IP.c_str(),grid,change);
+        networkThread = thread(runClient, IP.c_str(), ref(grid), ref(change));
     }
     else {
-        std::cerr << "未知的模式，请使用 1 或 2。" << std::endl;
-        return EXIT_FAILURE; 
+        cerr << "未知的模式，请使用 1 或 2。" << endl;
+        return EXIT_FAILURE;
     }
+
+    // 模拟主线程在10秒后触发发送操作
+    this_thread::sleep_for(chrono::seconds(10));
+    SendMessage();
+
+    // 等待网络线程结束
+    networkThread.join();
 
     return EXIT_SUCCESS;
 }
-*/

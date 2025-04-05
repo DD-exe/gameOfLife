@@ -177,7 +177,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
             break;
             case ID_VSOnline:
             {
-                HWND VSDialog = CreateDialog(hInst, MAKEINTRESOURCE(IDD_VSONLINE), hWnd, VSOnline);
+                HWND VSDialog = CreateDialog(hInst, MAKEINTRESOURCE(IDD_VSONLINESET), hWnd, VSOnline);
                 ShowWindow(VSDialog, SW_SHOW);
             }
             break;

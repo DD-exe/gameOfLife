@@ -23,11 +23,12 @@
 #define IDB_LINbmpPro                   133
 #define IDD_VS                          134
 #define IDD_SINGLE                      135
-#define IDD_VSONLINE                    136
+#define IDD_VSONLINESET                 136
 #define IDD_COLOR                       137
 #define IDR_GAME                        138
 #define IDD_CREATEROOM                  139
 #define IDD_JOINROOM                    140
+#define IDD_VSONLINE                    141
 #define IDC_EDITvsSIZE                  1000
 #define IDC_EDITvsSPEED                 1001
 #define IDC_P1ATT                       1002
@@ -66,7 +67,9 @@
 #define ID_OUTPUT1                      32782
 #define ID_OUTPUT2                      32783
 #define ID_DOING                        32784
+#define ID_OUTPUT5                      32784
 #define ID_TITLE3                       32785
+#define ID_OUTPUT6                      32785
 #define ID_EDIT3X                       32786
 #define ID_EDIT3Y                       32787
 #define ID_EDIT3OK                      32788
@@ -97,7 +100,7 @@
 #define _APS_NO_MFC                     1
 #define _APS_NEXT_RESOURCE_VALUE        145
 #define _APS_NEXT_COMMAND_VALUE         32808
-#define _APS_NEXT_CONTROL_VALUE         1027
+#define _APS_NEXT_CONTROL_VALUE         1028
 #define _APS_NEXT_SYMED_VALUE           110
 #endif
 #endif

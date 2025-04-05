@@ -83,13 +83,13 @@ INT_PTR CALLBACK VSdot(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
         }
         case IDPlayerOK:
         {
+            HWND hChara = GetDlgItem(hDlg, IDC_CHARA);
+            int index = SendMessage(hChara, CB_GETCURSEL, 0, 0);
             BOOL success1, success2,success3,success4;
             INT p1att = GetDlgItemInt(hDlg, IDC_P1ATT, &success1, TRUE);
             INT p1def = GetDlgItemInt(hDlg, IDC_P1DEF, &success2, TRUE);
             INT p1muv = GetDlgItemInt(hDlg, IDC_P1MUV, &success3, TRUE);
             INT p1suv = GetDlgItemInt(hDlg, IDC_P1SUV, &success4, TRUE);
-            HWND hChara = GetDlgItem(hDlg, IDC_CHARA);
-            int index = SendMessage(hChara, CB_GETCURSEL, 0, 0);
             if (success1&&success2&&success3&&success4) {
                 data->att[index] = p1att;
                 data->def[index] = p1def;
@@ -187,7 +187,9 @@ INT_PTR CALLBACK VSdot(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
         }
         case IDC_CHARA: 
         {
-            RECT rect = { 800,105,816,121 };
+            RECT rect = { data->colorBlockX,data->colorBlockY,
+            data->colorBlockX + data->colorBlockSize,
+            data->colorBlockY + data->colorBlockSize };
             InvalidateRect(hDlg, &rect, TRUE);
             return (INT_PTR)TRUE;
         }
