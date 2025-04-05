@@ -27,7 +27,6 @@
 #define IDD_COLOR                       137
 #define IDR_GAME                        138
 #define IDD_CREATEROOM                  139
-#define IDR_GAME1                       139
 #define IDR_GAMEONLINE                  139
 #define IDD_JOINROOM                    140
 #define IDD_VSONLINE                    141
@@ -70,6 +69,7 @@
 #define ID_OUTPUT2                      32783
 #define ID_DOING                        32784
 #define ID_OUTPUT5                      32784
+#define ID_OUTPUT                       32784
 #define ID_TITLE3                       32785
 #define ID_OUTPUT6                      32785
 #define ID_EDIT3X                       32786

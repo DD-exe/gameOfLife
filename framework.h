@@ -87,7 +87,10 @@ struct vsoData {
     BOOL ifCreate;
     BOOL ifServer;
     BOOL ifMouseDown;
-    INT myScore, yourScore;
+    INT score[2];       // 设想：开局20点，每回合增加10点，
+                        // 1点可改变一格状态，
+                        // 2点可增加1攻击或1防御，
+                        // 100点可提升1级繁殖或适应，3级为满。
     INT lastX, lastY;
     INT cellSize; INT tableX; INT tableY; INT listHalfSize;
     INT4 rule[2];

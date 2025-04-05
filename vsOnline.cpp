@@ -52,6 +52,8 @@ INT_PTR CALLBACK VSOnlineDot(HWND hDlg, UINT message, WPARAM wParam, LPARAM lPar
         data->lastX = data->lastY = -1;
         data->cellSize = 10;
         data->listHalfSize = 80;
+        data->score[0] = 20;
+        data->score[1] = 20;
         data->rule[0].x = 2; data->rule[0].y = 3; data->rule[0].z = 3; data->rule[0].t = 3;
         data->rule[1].x = 2; data->rule[1].y = 3; data->rule[1].z = 3; data->rule[1].t = 3;
         data->att[0] = 3; data->def[0] = 3;
@@ -66,7 +68,7 @@ INT_PTR CALLBACK VSOnlineDot(HWND hDlg, UINT message, WPARAM wParam, LPARAM lPar
         data->playerColor[0] = RGBgreen;
         data->playerColor[1] = RGBpurple;
         data->colorBlockX = 800;
-        data->colorBlockY = 105;
+        data->colorBlockY = 60;
         data->colorBlockSize = 16;
         HWND hCombo = GetDlgItem(hDlg, IDC_CHARA);
         SendMessage(hCombo, CB_ADDSTRING, 0, (LPARAM)L"己阵营");
@@ -76,6 +78,7 @@ INT_PTR CALLBACK VSOnlineDot(HWND hDlg, UINT message, WPARAM wParam, LPARAM lPar
         SetWindowText(GetDlgItem(hDlg, ID_OUTPUT2), std::to_wstring(data->def[0]).c_str());
         SetWindowText(GetDlgItem(hDlg, ID_OUTPUT3), std::to_wstring(data->muv[0]).c_str());
         SetWindowText(GetDlgItem(hDlg, ID_OUTPUT4), std::to_wstring(data->suv[0]).c_str());
+        SetWindowText(GetDlgItem(hDlg, ID_OUTPUT), std::to_wstring(data->score[0]).c_str());
         SetWindowLongPtr(hDlg, GWLP_USERDATA, (LONG_PTR)data);
         return (INT_PTR)TRUE;
     }
@@ -165,6 +168,7 @@ INT_PTR CALLBACK VSOnlineDot(HWND hDlg, UINT message, WPARAM wParam, LPARAM lPar
             RECT rect = { 0, 0,data->tableX * data->cellSize, data->tableY * data->cellSize };
             data->grid[0] = std::move(ans1);
             data->grid[1] = std::move(ans2);
+            data->ifCreate = FALSE;
             InvalidateRect(hDlg, &rect, TRUE);
             break;
         }
@@ -328,24 +332,33 @@ INT_PTR CALLBACK VSOnlineDot(HWND hDlg, UINT message, WPARAM wParam, LPARAM lPar
         data->ifMouseDown = TRUE;  // 标记鼠标按下
         int x = LOWORD(lParam) / data->cellSize;
         int y = HIWORD(lParam) / data->cellSize;
-        if (x < data->tableX && y < data->tableY) {
-            HWND hChara = GetDlgItem(hDlg, IDC_CHARA);
-            int index = SendMessage(hChara, CB_GETCURSEL, 0, 0); // 获取选中索引
+        HWND hChara = GetDlgItem(hDlg, IDC_CHARA);
+        int index = SendMessage(hChara, CB_GETCURSEL, 0, 0); // 获取选中索引
+        if (x < data->tableX && y < data->tableY&& index==0) {
             exchangeLife(data->grid[index], x + data->moveX, y + data->moveY);
             RECT rect = { x * data->cellSize, y * data->cellSize,
                         (x + 1) * data->cellSize, (y + 1) * data->cellSize };
             InvalidateRect(hDlg, &rect, TRUE);  // 仅重绘该区域
             data->lastX = x; data->lastY = y;   // 记录上次处理的格子，避免 `WM_MOUSEMOVE` 立即重复处理
         }
-        else if (LOWORD(lParam) >= 800 && LOWORD(lParam) < 816 && HIWORD(lParam) >= 105 && HIWORD(lParam) < 121) {
-            HWND hChara = GetDlgItem(hDlg, IDC_CHARA);
-            int index = SendMessage(hChara, CB_GETCURSEL, 0, 0);
+        else if (LOWORD(lParam) >= data->colorBlockX 
+            && LOWORD(lParam) < data->colorBlockX + data->colorBlockSize
+            && HIWORD(lParam) >= data->colorBlockY
+            && HIWORD(lParam) < data->colorBlockY + data->colorBlockSize) {
             data->playerColor[index] = DialogBoxParam(GetModuleHandle(NULL),
                 MAKEINTRESOURCE(IDD_COLOR), hDlg, color, (LPARAM)(data->playerColor[index]));
-            RECT rect = { data->colorBlockX,data->colorBlockY,
-            data->colorBlockX + data->colorBlockSize,
-            data->colorBlockY + data->colorBlockSize };
-            InvalidateRect(hDlg, &rect, TRUE);
+            {
+                RECT rect = { data->colorBlockX,data->colorBlockY,
+                data->colorBlockX + data->colorBlockSize,
+                data->colorBlockY + data->colorBlockSize };
+                InvalidateRect(hDlg, &rect, TRUE);
+            }
+            {
+                RECT rect = { 0,0,data->tableX * data->cellSize,data->tableY * data->cellSize };
+                InvalidateRect(hDlg, &rect, TRUE);
+            }
+            data->ifCreate = FALSE;
+            data->ifMouseDown = FALSE;
 
             return (INT_PTR)TRUE;
         }
@@ -353,14 +366,14 @@ INT_PTR CALLBACK VSOnlineDot(HWND hDlg, UINT message, WPARAM wParam, LPARAM lPar
     }
     case WM_MOUSEMOVE:
     {
+
         if (data->ifMouseDown) {  // 仅在鼠标按住时处理
             int x = LOWORD(lParam) / data->cellSize;
             int y = HIWORD(lParam) / data->cellSize;
-
-            if (x < data->tableX && y < data->tableY && (x != data->lastX || y != data->lastY)) {
+            HWND hChara = GetDlgItem(hDlg, IDC_CHARA);
+            int index = SendMessage(hChara, CB_GETCURSEL, 0, 0);
+            if (index==0&&(x < data->tableX && y < data->tableY) && (x != data->lastX || y != data->lastY)) {
                 // 只有当鼠标进入新格子时才处理，防止重复
-                HWND hChara = GetDlgItem(hDlg, IDC_CHARA);
-                int index = SendMessage(hChara, CB_GETCURSEL, 0, 0); // 获取选中索引
                 exchangeLife(data->grid[index], x + data->moveX, y + data->moveY);
                 RECT rect = { x * data->cellSize, y * data->cellSize, (x + 1) * data->cellSize, (y + 1) * data->cellSize };
                 InvalidateRect(hDlg, &rect, TRUE);
