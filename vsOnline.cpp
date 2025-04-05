@@ -314,7 +314,8 @@ INT_PTR CALLBACK VSOnlineDot(HWND hDlg, UINT message, WPARAM wParam, LPARAM lPar
             EnableWindow(GetDlgItem(hDlg,ID_STARTCLIENT), FALSE);
             EnableWindow(GetDlgItem(hDlg, IDC_IPADDRESS1), FALSE);
             SetDlgItemText(hDlg, ID_CNT, L"等待中……");
-            data->ifServer = runServer(data->grid[0]); // trans缺陷，只传一个？
+            data->ifServer = runServer(*data); // trans缺陷，只传一个grid？
+                                               // 你看，这就是为什么要传vsoData
             if (data->ifServer) {
                 SetDlgItemText(hDlg, ID_CNT, L"已连接");
                 EnableWindow(GetDlgItem(hDlg, ID_STARTSERVER), FALSE);
@@ -331,7 +332,7 @@ INT_PTR CALLBACK VSOnlineDot(HWND hDlg, UINT message, WPARAM wParam, LPARAM lPar
             BOOL success=GetDlgItemText(hDlg, IDC_ROOMIP, data->targetIP, 100);
             if (success) {
                 EnableWindow(GetDlgItem(hDlg, ID_STARTSERVER), FALSE);
-                data->ifClient = runClient(wc2s(data->targetIP).c_str(), data->grid[0], data->theMove);
+                data->ifClient = runClient(*data);
                 if (data->ifClient) {
                     SetDlgItemText(hDlg, ID_CNT, L"");
                 }
@@ -506,8 +507,10 @@ INT_PTR CALLBACK VSOnlineDot(HWND hDlg, UINT message, WPARAM wParam, LPARAM lPar
         int y = HIWORD(lParam) / data->cellSize;
         HWND hChara = GetDlgItem(hDlg, IDC_CHARA);
         int index = SendMessage(hChara, CB_GETCURSEL, 0, 0); // 获取选中索引
-        if (x < data->tableX && y < data->tableY&& index==0) {
+        if (x < data->tableX && y < data->tableY&& index==0&&data->score[index]>0) {
             exchangeLife(data->grid[index], x + data->moveX, y + data->moveY);
+            data->score[index] -= 1;
+            SetWindowText(GetDlgItem(hDlg, ID_OUTPUT), std::to_wstring(data->score[index]).c_str());
             RECT rect = { x * data->cellSize, y * data->cellSize,
                         (x + 1) * data->cellSize, (y + 1) * data->cellSize };
             InvalidateRect(hDlg, &rect, TRUE);  // 仅重绘该区域
@@ -543,9 +546,11 @@ INT_PTR CALLBACK VSOnlineDot(HWND hDlg, UINT message, WPARAM wParam, LPARAM lPar
             int y = HIWORD(lParam) / data->cellSize;
             HWND hChara = GetDlgItem(hDlg, IDC_CHARA);
             int index = SendMessage(hChara, CB_GETCURSEL, 0, 0);
-            if (index==0&&(x < data->tableX && y < data->tableY) && (x != data->lastX || y != data->lastY)) {
+            if (index==0 && data->score[index] > 0 &&(x < data->tableX && y < data->tableY) && (x != data->lastX || y != data->lastY)) {
                 // 只有当鼠标进入新格子时才处理，防止重复
                 exchangeLife(data->grid[index], x + data->moveX, y + data->moveY);
+                data->score[index] -= 1;
+                SetWindowText(GetDlgItem(hDlg, ID_OUTPUT), std::to_wstring(data->score[index]).c_str());
                 RECT rect = { x * data->cellSize, y * data->cellSize, (x + 1) * data->cellSize, (y + 1) * data->cellSize };
                 InvalidateRect(hDlg, &rect, TRUE);
 

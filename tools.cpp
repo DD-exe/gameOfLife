@@ -57,3 +57,11 @@ std::string wc2s(const wchar_t* wstr) {
     WideCharToMultiByte(CP_UTF8, 0, wstr, -1, &str[0], len, nullptr, nullptr);
     return str;
 }
+
+nlohmann::json move2json(vsoData* data) {
+    return NULL;
+}
+
+void json2move(vsoData* data, nlohmann::json change) {
+    return;
+}

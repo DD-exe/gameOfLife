@@ -51,13 +51,13 @@ void mySendMessage() {
     ifsend = true;
 }
 
-void serverSendLoop(ENetPeer* peer, GridType& grid) {
+void serverSendLoop(ENetPeer* peer, vsoData& mainData) {
     while (go) {
         if (!ifsend) {
             this_thread::sleep_for(chrono::seconds(1));
             continue;
         }
-        json data = serializeGrid(grid);
+        json data = serializeGrid(mainData.grid[0]);
         string jsonData = data.dump();
         ENetPacket* packet = enet_packet_create(jsonData.c_str(), jsonData.size() + 1, ENET_PACKET_FLAG_RELIABLE);
         enet_peer_send(peer, 0, packet);
@@ -76,7 +76,7 @@ void serverBeatSendLoop(ENetPeer* peer) {
     }
 }
 
-void serverReceiveLoop(ENetHost* server) {
+void serverReceiveLoop(ENetHost* server, vsoData& mainData) {
     ENetEvent event;
     int idleCounter = 0;
     while (go) {
@@ -90,6 +90,7 @@ void serverReceiveLoop(ENetHost* server) {
                     cout << "收到客户端数据: " << receivedData << endl;
                     if (receivedData != "go") {
                         // 添加对客户端操作数据包的处理
+
                     }
                     enet_packet_destroy(event.packet);
                     break;
@@ -112,7 +113,7 @@ void serverReceiveLoop(ENetHost* server) {
     }
 }
 
-BOOL runServer(GridType& grid) {
+BOOL runServer(vsoData& data) {
     ENetAddress address;
     address.host = ENET_HOST_ANY;
     address.port = 12138;
@@ -151,8 +152,8 @@ BOOL runServer(GridType& grid) {
 
     // 启动服务器的发送和接收线程
     thread beatThread(serverBeatSendLoop, event.peer);
-    thread sendThread(serverSendLoop, event.peer, ref(grid));
-    thread receiveThread(serverReceiveLoop, server);
+    thread sendThread(serverSendLoop, event.peer, ref(data));
+    thread receiveThread(serverReceiveLoop, server, ref(data));
 
     beatThread.join();
     sendThread.join();
@@ -162,12 +163,13 @@ BOOL runServer(GridType& grid) {
     return TRUE;
 }
 
-void clientSendLoop(ENetPeer* peer, json& change) {
+void clientSendLoop(ENetPeer* peer, vsoData& mainData) {
     while (go) {
         if (!ifsend) {
             this_thread::sleep_for(chrono::seconds(1));
             continue;
         }
+        json change = move2json(&mainData);
         string jsonData = change.dump(); // 用户的设置数据
         ENetPacket* packet = enet_packet_create(jsonData.c_str(), jsonData.size() + 1, ENET_PACKET_FLAG_RELIABLE);
         enet_peer_send(peer, 0, packet);
@@ -188,7 +190,7 @@ void clientBeatSendLoop(ENetPeer* peer) {
     }
 }
 
-void clientReceiveLoop(ENetHost* client, GridType& grid) {
+void clientReceiveLoop(ENetHost* client, vsoData& mainData) {
     ENetEvent event;
     int idleCounter = 0;
     while (go) {
@@ -201,7 +203,7 @@ void clientReceiveLoop(ENetHost* client, GridType& grid) {
                     if (receivedData != "go") {
                         try {
                             json newdata = json::parse(receivedData);
-                            grid = deserializeGrid(newdata);
+                            mainData.grid[0] = deserializeGrid(newdata);
                         }
                         catch (std::exception& e) {
                             cerr << "解析JSON数据出错: " << e.what() << endl;
@@ -226,15 +228,14 @@ void clientReceiveLoop(ENetHost* client, GridType& grid) {
     }
 }
 
-BOOL runClient(const char* serverIP, GridType& grid, json& change) {
+BOOL runClient(vsoData& data) {
     ENetHost* client = enet_host_create(nullptr, 1, 2, 0, 0);
     if (client == nullptr) {
         cerr << "客户端初始化失败！" << endl;
         return FALSE;// exit(EXIT_FAILURE);
     }
-
     ENetAddress address;
-    enet_address_set_host(&address, serverIP);
+    enet_address_set_host(&address, wc2s(data.targetIP).c_str());
     address.port = 12138;
 
     ENetPeer* peer = enet_host_connect(client, &address, 2, 0);
@@ -246,7 +247,7 @@ BOOL runClient(const char* serverIP, GridType& grid, json& change) {
 
     ENetEvent event;
     if (enet_host_service(client, &event, 5000) > 0 && event.type == ENET_EVENT_TYPE_CONNECT) {
-        cout << "成功连接到服务器: " << serverIP << endl;
+        cout << "成功连接到服务器: " << data.targetIP << endl;
     }
     else {
         cerr << "连接失败或超时。" << endl;
@@ -264,8 +265,8 @@ BOOL runClient(const char* serverIP, GridType& grid, json& change) {
 
     // 启动发送和接收线程
     thread beatThread(clientBeatSendLoop, peer);
-    thread sendThread(clientSendLoop, peer, ref(change));
-    thread receiveThread(clientReceiveLoop, client, ref(grid));
+    thread sendThread(clientSendLoop, peer, ref(data));
+    thread receiveThread(clientReceiveLoop, client, ref(data));
 
     beatThread.join();
     sendThread.join();

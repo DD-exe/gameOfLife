@@ -126,6 +126,8 @@ INT getAll(std::unordered_map<INT, std::unordered_map<INT, BOOL>>& grid,INT x, I
 void delState(STATE** x);
 int getRandomNum(int min, int max);
 std::string wc2s(const wchar_t* wstr);
+nlohmann::json move2json(vsoData* data);
+void json2move(vsoData* data, nlohmann::json change);
 INT_PTR CALLBACK About(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam);                  // about
 INT_PTR CALLBACK VSdot(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam);                  // vs
 INT_PTR CALLBACK single(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam);                 // single
@@ -136,8 +138,8 @@ INT_PTR CALLBACK VSOnlineDot(HWND hDlg, UINT message, WPARAM wParam, LPARAM lPar
 INT_PTR CALLBACK color(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam);                  // color
 INT_PTR CALLBACK CreateRoomProc(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam);         // createRoom
 INT_PTR CALLBACK JoinRoomProc(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam);           // joinRoom
-BOOL runServer(GridType& grid);                                                                 // trans
-BOOL runClient(const char* serverIP, GridType& grid, nlohmann::json& change);
+BOOL runServer(vsoData& data);                                                                 // trans
+BOOL runClient(vsoData& data);
 void mySendMessage();
 
 // inline
