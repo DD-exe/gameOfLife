@@ -28,6 +28,8 @@
 #define IDR_GAME                        138
 #define IDD_CREATEROOM                  139
 #define IDD_JOINROOM                    140
+#define IDD_RULES                       145
+#define IDD_VSRULES                     146
 #define IDC_EDITvsSIZE                  1000
 #define IDC_EDITvsSPEED                 1001
 #define IDC_P1ATT                       1002
@@ -88,6 +90,11 @@
 #define IDM_LOAD                        32803
 #define ID_32806                        32806
 #define ID_32807                        32807
+#define ID_32808                        32808
+#define ID_RULES                        32809
+#define IDM_RULES                       32810
+#define ID_32811                        32811
+#define ID_ABOUT                        32812
 #define IDC_STATIC                      -1
 
 // Next default values for new objects
@@ -95,8 +102,8 @@
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NO_MFC                     1
-#define _APS_NEXT_RESOURCE_VALUE        145
-#define _APS_NEXT_COMMAND_VALUE         32808
+#define _APS_NEXT_RESOURCE_VALUE        147
+#define _APS_NEXT_COMMAND_VALUE         32813
 #define _APS_NEXT_CONTROL_VALUE         1027
 #define _APS_NEXT_SYMED_VALUE           110
 #endif

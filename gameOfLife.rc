@@ -53,9 +53,10 @@ BEGIN
         END
         MENUITEM "退出(&X)",                      IDM_EXIT
     END
-    POPUP "帮助(&H)"
+    POPUP "帮助(&A)"
     BEGIN
         MENUITEM "关于(&A) ...",                  IDM_ABOUT
+        MENUITEM "规则(&R)",                      IDM_RULES
     END
 END
 
@@ -68,7 +69,8 @@ BEGIN
         MENUITEM "保存数据(&D)",                    IDM_SAVE
         MENUITEM "保存画面(&F)",                    ID_SAVE
     END
-    MENUITEM "读取数据(L)",                     IDM_LOAD
+    MENUITEM "读取数据(&L)",                    IDM_LOAD
+    MENUITEM "帮助(&H)",                      IDM_ABOUT
 END
 
 
@@ -182,6 +184,33 @@ BEGIN
     CONTROL         "",IDC_ROOMIP,"SysIPAddress32",WS_TABSTOP,49,7,100,15
 END
 
+IDD_RULES DIALOGEX 0, 0, 466, 123
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "单机模拟规则说明"
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    DEFPUSHBUTTON   "确定",IDOK,409,102,50,14
+    LTEXT           "存活需求：当一个存活细胞周围8格中的存活细胞数不在存活需求范围内时，细胞将死亡。",IDC_STATIC,28,38,377,8
+    LTEXT           "康威生命游戏是一种基于网格的细胞自动机",IDC_STATIC,27,22,272,8
+    LTEXT           "繁殖需求：当一个空格子周围8格中的活细胞数在繁殖需求范围内，将产生一个存活细胞。（模拟繁殖行为）",IDC_STATIC,28,55,411,8
+    LTEXT           "自由地调整你的细胞的存活需求和繁殖需求，观察生命的演化吧！",IDC_STATIC,28,71,387,8
+END
+
+IDD_VSRULES DIALOGEX 0, 0, 459, 171
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Dialog"
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    DEFPUSHBUTTON   "确定",IDOK,402,150,50,14
+    LTEXT           "康威生命游戏是一种基于网格的细胞自动机",IDC_STATIC,27,22,287,8
+    LTEXT           "存活需求：当一个存活细胞周围8格中的存活细胞数不在存活需求范围内时，细胞将死亡。",IDC_STATIC,28,38,405,8
+    LTEXT           "繁殖需求：当一个空格子周围8格中的活细胞数在繁殖需求范围内，将产生一个存活细胞。（模拟繁殖行为）",IDC_STATIC,28,55,405,8
+    LTEXT           "攻击等级、防御等级：共同决定两阵营细胞重合时留存的细胞属于哪个阵营。",IDC_STATIC,28,71,379,8
+    LTEXT           "若该单元格中存在某阵营的存活细胞，则使用该阵营的攻击等级作为判定点数，反之则使用防御等级。",IDC_STATIC,47,88,394,8
+    LTEXT           "判定点数的大小决定了在这个单元格中该阵营细胞的存活概率，判定点数越高，则存活概率越高。",IDC_STATIC,46,105,390,8
+    LTEXT           "自由地调整你的细胞的存活繁殖需求和攻防等级，然后进行生命的演化模拟吧！",IDC_STATIC,30,122,397,8
+END
+
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -245,6 +274,22 @@ BEGIN
     BEGIN
         LEFTMARGIN, 7
         TOPMARGIN, 7
+    END
+
+    IDD_RULES, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 459
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 116
+    END
+
+    IDD_VSRULES, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 452
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 164
     END
 END
 #endif    // APSTUDIO_INVOKED

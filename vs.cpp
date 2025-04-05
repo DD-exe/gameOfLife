@@ -46,12 +46,20 @@ INT_PTR CALLBACK VSdot(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
         SetTimer(hDlg, ID_TIMER2, 100*data->speed, NULL);
         SetWindowLongPtr(hDlg, GWLP_USERDATA, (LONG_PTR)data);
         return (INT_PTR)TRUE;
+
+        //创建默认文本
+        SetDlgItemText(hDlg, IDC_P1ATT, L"100");
     }
     case WM_COMMAND:
     {
         int wmId = LOWORD(wParam);
         switch (wmId)
         {
+        case IDM_ABOUT:
+        {
+            DialogBox(GetModuleHandle(NULL), MAKEINTRESOURCE(IDD_VSRULES), hDlg, VSRules);
+        }
+        break;
         case IDOKvsSIZE:
         {
             BOOL success; data->ifCreate = FALSE;
