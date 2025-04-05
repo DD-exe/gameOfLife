@@ -18,7 +18,7 @@
 #undef APSTUDIO_READONLY_SYMBOLS
 
 /////////////////////////////////////////////////////////////////////////////
-// ����(���壬�й�) resources
+// 中文(简体，中国) resources
 
 #if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_CHS)
 LANGUAGE LANG_CHINESE, SUBLANG_CHINESE_SIMPLIFIED
@@ -43,32 +43,34 @@ IDI_SMALL               ICON                    "image\\small.ico"
 
 IDC_GAMEOFLIFE MENU
 BEGIN
-    POPUP "����(&T)"
+    POPUP "功能(&T)"
     BEGIN
-        MENUITEM "����ģ��(&D)",                    ID_SINGLE
-        POPUP "�Կ�(&C)"
+        MENUITEM "单机模拟(&D)",                    ID_SINGLE
+        POPUP "对抗(&C)"
         BEGIN
-            MENUITEM "���ضԿ�(&V)",                    ID_VS
-            MENUITEM "���߶Կ�(&S)",                    ID_VSOnline
+            MENUITEM "本地对抗(&V)",                    ID_VS
+            MENUITEM "在线对抗(&S)",                    ID_VSOnline
         END
-        MENUITEM "�˳�(&X)",                      IDM_EXIT
+        MENUITEM "退出(&X)",                      IDM_EXIT
     END
-    POPUP "����(&H)"
+    POPUP "帮助(&A)"
     BEGIN
-        MENUITEM "����(&A) ...",                  IDM_ABOUT
+        MENUITEM "关于(&A) ...",                  IDM_ABOUT
+        MENUITEM "规则(&R)",                      IDM_RULES
     END
 END
 
 IDR_GAME MENU
 BEGIN
-    MENUITEM "����/��ͣ(&D)",                   ID_START
-    MENUITEM "����(&R)",                      ID_STOP
-    POPUP "����(&S)"
+    MENUITEM "启动/暂停(&D)",                   ID_START
+    MENUITEM "重置(&R)",                      ID_STOP
+    POPUP "保存(&S)"
     BEGIN
-        MENUITEM "��������(&D)",                    IDM_SAVE
-        MENUITEM "���滭��(&F)",                    ID_SAVE
+        MENUITEM "保存数据(&D)",                    IDM_SAVE
+        MENUITEM "保存画面(&F)",                    ID_SAVE
     END
-    MENUITEM "��ȡ����(L)",                     IDM_LOAD
+    MENUITEM "读取(&L)",                      IDM_LOAD
+    MENUITEM "帮助(&H)",                      IDM_ABOUT
 END
 
 
@@ -92,13 +94,13 @@ END
 
 IDD_ABOUTBOX DIALOGEX 0, 0, 170, 62
 STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
-CAPTION "���� gameOfLife"
+CAPTION "关于 gameOfLife"
 FONT 9, "MS Shell Dlg", 0, 0, 0x1
 BEGIN
     ICON            IDI_LINico,IDC_STATIC,14,14,20,20
-    LTEXT           "gameOfLife, �汾 2.0",IDC_STATIC,42,14,114,8,SS_NOPREFIX
-    LTEXT           "��Ȩ����ejeasfs(c) 2025",IDC_STATIC,42,26,114,8
-    DEFPUSHBUTTON   "ȷ��",IDOK,113,41,50,14,WS_GROUP
+    LTEXT           "gameOfLife, 版本 2.0",IDC_STATIC,42,14,114,8,SS_NOPREFIX
+    LTEXT           "版权所有ejeasfs(c) 2025",IDC_STATIC,42,26,114,8
+    DEFPUSHBUTTON   "确定",IDOK,113,41,50,14,WS_GROUP
 END
 
 IDD_VS DIALOGEX 0, 0, 564, 277
@@ -107,29 +109,29 @@ CAPTION "gameOfLifeVs."
 MENU IDR_GAME
 FONT 8, "MS Shell Dlg", 400, 0, 0x1
 BEGIN
-    DEFPUSHBUTTON   "ȷ��",IDOKvsSIZE,507,16,50,14,WS_GROUP
+    DEFPUSHBUTTON   "确定",IDOKvsSIZE,507,16,50,14,WS_GROUP
     EDITTEXT        IDC_EDITvsSIZE,463,16,40,14,ES_AUTOHSCROLL | ES_NUMBER | WS_GROUP
-    DEFPUSHBUTTON   "ȷ��",IDOKvsSPEED,507,44,50,14,WS_GROUP
-    LTEXT           "�����С",IDC_STATIC,465,7,37,8
-    LTEXT           "�����ٶ�",IDC_STATIC,467,35,39,8
+    DEFPUSHBUTTON   "确定",IDOKvsSPEED,507,44,50,14,WS_GROUP
+    LTEXT           "网格大小",IDC_STATIC,465,7,37,8
+    LTEXT           "迭代速度",IDC_STATIC,467,35,39,8
     EDITTEXT        IDC_EDITvsSPEED,463,45,40,14,ES_AUTOHSCROLL | ES_NUMBER | WS_GROUP
     COMBOBOX        IDC_CHARA,464,64,48,55,CBS_DROPDOWNLIST | CBS_SORT | WS_VSCROLL | WS_GROUP | WS_TABSTOP
     EDITTEXT        IDC_P1ATT,464,96,40,14,ES_AUTOHSCROLL | WS_GROUP
-    LTEXT           "����",IDC_STATIC,464,86,39,8
+    LTEXT           "攻击",IDC_STATIC,464,86,39,8
     EDITTEXT        IDC_P1DEF,508,96,40,14,ES_AUTOHSCROLL | WS_GROUP
-    DEFPUSHBUTTON   "ȷ��",IDPlayerOK,480,135,50,14,WS_GROUP
-    LTEXT           "����",IDC_STATIC,508,86,39,8
+    DEFPUSHBUTTON   "确定",IDPlayerOK,480,135,50,14,WS_GROUP
+    LTEXT           "防御",IDC_STATIC,508,86,39,8
     EDITTEXT        IDC_P1MUV,463,118,40,14,ES_AUTOHSCROLL | WS_GROUP
-    LTEXT           "��ֳ�ȼ�",IDC_STATIC,464,110,39,8
+    LTEXT           "繁殖等级",IDC_STATIC,464,110,39,8
     EDITTEXT        IDC_P1SUV,509,119,40,14,ES_AUTOHSCROLL | WS_GROUP
-    LTEXT           "����ȼ�",IDC_STATIC,508,110,39,8
-    DEFPUSHBUTTON   "����/��ͣ",ID_START,454,153,50,14,WS_GROUP
-    DEFPUSHBUTTON   "����",ID_STOP,507,153,50,14,WS_GROUP
+    LTEXT           "生存等级",IDC_STATIC,508,110,39,8
+    DEFPUSHBUTTON   "启动/暂停",ID_START,454,153,50,14,WS_GROUP
+    DEFPUSHBUTTON   "重置",ID_STOP,507,153,50,14,WS_GROUP
     DEFPUSHBUTTON   "^",IDvsUP,494,175,19,14,WS_GROUP
     DEFPUSHBUTTON   "v",IDvsDOWN,494,203,19,14,WS_GROUP
     DEFPUSHBUTTON   "<",IDvsLEFT,476,190,19,14,WS_GROUP
     DEFPUSHBUTTON   ">",IDvsRIGHT,512,190,19,14,WS_GROUP
-    LTEXT           "ѡɫ:",IDC_STATIC,511,66,21,8
+    LTEXT           "选色:",IDC_STATIC,511,66,21,8
 END
 
 IDD_SINGLE DIALOGEX 0, 0, 720, 422
@@ -142,43 +144,43 @@ END
 
 IDD_VSONLINESET DIALOGEX 0, 0, 176, 44
 STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
-CAPTION "���߶Կ�����"
+CAPTION "在线对抗设置"
 FONT 8, "MS Shell Dlg", 400, 0, 0x1
 BEGIN
-    DEFPUSHBUTTON   "��������",IDvsOnlineCREATE,18,14,50,14
-    PUSHBUTTON      "���뷿��",IDvsOnlineJOIN,93,14,50,14
+    DEFPUSHBUTTON   "创建房间",IDvsOnlineCREATE,18,14,50,14
+    PUSHBUTTON      "加入房间",IDvsOnlineJOIN,93,14,50,14
 END
 
 IDD_COLOR DIALOGEX 0, 0, 204, 183
 STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
-CAPTION "��ɫѡ��"
+CAPTION "颜色选择"
 FONT 8, "MS Shell Dlg", 400, 0, 0x1
 BEGIN
-    DEFPUSHBUTTON   "ȷ��",IDOK,40,161,50,14
-    PUSHBUTTON      "ȡ��",IDCANCEL,114,161,50,14
+    DEFPUSHBUTTON   "确定",IDOK,40,161,50,14
+    PUSHBUTTON      "取消",IDCANCEL,114,161,50,14
 END
 
 IDD_CREATEROOM DIALOGEX 0, 0, 172, 62
 STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
-CAPTION "��������"
+CAPTION "创建房间"
 FONT 8, "MS Shell Dlg", 400, 0, 0x1
 BEGIN
-    DEFPUSHBUTTON   "ȷ��",IDOK,35,45,50,14
-    PUSHBUTTON      "ȡ��",IDCANCEL,88,45,50,14
-    LTEXT           "����IP��",IDC_LOCALIPTEXT,8,15,29,8
-    LTEXT           "IP��ַ",IDC_LOCALIP,74,16,98,8
-    LTEXT           "�Ѽ��뷿����������",IDC_PLAYERNUMBERTEXT,8,29,72,8
+    DEFPUSHBUTTON   "确定",IDOK,35,45,50,14
+    PUSHBUTTON      "取消",IDCANCEL,88,45,50,14
+    LTEXT           "本机IP：",IDC_LOCALIPTEXT,8,15,29,8
+    LTEXT           "IP地址",IDC_LOCALIP,74,16,98,8
+    LTEXT           "已加入房间的玩家数：",IDC_PLAYERNUMBERTEXT,8,29,72,8
     LTEXT           "0",IDC_PLAYERNUMBER,97,27,8,8
 END
 
 IDD_JOINROOM DIALOGEX 0, 0, 168, 52
 STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
-CAPTION "���뷿��"
+CAPTION "加入房间"
 FONT 8, "MS Shell Dlg", 400, 0, 0x1
 BEGIN
-    DEFPUSHBUTTON   "ȷ��",IDOK,28,26,50,14
-    PUSHBUTTON      "ȡ��",IDCANCEL,82,26,50,14
-    LTEXT           "����IP��",IDC_ROOMIPTEXT,16,10,29,8
+    DEFPUSHBUTTON   "确定",IDOK,28,26,50,14
+    PUSHBUTTON      "取消",IDCANCEL,82,26,50,14
+    LTEXT           "房主IP：",IDC_ROOMIPTEXT,16,10,29,8
     CONTROL         "",IDC_ROOMIP,"SysIPAddress32",WS_TABSTOP,49,7,100,15
 END
 
@@ -188,30 +190,56 @@ CAPTION "gameOfLifeVs."
 MENU IDR_GAME
 FONT 8, "MS Shell Dlg", 400, 0, 0x1
 BEGIN
-    DEFPUSHBUTTON   "ȷ��",IDOKvsSIZE,507,16,50,14,WS_GROUP
+    DEFPUSHBUTTON   "确定",IDOKvsSIZE,507,16,50,14,WS_GROUP
     EDITTEXT        IDC_EDITvsSIZE,463,16,40,14,ES_AUTOHSCROLL | ES_NUMBER | WS_GROUP
-    LTEXT           "�����С",IDC_STATIC,465,7,37,8
+    LTEXT           "网格大小",IDC_STATIC,465,7,37,8
     COMBOBOX        IDC_CHARA,464,35,48,55,CBS_DROPDOWNLIST | CBS_SORT | WS_VSCROLL | WS_GROUP | WS_TABSTOP
     EDITTEXT        IDC_P1ATT,464,58,40,14,ES_AUTOHSCROLL | WS_GROUP
-    LTEXT           "����",IDC_STATIC,464,48,39,8
+    LTEXT           "攻击",IDC_STATIC,464,48,39,8
     EDITTEXT        IDC_P1DEF,464,83,40,14,ES_AUTOHSCROLL | WS_GROUP
-    DEFPUSHBUTTON   "ȷ��",IDPlayerOK,480,150,50,14,WS_GROUP
-    LTEXT           "����",IDC_STATIC,464,73,39,8
+    DEFPUSHBUTTON   "确定",IDPlayerOK,480,150,50,14,WS_GROUP
+    LTEXT           "防御",IDC_STATIC,464,73,39,8
     EDITTEXT        IDC_P1MUV,464,106,40,14,ES_AUTOHSCROLL | WS_GROUP
-    LTEXT           "��ֳ�ȼ�",IDC_STATIC,465,98,39,8
+    LTEXT           "繁殖等级",IDC_STATIC,465,98,39,8
     EDITTEXT        IDC_P1SUV,465,131,40,14,ES_AUTOHSCROLL | WS_GROUP
-    LTEXT           "����ȼ�",IDC_STATIC,464,122,39,8
-    DEFPUSHBUTTON   "��������",ID_START,454,168,50,14,WS_GROUP
-    DEFPUSHBUTTON   "����",ID_STOP,507,168,50,14,WS_GROUP
+    LTEXT           "生存等级",IDC_STATIC,464,122,39,8
+    DEFPUSHBUTTON   "单步运行",ID_START,454,168,50,14,WS_GROUP
+    DEFPUSHBUTTON   "重置",ID_STOP,507,168,50,14,WS_GROUP
     DEFPUSHBUTTON   "^",IDvsUP,494,190,19,14,WS_GROUP
     DEFPUSHBUTTON   "v",IDvsDOWN,494,218,19,14,WS_GROUP
     DEFPUSHBUTTON   "<",IDvsLEFT,476,205,19,14,WS_GROUP
     DEFPUSHBUTTON   ">",IDvsRIGHT,512,205,19,14,WS_GROUP
-    LTEXT           "ѡɫ:",IDC_STATIC,511,37,21,8
+    LTEXT           "选色:",IDC_STATIC,511,37,21,8
     LTEXT           "Static",ID_OUTPUT1,511,59,35,12
     LTEXT           "Static",ID_OUTPUT2,512,107,35,12
     LTEXT           "Static",ID_OUTPUT5,510,85,35,12
     LTEXT           "Static",ID_OUTPUT6,512,131,35,12
+
+IDD_RULES DIALOGEX 0, 0, 466, 123
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "单机模拟规则说明"
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    DEFPUSHBUTTON   "确定",IDOK,409,102,50,14
+    LTEXT           "存活需求：当一个存活细胞周围8格中的存活细胞数不在存活需求范围内时，细胞将死亡。",IDC_STATIC,28,38,377,8
+    LTEXT           "康威生命游戏是一种基于网格的细胞自动机",IDC_STATIC,27,22,272,8
+    LTEXT           "繁殖需求：当一个空格子周围8格中的活细胞数在繁殖需求范围内，将产生一个存活细胞。（模拟繁殖行为）",IDC_STATIC,28,55,411,8
+    LTEXT           "自由地调整你的细胞的存活需求和繁殖需求，观察生命的演化吧！",IDC_STATIC,28,71,387,8
+END
+
+IDD_VSRULES DIALOGEX 0, 0, 459, 171
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "对抗模式规则说明"
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    DEFPUSHBUTTON   "确定",IDOK,402,150,50,14
+    LTEXT           "康威生命游戏是一种基于网格的细胞自动机",IDC_STATIC,27,22,287,8
+    LTEXT           "存活需求：当一个存活细胞周围8格中的存活细胞数不在存活需求范围内时，细胞将死亡。",IDC_STATIC,28,38,405,8
+    LTEXT           "繁殖需求：当一个空格子周围8格中的活细胞数在繁殖需求范围内，将产生一个存活细胞。（模拟繁殖行为）",IDC_STATIC,28,55,405,8
+    LTEXT           "攻击等级、防御等级：共同决定两阵营细胞重合时留存的细胞属于哪个阵营。",IDC_STATIC,28,71,379,8
+    LTEXT           "若该单元格中存在某阵营的存活细胞，则使用该阵营的攻击等级作为判定点数，反之则使用防御等级。",IDC_STATIC,47,88,394,8
+    LTEXT           "判定点数的大小决定了在这个单元格中该阵营细胞的存活概率，判定点数越高，则存活概率越高。",IDC_STATIC,46,105,390,8
+    LTEXT           "自由地调整你的细胞的存活繁殖需求和攻防等级，然后进行生命的演化模拟吧！",IDC_STATIC,30,122,397,8
 END
 
 
@@ -278,7 +306,7 @@ BEGIN
         LEFTMARGIN, 7
         TOPMARGIN, 7
     END
-
+    
     IDD_VSONLINE, DIALOG
     BEGIN
         LEFTMARGIN, 7
@@ -288,6 +316,21 @@ BEGIN
         TOPMARGIN, 7
         BOTTOMMARGIN, 270
         HORZGUIDE, 7
+
+    IDD_RULES, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 459
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 116
+    END
+
+    IDD_VSRULES, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 452
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 164
     END
 END
 #endif    // APSTUDIO_INVOKED
@@ -345,7 +388,7 @@ BEGIN
     IDC_GAMEOFLIFE          "GAMEOFLIFE"
 END
 
-#endif    // ����(���壬�й�) resources
+#endif    // 中文(简体，中国) resources
 /////////////////////////////////////////////////////////////////////////////
 
 

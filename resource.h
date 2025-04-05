@@ -29,6 +29,8 @@
 #define IDD_CREATEROOM                  139
 #define IDD_JOINROOM                    140
 #define IDD_VSONLINE                    141
+#define IDD_RULES                       142
+#define IDD_VSRULES                     143
 #define IDC_EDITvsSIZE                  1000
 #define IDC_EDITvsSPEED                 1001
 #define IDC_P1ATT                       1002
@@ -37,7 +39,6 @@
 #define IDC_P1MUV                       1005
 #define IDC_P1SUV                       1006
 #define IDOKvsSIZE                      1007
-#define IDC_P2ATT                       1008
 #define ID_COLOR                        1008
 #define IDC_P2DEF                       1009
 #define IDC_P2MUV                       1010
@@ -46,15 +47,15 @@
 #define IDvsDOWN                        1013
 #define IDvsOnlineCREATE                1013
 #define IDvsLEFT                        1014
-#define IDvsOnlineJOIN                  1014
-#define IDvsRIGHT                       1015
+#define IDvsOnlineJOIN                  1015
+#define IDvsRIGHT                       1016
 #define IDC_PLAYERNUMBERTEXT            1021
 #define IDC_PLAYERNUMBER                1022
 #define IDC_LOCALIPTEXT                 1023
 #define IDC_LOCALIP                     1024
 #define IDC_ROOMIPTEXT                  1025
 #define IDC_IPADDRESS1                  1026
-#define IDC_ROOMIP                      1026
+#define IDC_ROOMIP                      1027
 #define ID_TIMER                        32771
 #define ID_TIMER2                       32772
 #define ID_SAVE                         32773
@@ -91,6 +92,11 @@
 #define IDM_LOAD                        32803
 #define ID_32806                        32806
 #define ID_32807                        32807
+#define ID_32808                        32808
+#define ID_RULES                        32809
+#define IDM_RULES                       32810
+#define ID_32811                        32811
+#define ID_ABOUT                        32812
 #define IDC_STATIC                      -1
 
 // Next default values for new objects
@@ -98,8 +104,8 @@
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NO_MFC                     1
-#define _APS_NEXT_RESOURCE_VALUE        145
-#define _APS_NEXT_COMMAND_VALUE         32808
+#define _APS_NEXT_RESOURCE_VALUE        144
+#define _APS_NEXT_COMMAND_VALUE         32813
 #define _APS_NEXT_CONTROL_VALUE         1028
 #define _APS_NEXT_SYMED_VALUE           110
 #endif
