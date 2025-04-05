@@ -283,10 +283,18 @@ INT_PTR CALLBACK VSdot(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
             int index = SendMessage(hChara, CB_GETCURSEL, 0, 0);
             data->playerColor[index] = DialogBoxParam(GetModuleHandle(NULL), 
                 MAKEINTRESOURCE(IDD_COLOR), hDlg, color, (LPARAM)(data->playerColor[index]));
-            RECT rect = { data->colorBlockX,data->colorBlockY,
-            data->colorBlockX + data->colorBlockSize,
-            data->colorBlockY + data->colorBlockSize };
-            InvalidateRect(hDlg, &rect, TRUE);
+            {
+                RECT rect = { data->colorBlockX,data->colorBlockY,
+                data->colorBlockX + data->colorBlockSize,
+                data->colorBlockY + data->colorBlockSize };
+                InvalidateRect(hDlg, &rect, TRUE);
+            }
+            {
+                RECT rect = { 0,0,data->tableX * data->cellSize,data->tableY * data->cellSize };
+                InvalidateRect(hDlg, &rect, TRUE);
+            }
+            data->ifCreate = FALSE;
+            data->ifMouseDown = FALSE;
             
             return (INT_PTR)TRUE;
         }

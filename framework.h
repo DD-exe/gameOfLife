@@ -1,6 +1,6 @@
 ﻿#pragma once
 #include "targetver.h"
-#define WIN32_LEAN_AND_MEAN             // 从Windows头文件中排除极少使用的内容
+#define WIN32_LEAN_AND_MEAN // 从Windows头文件中排除极少使用的内容
 // Windows 头文件
 #include <windows.h>
 // C 运行时头文件
@@ -81,6 +81,22 @@ struct coData {
     INT r, g, b;
     COLORREF oc;
     BOOL ifMouseDown;
+};
+struct vsoData {
+    std::unordered_map<INT, std::unordered_map<INT, BOOL>> grid[2];
+    BOOL ifCreate;
+    BOOL ifRun;
+    BOOL ifMouseDown;
+    INT lastX, lastY;
+    INT speed;
+    INT cellSize; INT tableX; INT tableY; INT listHalfSize;
+    INT4 rule[2];
+    INT att[2]; INT def[2];
+    INT moveX, moveY;
+    COLORREF playerColor[2];
+    INT colorBlockX;
+    INT colorBlockY;
+    INT colorBlockSize;
 };
 BOOL findLife(std::unordered_map<INT, std::unordered_map<INT, BOOL>> &grid, INT x, INT y);      // life
 void exchangeLife(std::unordered_map<INT, std::unordered_map<INT, BOOL>>& grid, INT x, INT y);

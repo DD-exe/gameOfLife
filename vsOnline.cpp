@@ -40,12 +40,12 @@ INT_PTR CALLBACK VSOnline(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
 INT_PTR CALLBACK VSOnlineDot(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
 {
     UNREFERENCED_PARAMETER(lParam);
-    vsData* data = (vsData*)GetWindowLongPtr(hDlg, GWLP_USERDATA);
+    vsoData* data = (vsoData*)GetWindowLongPtr(hDlg, GWLP_USERDATA);
     switch (message)
     {
     case WM_INITDIALOG:
     {
-        vsData* data = new vsData();
+        vsoData* data = new vsoData();
         data->ifCreate = FALSE;
         data->ifRun = FALSE;
         data->ifMouseDown = FALSE;

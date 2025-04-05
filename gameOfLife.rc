@@ -96,7 +96,7 @@ CAPTION "关于 gameOfLife"
 FONT 9, "MS Shell Dlg", 0, 0, 0x1
 BEGIN
     ICON            IDI_LINico,IDC_STATIC,14,14,20,20
-    LTEXT           "gameOfLife, 版本 1.0",IDC_STATIC,42,14,114,8,SS_NOPREFIX
+    LTEXT           "gameOfLife, 版本 2.0",IDC_STATIC,42,14,114,8,SS_NOPREFIX
     LTEXT           "版权所有ejeasfs(c) 2025",IDC_STATIC,42,26,114,8
     DEFPUSHBUTTON   "确定",IDOK,113,41,50,14,WS_GROUP
 END

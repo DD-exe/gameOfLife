@@ -213,10 +213,19 @@ INT_PTR CALLBACK single(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
         else if (LOWORD(lParam) >= data->colorBlockX && LOWORD(lParam) < data->colorBlockX + data->colorBlockSize && HIWORD(lParam) < data->colorBlockY + data->colorBlockSize) {
             data->playerColor = DialogBoxParam(GetModuleHandle(NULL),
                 MAKEINTRESOURCE(IDD_COLOR), hDlg, color, (LPARAM)(data->playerColor));
-            RECT rect = { data->colorBlockX,data->colorBlockY,
-            data->colorBlockX + data->colorBlockSize,
-            data->colorBlockY + data->colorBlockSize };
-            InvalidateRect(hDlg, &rect, TRUE);
+            {
+                RECT rect = { data->colorBlockX,data->colorBlockY,
+                data->colorBlockX + data->colorBlockSize,
+                data->colorBlockY + data->colorBlockSize };
+                InvalidateRect(hDlg, &rect, TRUE);
+            }
+            {
+                RECT rect = { 0,0,data->tableX*data->cellSize,data->tableY*data->cellSize };
+                InvalidateRect(hDlg, &rect, TRUE);
+            }
+            data->ifCreate = FALSE;
+            data->ifMouseDown = FALSE;
+
             return (INT_PTR)TRUE;
         }
         return (INT_PTR)TRUE;
