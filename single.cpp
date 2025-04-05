@@ -3,10 +3,6 @@
 */
 #include "framework.h"
 #include "gameOfLife.h"
-#define RGBgrey     RGB(200,200,200)
-#define RGBwhite    RGB(255,255,255)
-#define RGBblue     RGB(100,100,255)
-#define RGBpurple   RGB(180,150,255)
 
 INT_PTR CALLBACK single(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
 {

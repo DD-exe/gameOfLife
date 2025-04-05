@@ -18,6 +18,11 @@
 #include <unordered_map>
 #include <string>
 
+#define RGBgrey     RGB(200,200,200)
+#define RGBblack    RGB(0,0,0)
+#define RGBwhite    RGB(255,255,255)
+#define RGBgreen    RGB(60,255,176)
+#define RGBpurple   RGB(180,150,255)
 enum STATE {
     DEAD, LIVE
 };
@@ -103,6 +108,7 @@ INT_PTR CALLBACK single(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam); 
 void SetSingleWindows(HWND hDlg, siData* data);
 void moveSingleWindows(HWND hDlg, siData* data, INT clientWidth);
 INT_PTR CALLBACK VSOnline(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam);               // vsOnline
+INT_PTR CALLBACK VSOnlineDot(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam);
 INT_PTR CALLBACK color(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam);                  // color
 INT_PTR CALLBACK CreateRoomProc(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam);         // createRoom
 INT_PTR CALLBACK JoinRoomProc(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam);           // joinRoom

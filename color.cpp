@@ -3,7 +3,6 @@
 */
 #include "framework.h"
 #include "gameOfLife.h"
-#define RGBpurple   RGB(180,150,255)
 
 INT_PTR CALLBACK color(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
 {

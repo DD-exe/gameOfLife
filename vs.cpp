@@ -1,10 +1,5 @@
 #include "framework.h"
 #include "gameOfLife.h"
-#define RGBgrey     RGB(200,200,200)
-#define RGBblack    RGB(0,0,0)
-#define RGBwhite    RGB(255,255,255)
-#define RGBgreen    RGB(60,255,176)
-#define RGBpurple   RGB(180,150,255)
 
 INT_PTR CALLBACK VSdot(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
 {
