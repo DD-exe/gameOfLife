@@ -110,56 +110,163 @@ INT_PTR CALLBACK VSOnlineDot(HWND hDlg, UINT message, WPARAM wParam, LPARAM lPar
             }
             break;
         }
-        case IDPlayerOK:
+        case ID_ADDATT:
         {
             HWND hChara = GetDlgItem(hDlg, IDC_CHARA);
             int index = SendMessage(hChara, CB_GETCURSEL, 0, 0);
-            BOOL success1, success2, success3, success4;
-            INT p1att = GetDlgItemInt(hDlg, IDC_P1ATT, &success1, TRUE);
-            INT p1def = GetDlgItemInt(hDlg, IDC_P1DEF, &success2, TRUE);
-            INT p1muv = GetDlgItemInt(hDlg, IDC_P1MUV, &success3, TRUE);
-            INT p1suv = GetDlgItemInt(hDlg, IDC_P1SUV, &success4, TRUE);
-            if (success1 && success2 && success3 && success4) {
-                data->att[index] = p1att;
-                data->def[index] = p1def;
-                switch (p1muv)
+            if (index == 0) {
+                if (data->score[index] >= 2) {
+                    data->score[index] -= 2;
+                    data->att[index] += 1;
+                    SetWindowText(GetDlgItem(hDlg, ID_OUTPUT1), std::to_wstring(data->att[index]).c_str());              
+                    SetWindowText(GetDlgItem(hDlg, ID_OUTPUT), std::to_wstring(data->score[index]).c_str());
+                }
+            }            
+            break;
+        }
+        case ID_ADDDEF:
+        {
+            HWND hChara = GetDlgItem(hDlg, IDC_CHARA);
+            int index = SendMessage(hChara, CB_GETCURSEL, 0, 0);
+            if (index == 0) {
+                if (data->score[index] >= 2) {
+                    data->score[index] -= 2;
+                    data->def[index] += 1;
+                    SetWindowText(GetDlgItem(hDlg, ID_OUTPUT2), std::to_wstring(data->def[index]).c_str());
+                    SetWindowText(GetDlgItem(hDlg, ID_OUTPUT), std::to_wstring(data->score[index]).c_str());
+                }
+            }
+            break;
+        }
+        case ID_ADDMUV:
+        {
+            HWND hChara = GetDlgItem(hDlg, IDC_CHARA);
+            int index = SendMessage(hChara, CB_GETCURSEL, 0, 0);
+            if (index == 0) {
+                if (data->score[index] >= 100&&data->muv[index]<3) {
+                    data->score[index] -= 100;
+                    data->muv[index] += 1;
+                }
+                switch (data->muv[index])
                 {
                 case 1:
-                    data->muv[index] = 1;
                     data->rule[index].z = 3; data->rule[index].t = 3;
                     break;
                 case 2:
-                    data->muv[index] = 2;
                     data->rule[index].z = 3; data->rule[index].t = 4;
                     break;
                 case 3:
-                    data->muv[index] = 3;
                     data->rule[index].z = 2; data->rule[index].t = 4;
                     break;
-                default:
-                    break;
                 }
-                switch (p1suv)
+                SetWindowText(GetDlgItem(hDlg, ID_OUTPUT3), std::to_wstring(data->muv[index]).c_str());
+                SetWindowText(GetDlgItem(hDlg, ID_OUTPUT), std::to_wstring(data->score[index]).c_str());
+            }
+            break;
+        }
+        case ID_ADDSUV:
+        {
+            HWND hChara = GetDlgItem(hDlg, IDC_CHARA);
+            int index = SendMessage(hChara, CB_GETCURSEL, 0, 0);
+            if (index == 0) {
+                if (data->score[index] >= 100 && data->suv[index] < 3) {
+                    data->score[index] -= 100;
+                    data->suv[index] += 1;
+                }
+                switch (data->suv[index])
                 {
                 case 1:
-                    data->suv[index] = 1;
                     data->rule[index].x = 2; data->rule[index].y = 3;
                     break;
                 case 2:
-                    data->suv[index] = 2;
                     data->rule[index].x = 2; data->rule[index].y = 4;
                     break;
                 case 3:
-                    data->suv[index] = 3;
                     data->rule[index].x = 1; data->rule[index].y = 4;
                     break;
-                default:
+                }
+                SetWindowText(GetDlgItem(hDlg, ID_OUTPUT4), std::to_wstring(data->suv[index]).c_str());
+                SetWindowText(GetDlgItem(hDlg, ID_OUTPUT), std::to_wstring(data->score[index]).c_str());
+            }
+            break;
+        }
+        case ID_SUBATT:
+        {
+            HWND hChara = GetDlgItem(hDlg, IDC_CHARA);
+            int index = SendMessage(hChara, CB_GETCURSEL, 0, 0);
+            if (index == 0) {
+                if (data->att[index] > 0) {
+                    data->score[index] += 2;
+                    data->att[index] -= 1;
+                    SetWindowText(GetDlgItem(hDlg, ID_OUTPUT1), std::to_wstring(data->att[index]).c_str());
+                    SetWindowText(GetDlgItem(hDlg, ID_OUTPUT), std::to_wstring(data->score[index]).c_str());
+                }
+            }
+            break;
+        }
+        case ID_SUBDEF:
+        {
+            HWND hChara = GetDlgItem(hDlg, IDC_CHARA);
+            int index = SendMessage(hChara, CB_GETCURSEL, 0, 0);
+            if (index == 0) {
+                if (data->def[index] > 0) {
+                    data->score[index] += 2;
+                    data->def[index] -= 1;
+                    SetWindowText(GetDlgItem(hDlg, ID_OUTPUT2), std::to_wstring(data->def[index]).c_str());
+                    SetWindowText(GetDlgItem(hDlg, ID_OUTPUT), std::to_wstring(data->score[index]).c_str());
+                }
+            }
+            break;
+        }
+        case ID_SUBMUV:
+        {
+            HWND hChara = GetDlgItem(hDlg, IDC_CHARA);
+            int index = SendMessage(hChara, CB_GETCURSEL, 0, 0);
+            if (index == 0) {
+                if (data->muv[index] > 1) {
+                    data->score[index] += 100;
+                    data->muv[index] -= 1;
+                }
+                switch (data->muv[index])
+                {
+                case 1:
+                    data->rule[index].z = 3; data->rule[index].t = 3;
+                    break;
+                case 2:
+                    data->rule[index].z = 3; data->rule[index].t = 4;
+                    break;
+                case 3:
+                    data->rule[index].z = 2; data->rule[index].t = 4;
                     break;
                 }
-                SetWindowText(GetDlgItem(hDlg, ID_OUTPUT1), std::to_wstring(data->att[index]).c_str());
-                SetWindowText(GetDlgItem(hDlg, ID_OUTPUT2), std::to_wstring(data->def[index]).c_str());
                 SetWindowText(GetDlgItem(hDlg, ID_OUTPUT3), std::to_wstring(data->muv[index]).c_str());
+                SetWindowText(GetDlgItem(hDlg, ID_OUTPUT), std::to_wstring(data->score[index]).c_str());
+            }
+            break;
+        }
+        case ID_SUBSUV:
+        {
+            HWND hChara = GetDlgItem(hDlg, IDC_CHARA);
+            int index = SendMessage(hChara, CB_GETCURSEL, 0, 0);
+            if (index == 0) {
+                if (data->suv[index] > 1) {
+                    data->score[index] += 100;
+                    data->suv[index] -= 1;
+                }
+                switch (data->suv[index])
+                {
+                case 1:
+                    data->rule[index].x = 2; data->rule[index].y = 3;
+                    break;
+                case 2:
+                    data->rule[index].x = 2; data->rule[index].y = 4;
+                    break;
+                case 3:
+                    data->rule[index].x = 1; data->rule[index].y = 4;
+                    break;
+                }
                 SetWindowText(GetDlgItem(hDlg, ID_OUTPUT4), std::to_wstring(data->suv[index]).c_str());
+                SetWindowText(GetDlgItem(hDlg, ID_OUTPUT), std::to_wstring(data->score[index]).c_str());
             }
             break;
         }
@@ -269,16 +376,24 @@ INT_PTR CALLBACK VSOnlineDot(HWND hDlg, UINT message, WPARAM wParam, LPARAM lPar
             HWND hChara = GetDlgItem(hDlg, IDC_CHARA);
             int index = SendMessage(hChara, CB_GETCURSEL, 0, 0);
             if (index == 0) {
-                EnableWindow(GetDlgItem(hDlg, IDC_P1ATT), TRUE);
-                EnableWindow(GetDlgItem(hDlg, IDC_P1DEF), TRUE);
-                EnableWindow(GetDlgItem(hDlg, IDC_P1MUV), TRUE);
-                EnableWindow(GetDlgItem(hDlg, IDC_P1SUV), TRUE);
+                EnableWindow(GetDlgItem(hDlg, ID_ADDATT), TRUE);
+                EnableWindow(GetDlgItem(hDlg, ID_ADDDEF), TRUE);
+                EnableWindow(GetDlgItem(hDlg, ID_ADDMUV), TRUE);
+                EnableWindow(GetDlgItem(hDlg, ID_ADDSUV), TRUE);
+                EnableWindow(GetDlgItem(hDlg, ID_SUBATT), TRUE);
+                EnableWindow(GetDlgItem(hDlg, ID_SUBDEF), TRUE);
+                EnableWindow(GetDlgItem(hDlg, ID_SUBMUV), TRUE);
+                EnableWindow(GetDlgItem(hDlg, ID_SUBSUV), TRUE);
             }
             else {
-                EnableWindow(GetDlgItem(hDlg, IDC_P1ATT), FALSE);
-                EnableWindow(GetDlgItem(hDlg, IDC_P1DEF), FALSE);
-                EnableWindow(GetDlgItem(hDlg, IDC_P1MUV), FALSE);
-                EnableWindow(GetDlgItem(hDlg, IDC_P1SUV), FALSE);
+                EnableWindow(GetDlgItem(hDlg, ID_ADDATT), FALSE);
+                EnableWindow(GetDlgItem(hDlg, ID_ADDDEF), FALSE);
+                EnableWindow(GetDlgItem(hDlg, ID_ADDMUV), FALSE);
+                EnableWindow(GetDlgItem(hDlg, ID_ADDSUV), FALSE);
+                EnableWindow(GetDlgItem(hDlg, ID_SUBATT), FALSE);
+                EnableWindow(GetDlgItem(hDlg, ID_SUBDEF), FALSE);
+                EnableWindow(GetDlgItem(hDlg, ID_SUBMUV), FALSE);
+                EnableWindow(GetDlgItem(hDlg, ID_SUBSUV), FALSE);
             }
             SetWindowText(GetDlgItem(hDlg, ID_OUTPUT1), std::to_wstring(data->att[index]).c_str());
             SetWindowText(GetDlgItem(hDlg, ID_OUTPUT2), std::to_wstring(data->def[index]).c_str());

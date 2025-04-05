@@ -51,9 +51,18 @@
 #define IDvsLEFT                        1014
 #define IDvsOnlineJOIN                  1014
 #define IDvsRIGHT                       1015
+#define ID_SUBATT                       1016
+#define ID_ADDATT                       1017
+#define ID_SUBDEF                       1018
+#define ID_ADDDEF                       1019
+#define ID_SUBMUV                       1020
 #define IDC_PLAYERNUMBERTEXT            1021
+#define ID_ADDMUV                       1021
 #define IDC_PLAYERNUMBER                1022
+#define ID_SUBSUV                       1022
 #define IDC_LOCALIPTEXT                 1023
+#define IDvsRIGHT5                      1023
+#define ID_ADDSUV                       1023
 #define IDC_LOCALIP                     1024
 #define IDC_ROOMIPTEXT                  1025
 #define IDC_IPADDRESS1                  1026
@@ -85,7 +94,6 @@
 #define ID_EDIT4OK                      32793
 #define ID_OUTPUT4                      32794
 #define ID_VS                           32795
-#define ID_OUTPUT7                      32795
 #define ID_TIMER3                       32796
 #define ID_SINGLE                       32797
 #define ID_SINGLEBUTTON                 32798
