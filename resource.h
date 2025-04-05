@@ -10,6 +10,8 @@
 #define ID_START                        6
 #define ID_STOP                         7
 #define IDlizi                          8
+#define ID_STARTSERVER                  8
+#define ID_STARTCLIENT                  11
 #define IDD_GAMEOFLIFE_DIALOG           102
 #define IDS_APP_TITLE                   103
 #define IDD_ABOUTBOX                    103
@@ -56,6 +58,7 @@
 #define IDC_ROOMIPTEXT                  1025
 #define IDC_IPADDRESS1                  1026
 #define IDC_ROOMIP                      1026
+#define ID_CNT                          1028
 #define ID_TIMER                        32771
 #define ID_TIMER2                       32772
 #define ID_SAVE                         32773
@@ -82,6 +85,7 @@
 #define ID_EDIT4OK                      32793
 #define ID_OUTPUT4                      32794
 #define ID_VS                           32795
+#define ID_OUTPUT7                      32795
 #define ID_TIMER3                       32796
 #define ID_SINGLE                       32797
 #define ID_SINGLEBUTTON                 32798
@@ -102,7 +106,7 @@
 #define _APS_NO_MFC                     1
 #define _APS_NEXT_RESOURCE_VALUE        145
 #define _APS_NEXT_COMMAND_VALUE         32808
-#define _APS_NEXT_CONTROL_VALUE         1028
+#define _APS_NEXT_CONTROL_VALUE         1029
 #define _APS_NEXT_SYMED_VALUE           110
 #endif
 #endif

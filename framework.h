@@ -85,7 +85,9 @@ struct coData {
 struct vsoData {
     std::unordered_map<INT, std::unordered_map<INT, BOOL>> grid[2];
     BOOL ifCreate;
-    BOOL ifServer;
+    BOOL ifServer,ifClient;
+    wchar_t targetIP[100];
+    nlohmann::json theMove;
     BOOL ifMouseDown;
     INT score[2];       // 设想：开局20点，每回合增加10点，
                         // 1点可改变一格状态，
@@ -102,6 +104,7 @@ struct vsoData {
     INT colorBlockY;
     INT colorBlockSize;
 };
+using GridType = std::unordered_map<INT, std::unordered_map<INT, BOOL>>;
 BOOL findLife(std::unordered_map<INT, std::unordered_map<INT, BOOL>> &grid, INT x, INT y);      // life
 void exchangeLife(std::unordered_map<INT, std::unordered_map<INT, BOOL>>& grid, INT x, INT y);
 void myLife(std::unordered_map<INT, std::unordered_map<INT, BOOL>>& grid,
@@ -122,6 +125,7 @@ void bihWrite(BITMAPINFOHEADER& bih, FILE* file, INT dx, INT dy, INT duiqiX);
 INT getAll(std::unordered_map<INT, std::unordered_map<INT, BOOL>>& grid,INT x, INT y, INT z);   // tools
 void delState(STATE** x);
 int getRandomNum(int min, int max);
+std::string wc2s(const wchar_t* wstr);
 INT_PTR CALLBACK About(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam);                  // about
 INT_PTR CALLBACK VSdot(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam);                  // vs
 INT_PTR CALLBACK single(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam);                 // single
@@ -132,6 +136,9 @@ INT_PTR CALLBACK VSOnlineDot(HWND hDlg, UINT message, WPARAM wParam, LPARAM lPar
 INT_PTR CALLBACK color(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam);                  // color
 INT_PTR CALLBACK CreateRoomProc(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam);         // createRoom
 INT_PTR CALLBACK JoinRoomProc(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam);           // joinRoom
+BOOL runServer(GridType& grid);                                                                 // trans
+BOOL runClient(const char* serverIP, GridType& grid, nlohmann::json& change);
+void mySendMessage();
 
 // inline
 inline void getClientXY(HWND hWnd, INT* x, INT* y) {

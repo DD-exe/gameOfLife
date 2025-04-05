@@ -49,6 +49,9 @@ INT_PTR CALLBACK VSOnlineDot(HWND hDlg, UINT message, WPARAM wParam, LPARAM lPar
         data->ifCreate = FALSE;
         // data->ifRun = FALSE;
         data->ifMouseDown = FALSE;
+        data->ifServer = FALSE;
+        data->ifClient = FALSE;
+        SetWindowText(GetDlgItem(hDlg, ID_CNT), L"未启动");
         data->lastX = data->lastY = -1;
         data->cellSize = 10;
         data->listHalfSize = 80;
@@ -74,11 +77,12 @@ INT_PTR CALLBACK VSOnlineDot(HWND hDlg, UINT message, WPARAM wParam, LPARAM lPar
         SendMessage(hCombo, CB_ADDSTRING, 0, (LPARAM)L"己阵营");
         SendMessage(hCombo, CB_ADDSTRING, 0, (LPARAM)L"他阵营");
         SendMessage(hCombo, CB_SETCURSEL, 0, 0);                                // 选择第一个选项
-        SetWindowText(GetDlgItem(hDlg, ID_OUTPUT1), std::to_wstring(data->att[0]).c_str());
-        SetWindowText(GetDlgItem(hDlg, ID_OUTPUT2), std::to_wstring(data->def[0]).c_str());
-        SetWindowText(GetDlgItem(hDlg, ID_OUTPUT3), std::to_wstring(data->muv[0]).c_str());
-        SetWindowText(GetDlgItem(hDlg, ID_OUTPUT4), std::to_wstring(data->suv[0]).c_str());
-        SetWindowText(GetDlgItem(hDlg, ID_OUTPUT), std::to_wstring(data->score[0]).c_str());
+        SetDlgItemText(hDlg, ID_OUTPUT1, std::to_wstring(data->att[0]).c_str());
+        SetDlgItemText(hDlg, ID_OUTPUT2, std::to_wstring(data->def[0]).c_str());
+        SetDlgItemText(hDlg, ID_OUTPUT3, std::to_wstring(data->muv[0]).c_str());
+        SetDlgItemText(hDlg, ID_OUTPUT4, std::to_wstring(data->suv[0]).c_str());
+        SetDlgItemText(hDlg, ID_OUTPUT, std::to_wstring(data->score[0]).c_str());
+        SetDlgItemText(hDlg, IDC_ROOMIP, L"127.0.0.1");
         SetWindowLongPtr(hDlg, GWLP_USERDATA, (LONG_PTR)data);
         return (INT_PTR)TRUE;
     }
@@ -180,6 +184,38 @@ INT_PTR CALLBACK VSOnlineDot(HWND hDlg, UINT message, WPARAM wParam, LPARAM lPar
             RECT rect = { 0,0,data->tableX * data->cellSize,data->tableY * data->cellSize };
             InvalidateRect(hDlg, &rect, TRUE);
             break;
+        }
+        case ID_STARTSERVER:
+        {
+            EnableWindow(GetDlgItem(hDlg,ID_STARTCLIENT), FALSE);
+            EnableWindow(GetDlgItem(hDlg, IDC_IPADDRESS1), FALSE);
+            SetDlgItemText(hDlg, ID_CNT, L"等待中……");
+            data->ifServer = runServer(data->grid[0]); // trans缺陷，只传一个？
+            if (data->ifServer) {
+                SetDlgItemText(hDlg, ID_CNT, L"已连接");
+                EnableWindow(GetDlgItem(hDlg, ID_STARTSERVER), FALSE);
+            }
+            else {
+                SetDlgItemText(hDlg, ID_CNT, L"无连接");
+                EnableWindow(GetDlgItem(hDlg, ID_STARTCLIENT), TRUE);
+                EnableWindow(GetDlgItem(hDlg, IDC_IPADDRESS1), TRUE);
+            }           
+            return (INT_PTR)TRUE;
+        }
+        case ID_STARTCLIENT:
+        {
+            BOOL success=GetDlgItemText(hDlg, IDC_ROOMIP, data->targetIP, 100);
+            if (success) {
+                EnableWindow(GetDlgItem(hDlg, ID_STARTSERVER), FALSE);
+                data->ifClient = runClient(wc2s(data->targetIP).c_str(), data->grid[0], data->theMove);
+                if (data->ifClient) {
+                    SetDlgItemText(hDlg, ID_CNT, L"");
+                }
+                else {
+                    EnableWindow(GetDlgItem(hDlg, ID_STARTSERVER), TRUE);
+                }
+            }
+            return (INT_PTR)TRUE;
         }
         case IDM_SAVE:
         {
@@ -366,7 +402,6 @@ INT_PTR CALLBACK VSOnlineDot(HWND hDlg, UINT message, WPARAM wParam, LPARAM lPar
     }
     case WM_MOUSEMOVE:
     {
-
         if (data->ifMouseDown) {  // 仅在鼠标按住时处理
             int x = LOWORD(lParam) / data->cellSize;
             int y = HIWORD(lParam) / data->cellSize;

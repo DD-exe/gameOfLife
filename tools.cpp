@@ -50,3 +50,10 @@ int getRandomNum(int min, int max) {
     std::uniform_int_distribution<int> distrib(min, max);
     return distrib(gen);
 }
+
+std::string wc2s(const wchar_t* wstr) {
+    int len = WideCharToMultiByte(CP_UTF8, 0, wstr, -1, nullptr, 0, nullptr, nullptr);
+    std::string str(len, 0);
+    WideCharToMultiByte(CP_UTF8, 0, wstr, -1, &str[0], len, nullptr, nullptr);
+    return str;
+}

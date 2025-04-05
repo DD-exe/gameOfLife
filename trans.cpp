@@ -47,7 +47,7 @@ static GridType deserializeGrid(const json& j) {
     return grid;
 }
 
-void SendMessage() {
+void mySendMessage() {
     ifsend = true;
 }
 
@@ -112,15 +112,16 @@ void serverReceiveLoop(ENetHost* server) {
     }
 }
 
-void runServer(GridType& grid) {
+BOOL runServer(GridType& grid) {
     ENetAddress address;
     address.host = ENET_HOST_ANY;
     address.port = 12138;
 
-    ENetHost* server = enet_host_create(&address, 1, 2, 0, 0);
+    ENetHost* server = enet_host_create(&address, 1, 2, 0, 0); // 此处有问题，什么host.c，
+                                                               // 疑似/lib里enet.lib差东西?
     if (server == nullptr) {
         cerr << "服务器初始化失败！" << endl;
-        exit(EXIT_FAILURE);
+        return FALSE;// exit(EXIT_FAILURE);
     }
 
     cout << "服务器启动，监听端口 12138，等待客户端连接..." << endl;
@@ -132,7 +133,7 @@ void runServer(GridType& grid) {
     else {
         cerr << "客户端连接超时。" << endl;
         enet_host_destroy(server);
-        return;
+        return FALSE;
     }
 
     // 等待客户端发送 "准备" 指令
@@ -158,6 +159,7 @@ void runServer(GridType& grid) {
     receiveThread.join();
 
     enet_host_destroy(server);
+    return TRUE;
 }
 
 void clientSendLoop(ENetPeer* peer, json& change) {
@@ -224,11 +226,11 @@ void clientReceiveLoop(ENetHost* client, GridType& grid) {
     }
 }
 
-void runClient(const char* serverIP, GridType& grid, json& change) {
+BOOL runClient(const char* serverIP, GridType& grid, json& change) {
     ENetHost* client = enet_host_create(nullptr, 1, 2, 0, 0);
     if (client == nullptr) {
         cerr << "客户端初始化失败！" << endl;
-        exit(EXIT_FAILURE);
+        return FALSE;// exit(EXIT_FAILURE);
     }
 
     ENetAddress address;
@@ -239,7 +241,7 @@ void runClient(const char* serverIP, GridType& grid, json& change) {
     if (peer == nullptr) {
         cerr << "无法创建连接！" << endl;
         enet_host_destroy(client);
-        exit(EXIT_FAILURE);
+        return FALSE; // exit(EXIT_FAILURE);
     }
 
     ENetEvent event;
@@ -250,7 +252,7 @@ void runClient(const char* serverIP, GridType& grid, json& change) {
         cerr << "连接失败或超时。" << endl;
         enet_peer_reset(peer);
         enet_host_destroy(client);
-        exit(EXIT_FAILURE);
+        return FALSE; // exit(EXIT_FAILURE);
     }
 
     // 发送 "准备" 指令
@@ -270,6 +272,7 @@ void runClient(const char* serverIP, GridType& grid, json& change) {
     receiveThread.join();
 
     enet_host_destroy(client);
+    return TRUE;
 }
 
 /*
