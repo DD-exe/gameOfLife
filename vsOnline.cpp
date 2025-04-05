@@ -110,6 +110,7 @@ INT_PTR CALLBACK VSOnlineDot(HWND hDlg, UINT message, WPARAM wParam, LPARAM lPar
             }
             break;
         }
+        // 对于下面一系列add/sub，若为客户端，需要将操作同步给服务端（？
         case ID_ADDATT:
         {
             HWND hChara = GetDlgItem(hDlg, IDC_CHARA);
@@ -272,24 +273,40 @@ INT_PTR CALLBACK VSOnlineDot(HWND hDlg, UINT message, WPARAM wParam, LPARAM lPar
         }
         case ID_START:
         {
-            std::unordered_map<INT, std::unordered_map<INT, BOOL>> ans1;
-            std::unordered_map<INT, std::unordered_map<INT, BOOL>> ans2;
-            myLife(data->grid[0], ans1, data->rule[0], state);
-            myLife(data->grid[1], ans2, data->rule[1], state);
-            RECT rect = { 0, 0,data->tableX * data->cellSize, data->tableY * data->cellSize };
-            data->grid[0] = std::move(ans1);
-            data->grid[1] = std::move(ans2);
-            data->ifCreate = FALSE;
-            InvalidateRect(hDlg, &rect, TRUE);
+            if (data->ifClient || data->ifServer) {
+
+            }
+            else {
+                data->score[0] += 10;
+                data->score[1] += 10;
+                HWND hChara = GetDlgItem(hDlg, IDC_CHARA);
+                int index = SendMessage(hChara, CB_GETCURSEL, 0, 0);
+                SetWindowText(GetDlgItem(hDlg, ID_OUTPUT), std::to_wstring(data->score[index]).c_str());
+                
+                std::unordered_map<INT, std::unordered_map<INT, BOOL>> ans1;
+                std::unordered_map<INT, std::unordered_map<INT, BOOL>> ans2;
+                myLife(data->grid[0], ans1, data->rule[0], state);
+                myLife(data->grid[1], ans2, data->rule[1], state);
+                RECT rect = { 0, 0,data->tableX * data->cellSize, data->tableY * data->cellSize };
+                data->grid[0] = std::move(ans1);
+                data->grid[1] = std::move(ans2);
+                data->ifCreate = FALSE;
+                InvalidateRect(hDlg, &rect, TRUE);
+            }
             break;
         }
         case ID_STOP:
         {
-            data->grid[0].clear();
-            data->grid[1].clear();
-            data->ifCreate = FALSE;
-            RECT rect = { 0,0,data->tableX * data->cellSize,data->tableY * data->cellSize };
-            InvalidateRect(hDlg, &rect, TRUE);
+            if (data->ifClient || data->ifServer) {
+
+            }
+            else {
+                data->grid[0].clear();
+                data->grid[1].clear();
+                data->ifCreate = FALSE;
+                RECT rect = { 0,0,data->tableX * data->cellSize,data->tableY * data->cellSize };
+                InvalidateRect(hDlg, &rect, TRUE);
+            }
             break;
         }
         case ID_STARTSERVER:
@@ -346,6 +363,7 @@ INT_PTR CALLBACK VSOnlineDot(HWND hDlg, UINT message, WPARAM wParam, LPARAM lPar
         case IDvsUP:
         {
             if (data->moveY > 0)--(data->moveY);
+            data->ifCreate = FALSE;
             RECT rect = { 0,0,data->tableX * data->cellSize,data->tableY * data->cellSize };
             InvalidateRect(hDlg, &rect, TRUE);
             return (INT_PTR)TRUE;
@@ -353,6 +371,7 @@ INT_PTR CALLBACK VSOnlineDot(HWND hDlg, UINT message, WPARAM wParam, LPARAM lPar
         case IDvsDOWN:
         {
             ++(data->moveY);
+            data->ifCreate = FALSE;
             RECT rect = { 0,0,data->tableX * data->cellSize,data->tableY * data->cellSize };
             InvalidateRect(hDlg, &rect, TRUE);
             return (INT_PTR)TRUE;
@@ -360,6 +379,7 @@ INT_PTR CALLBACK VSOnlineDot(HWND hDlg, UINT message, WPARAM wParam, LPARAM lPar
         case IDvsLEFT:
         {
             if (data->moveX > 0)--(data->moveX);
+            data->ifCreate = FALSE;
             RECT rect = { 0,0,data->tableX * data->cellSize,data->tableY * data->cellSize };
             InvalidateRect(hDlg, &rect, TRUE);
             return (INT_PTR)TRUE;
@@ -367,6 +387,7 @@ INT_PTR CALLBACK VSOnlineDot(HWND hDlg, UINT message, WPARAM wParam, LPARAM lPar
         case IDvsRIGHT:
         {
             ++(data->moveX);
+            data->ifCreate = FALSE;
             RECT rect = { 0,0,data->tableX * data->cellSize,data->tableY * data->cellSize };
             InvalidateRect(hDlg, &rect, TRUE);
             return (INT_PTR)TRUE;

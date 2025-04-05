@@ -160,6 +160,7 @@ INT_PTR CALLBACK VSdot(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
         case IDvsUP:
         {
             if (data->moveY > 0)--(data->moveY);
+            data->ifCreate = FALSE;
             RECT rect = { 0,0,data->tableX * data->cellSize,data->tableY * data->cellSize };
             InvalidateRect(hDlg, &rect, TRUE);
             return (INT_PTR)TRUE;
@@ -167,6 +168,7 @@ INT_PTR CALLBACK VSdot(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
         case IDvsDOWN:
         {
             ++(data->moveY);
+            data->ifCreate = FALSE;
             RECT rect = { 0,0,data->tableX * data->cellSize,data->tableY * data->cellSize };
             InvalidateRect(hDlg, &rect, TRUE);
             return (INT_PTR)TRUE;
@@ -174,6 +176,7 @@ INT_PTR CALLBACK VSdot(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
         case IDvsLEFT:
         {
             if (data->moveX > 0)--(data->moveX);
+            data->ifCreate = FALSE;
             RECT rect = { 0,0,data->tableX * data->cellSize,data->tableY * data->cellSize };
             InvalidateRect(hDlg, &rect, TRUE);
             return (INT_PTR)TRUE;
@@ -181,6 +184,7 @@ INT_PTR CALLBACK VSdot(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
         case IDvsRIGHT:
         {
             ++(data->moveX);
+            data->ifCreate = FALSE;
             RECT rect = { 0,0,data->tableX * data->cellSize,data->tableY * data->cellSize };
             InvalidateRect(hDlg, &rect, TRUE);
             return (INT_PTR)TRUE;
