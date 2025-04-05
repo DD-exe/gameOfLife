@@ -14,6 +14,7 @@
 #include <winsock2.h>
 #include <ws2tcpip.h>
 #include <iphlpapi.h>
+#pragma comment(lib, "winmm.lib")
 
 using namespace std;
 using json = nlohmann::json;

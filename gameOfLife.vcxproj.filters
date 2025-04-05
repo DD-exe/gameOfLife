@@ -68,6 +68,9 @@
     <ClCompile Include="saveBmp.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="trans.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="gameOfLife.rc">

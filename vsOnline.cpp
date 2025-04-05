@@ -70,7 +70,7 @@ INT_PTR CALLBACK VSOnlineDot(HWND hDlg, UINT message, WPARAM wParam, LPARAM lPar
         SendMessage(hCombo, CB_ADDSTRING, 0, (LPARAM)L"己阵营");
         SendMessage(hCombo, CB_ADDSTRING, 0, (LPARAM)L"他阵营");
         SendMessage(hCombo, CB_SETCURSEL, 0, 0);                                // 选择第一个选项
-        SetWindowText(data->modXuInfo, std::to_wstring(data->).c_str());
+        // SetWindowText(data->modXuInfo, std::to_wstring(data->).c_str());
         SetWindowLongPtr(hDlg, GWLP_USERDATA, (LONG_PTR)data);
         return (INT_PTR)TRUE;
     }
