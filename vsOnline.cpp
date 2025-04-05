@@ -47,20 +47,15 @@ INT_PTR CALLBACK VSOnlineDot(HWND hDlg, UINT message, WPARAM wParam, LPARAM lPar
     {
         vsoData* data = new vsoData();
         data->ifCreate = FALSE;
-        data->ifRun = FALSE;
+        // data->ifRun = FALSE;
         data->ifMouseDown = FALSE;
         data->lastX = data->lastY = -1;
-        data->speed = 10;
         data->cellSize = 10;
         data->listHalfSize = 80;
         data->rule[0].x = 2; data->rule[0].y = 3; data->rule[0].z = 3; data->rule[0].t = 3;
         data->rule[1].x = 2; data->rule[1].y = 3; data->rule[1].z = 3; data->rule[1].t = 3;
-        // data->rule[2].x = 2; data->rule[2].y = 3; data->rule[2].z = 3; data->rule[2].t = 3;
-        // data->rule[3].x = 2; data->rule[3].y = 3; data->rule[3].z = 3; data->rule[3].t = 3;
         data->att[0] = 3; data->def[0] = 3;
         data->att[1] = 3; data->def[1] = 3;
-        // data->att[2] = 3; data->def[2] = 3;
-        // data->att[3] = 3; data->def[3] = 3;
         data->moveX = data->moveY = 0;
         INT clientWidth, clientHeight;
         getClientXY(hDlg, &clientWidth, &clientHeight);
@@ -71,15 +66,11 @@ INT_PTR CALLBACK VSOnlineDot(HWND hDlg, UINT message, WPARAM wParam, LPARAM lPar
         data->colorBlockX = 800;
         data->colorBlockY = 105;
         data->colorBlockSize = 16;
-        // data->player[2] = RGBgrey;
-        // data->player[3] = RGBblack;
         HWND hCombo = GetDlgItem(hDlg, IDC_CHARA);
-        SendMessage(hCombo, CB_ADDSTRING, 0, (LPARAM)L"阵营1");
-        SendMessage(hCombo, CB_ADDSTRING, 0, (LPARAM)L"阵营2");
-        // SendMessage(hCombo, CB_ADDSTRING, 0, (LPARAM)L"阵营三");
-        // SendMessage(hCombo, CB_ADDSTRING, 0, (LPARAM)L"阵营四");
+        SendMessage(hCombo, CB_ADDSTRING, 0, (LPARAM)L"己阵营");
+        SendMessage(hCombo, CB_ADDSTRING, 0, (LPARAM)L"他阵营");
         SendMessage(hCombo, CB_SETCURSEL, 0, 0);                                // 选择第一个选项
-        SetTimer(hDlg, ID_TIMER2, 100 * data->speed, NULL);
+        SetWindowText(data->modXuInfo, std::to_wstring(data->).c_str());
         SetWindowLongPtr(hDlg, GWLP_USERDATA, (LONG_PTR)data);
         return (INT_PTR)TRUE;
     }
@@ -107,25 +98,15 @@ INT_PTR CALLBACK VSOnlineDot(HWND hDlg, UINT message, WPARAM wParam, LPARAM lPar
             }
             break;
         }
-        case IDOKvsSPEED:
-        {
-            BOOL success;
-            data->speed = GetDlgItemInt(hDlg, IDC_EDITvsSPEED, &success, TRUE);
-            if (success) {
-                KillTimer(hDlg, ID_TIMER2);
-                SetTimer(hDlg, ID_TIMER2, 100 * data->speed, NULL);
-            }
-            break;
-        }
         case IDPlayerOK:
         {
+            HWND hChara = GetDlgItem(hDlg, IDC_CHARA);
+            int index = SendMessage(hChara, CB_GETCURSEL, 0, 0);
             BOOL success1, success2, success3, success4;
             INT p1att = GetDlgItemInt(hDlg, IDC_P1ATT, &success1, TRUE);
             INT p1def = GetDlgItemInt(hDlg, IDC_P1DEF, &success2, TRUE);
             INT p1muv = GetDlgItemInt(hDlg, IDC_P1MUV, &success3, TRUE);
             INT p1suv = GetDlgItemInt(hDlg, IDC_P1SUV, &success4, TRUE);
-            HWND hChara = GetDlgItem(hDlg, IDC_CHARA);
-            int index = SendMessage(hChara, CB_GETCURSEL, 0, 0);
             if (success1 && success2 && success3 && success4) {
                 data->att[index] = p1att;
                 data->def[index] = p1def;
@@ -162,7 +143,14 @@ INT_PTR CALLBACK VSOnlineDot(HWND hDlg, UINT message, WPARAM wParam, LPARAM lPar
         }
         case ID_START:
         {
-            data->ifRun = !data->ifRun;
+            std::unordered_map<INT, std::unordered_map<INT, BOOL>> ans1;
+            std::unordered_map<INT, std::unordered_map<INT, BOOL>> ans2;
+            myLife(data->grid[0], ans1, data->rule[0], state);
+            myLife(data->grid[1], ans2, data->rule[1], state);
+            RECT rect = { 0, 0,data->tableX * data->cellSize, data->tableY * data->cellSize };
+            data->grid[0] = std::move(ans1);
+            data->grid[1] = std::move(ans2);
+            InvalidateRect(hDlg, &rect, TRUE);
             break;
         }
         case ID_STOP:
@@ -223,7 +211,23 @@ INT_PTR CALLBACK VSOnlineDot(HWND hDlg, UINT message, WPARAM wParam, LPARAM lPar
         }
         case IDC_CHARA:
         {
-            RECT rect = { 800,105,816,121 };
+            HWND hChara = GetDlgItem(hDlg, IDC_CHARA);
+            int index = SendMessage(hChara, CB_GETCURSEL, 0, 0);
+            if (index == 0) {
+                EnableWindow(GetDlgItem(hDlg, IDC_P1ATT), TRUE);
+                EnableWindow(GetDlgItem(hDlg, IDC_P1DEF), TRUE);
+                EnableWindow(GetDlgItem(hDlg, IDC_P1MUV), TRUE);
+                EnableWindow(GetDlgItem(hDlg, IDC_P1SUV), TRUE);
+            }
+            else {
+                EnableWindow(GetDlgItem(hDlg, IDC_P1ATT), FALSE);
+                EnableWindow(GetDlgItem(hDlg, IDC_P1DEF), FALSE);
+                EnableWindow(GetDlgItem(hDlg, IDC_P1MUV), FALSE);
+                EnableWindow(GetDlgItem(hDlg, IDC_P1SUV), FALSE);
+            }
+            RECT rect = { data->colorBlockX,data->colorBlockY,
+            data->colorBlockX + data->colorBlockSize,
+            data->colorBlockY + data->colorBlockSize };
             InvalidateRect(hDlg, &rect, TRUE);
             return (INT_PTR)TRUE;
         }
@@ -312,7 +316,7 @@ INT_PTR CALLBACK VSOnlineDot(HWND hDlg, UINT message, WPARAM wParam, LPARAM lPar
             RECT rect = { x * data->cellSize, y * data->cellSize,
                         (x + 1) * data->cellSize, (y + 1) * data->cellSize };
             InvalidateRect(hDlg, &rect, TRUE);  // 仅重绘该区域
-            data->lastX = x; data->lastY = y;  // 记录上次处理的格子，避免 `WM_MOUSEMOVE` 立即重复处理
+            data->lastX = x; data->lastY = y;   // 记录上次处理的格子，避免 `WM_MOUSEMOVE` 立即重复处理
         }
         else if (LOWORD(lParam) >= 800 && LOWORD(lParam) < 816 && HIWORD(lParam) >= 105 && HIWORD(lParam) < 121) {
             HWND hChara = GetDlgItem(hDlg, IDC_CHARA);
@@ -352,22 +356,6 @@ INT_PTR CALLBACK VSOnlineDot(HWND hDlg, UINT message, WPARAM wParam, LPARAM lPar
     {
         data->ifMouseDown = FALSE;  // 释放鼠标按下状态
         data->lastX = data->lastY = -1;   // 清除上次处理的格子记录
-        return (INT_PTR)TRUE;
-    }
-    case WM_TIMER:
-    {
-        if (data->ifRun && wParam == ID_TIMER2)
-        {
-            std::unordered_map<INT, std::unordered_map<INT, BOOL>> ans1;
-            std::unordered_map<INT, std::unordered_map<INT, BOOL>> ans2;
-            myLife(data->grid[0], ans1, data->rule[0], state);
-            myLife(data->grid[1], ans2, data->rule[1], state);
-            RECT rect = { 0, 0,data->tableX * data->cellSize, data->tableY * data->cellSize };
-            data->grid[0] = std::move(ans1);
-            data->grid[1] = std::move(ans2);
-            InvalidateRect(hDlg, &rect, TRUE);
-            break;
-        }
         return (INT_PTR)TRUE;
     }
     case WM_DESTROY:

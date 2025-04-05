@@ -85,10 +85,10 @@ struct coData {
 struct vsoData {
     std::unordered_map<INT, std::unordered_map<INT, BOOL>> grid[2];
     BOOL ifCreate;
-    BOOL ifRun;
+    BOOL ifServer;
     BOOL ifMouseDown;
+    INT myScore, yourScore;
     INT lastX, lastY;
-    INT speed;
     INT cellSize; INT tableX; INT tableY; INT listHalfSize;
     INT4 rule[2];
     INT att[2]; INT def[2];
