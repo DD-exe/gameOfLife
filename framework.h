@@ -92,6 +92,7 @@ struct vsoData {
     INT cellSize; INT tableX; INT tableY; INT listHalfSize;
     INT4 rule[2];
     INT att[2]; INT def[2];
+    INT muv[2]; INT suv[2];
     INT moveX, moveY;
     COLORREF playerColor[2];
     INT colorBlockX;

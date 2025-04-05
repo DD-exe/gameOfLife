@@ -71,6 +71,18 @@ BEGIN
     MENUITEM "读取数据(L)",                     IDM_LOAD
 END
 
+IDR_GAMEONLINE MENU
+BEGIN
+    MENUITEM "单步运行(&D)",                    ID_START
+    MENUITEM "重置(&R)",                      ID_STOP
+    POPUP "保存(&S)"
+    BEGIN
+        MENUITEM "保存数据(&D)",                    IDM_SAVE
+        MENUITEM "保存画面(&F)",                    ID_SAVE
+    END
+    MENUITEM "读取数据(L)",                     IDM_LOAD
+END
+
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -182,7 +194,7 @@ BEGIN
     CONTROL         "",IDC_ROOMIP,"SysIPAddress32",WS_TABSTOP,49,7,100,15
 END
 
-IDD_VSONLINE DIALOGEX 0, 0, 564, 277
+IDD_VSONLINE DIALOGEX 0, 0, 564, 327
 STYLE DS_LOCALEDIT | DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_MINIMIZEBOX | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "gameOfLifeVs."
 MENU IDR_GAME
@@ -286,7 +298,7 @@ BEGIN
         VERTGUIDE, 7
         VERTGUIDE, 454
         TOPMARGIN, 7
-        BOTTOMMARGIN, 270
+        BOTTOMMARGIN, 320
         HORZGUIDE, 7
     END
 END

@@ -56,6 +56,8 @@ INT_PTR CALLBACK VSOnlineDot(HWND hDlg, UINT message, WPARAM wParam, LPARAM lPar
         data->rule[1].x = 2; data->rule[1].y = 3; data->rule[1].z = 3; data->rule[1].t = 3;
         data->att[0] = 3; data->def[0] = 3;
         data->att[1] = 3; data->def[1] = 3;
+        data->muv[0] = 1; data->suv[0] = 1;
+        data->muv[1] = 1; data->suv[1] = 1;
         data->moveX = data->moveY = 0;
         INT clientWidth, clientHeight;
         getClientXY(hDlg, &clientWidth, &clientHeight);
@@ -70,7 +72,10 @@ INT_PTR CALLBACK VSOnlineDot(HWND hDlg, UINT message, WPARAM wParam, LPARAM lPar
         SendMessage(hCombo, CB_ADDSTRING, 0, (LPARAM)L"己阵营");
         SendMessage(hCombo, CB_ADDSTRING, 0, (LPARAM)L"他阵营");
         SendMessage(hCombo, CB_SETCURSEL, 0, 0);                                // 选择第一个选项
-        // SetWindowText(data->modXuInfo, std::to_wstring(data->).c_str());
+        SetWindowText(GetDlgItem(hDlg, ID_OUTPUT1), std::to_wstring(data->att[0]).c_str());
+        SetWindowText(GetDlgItem(hDlg, ID_OUTPUT2), std::to_wstring(data->def[0]).c_str());
+        SetWindowText(GetDlgItem(hDlg, ID_OUTPUT3), std::to_wstring(data->muv[0]).c_str());
+        SetWindowText(GetDlgItem(hDlg, ID_OUTPUT4), std::to_wstring(data->suv[0]).c_str());
         SetWindowLongPtr(hDlg, GWLP_USERDATA, (LONG_PTR)data);
         return (INT_PTR)TRUE;
     }
@@ -113,12 +118,15 @@ INT_PTR CALLBACK VSOnlineDot(HWND hDlg, UINT message, WPARAM wParam, LPARAM lPar
                 switch (p1muv)
                 {
                 case 1:
+                    data->muv[index] = 1;
                     data->rule[index].z = 3; data->rule[index].t = 3;
                     break;
                 case 2:
+                    data->muv[index] = 2;
                     data->rule[index].z = 3; data->rule[index].t = 4;
                     break;
                 case 3:
+                    data->muv[index] = 3;
                     data->rule[index].z = 2; data->rule[index].t = 4;
                     break;
                 default:
@@ -127,17 +135,24 @@ INT_PTR CALLBACK VSOnlineDot(HWND hDlg, UINT message, WPARAM wParam, LPARAM lPar
                 switch (p1suv)
                 {
                 case 1:
+                    data->suv[index] = 1;
                     data->rule[index].x = 2; data->rule[index].y = 3;
                     break;
                 case 2:
+                    data->suv[index] = 2;
                     data->rule[index].x = 2; data->rule[index].y = 4;
                     break;
                 case 3:
+                    data->suv[index] = 3;
                     data->rule[index].x = 1; data->rule[index].y = 4;
                     break;
                 default:
                     break;
                 }
+                SetWindowText(GetDlgItem(hDlg, ID_OUTPUT1), std::to_wstring(data->att[index]).c_str());
+                SetWindowText(GetDlgItem(hDlg, ID_OUTPUT2), std::to_wstring(data->def[index]).c_str());
+                SetWindowText(GetDlgItem(hDlg, ID_OUTPUT3), std::to_wstring(data->muv[index]).c_str());
+                SetWindowText(GetDlgItem(hDlg, ID_OUTPUT4), std::to_wstring(data->suv[index]).c_str());
             }
             break;
         }
@@ -225,6 +240,10 @@ INT_PTR CALLBACK VSOnlineDot(HWND hDlg, UINT message, WPARAM wParam, LPARAM lPar
                 EnableWindow(GetDlgItem(hDlg, IDC_P1MUV), FALSE);
                 EnableWindow(GetDlgItem(hDlg, IDC_P1SUV), FALSE);
             }
+            SetWindowText(GetDlgItem(hDlg, ID_OUTPUT1), std::to_wstring(data->att[index]).c_str());
+            SetWindowText(GetDlgItem(hDlg, ID_OUTPUT2), std::to_wstring(data->def[index]).c_str());
+            SetWindowText(GetDlgItem(hDlg, ID_OUTPUT3), std::to_wstring(data->muv[index]).c_str());
+            SetWindowText(GetDlgItem(hDlg, ID_OUTPUT4), std::to_wstring(data->suv[index]).c_str());
             RECT rect = { data->colorBlockX,data->colorBlockY,
             data->colorBlockX + data->colorBlockSize,
             data->colorBlockY + data->colorBlockSize };

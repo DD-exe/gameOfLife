@@ -27,6 +27,8 @@
 #define IDD_COLOR                       137
 #define IDR_GAME                        138
 #define IDD_CREATEROOM                  139
+#define IDR_GAME1                       139
+#define IDR_GAMEONLINE                  139
 #define IDD_JOINROOM                    140
 #define IDD_VSONLINE                    141
 #define IDC_EDITvsSIZE                  1000
