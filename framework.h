@@ -134,8 +134,6 @@ INT getAll(std::unordered_map<INT, std::unordered_map<INT, BOOL>>& grid,INT x, I
 void delState(STATE** x);
 int getRandomNum(int min, int max);
 std::string wc2s(const wchar_t* wstr);
-nlohmann::json move2json(vsoData* data);
-void json2move(vsoData* data, nlohmann::json change);
 bool GetLocalIPAddress(wchar_t* ipBuffer, int bufferSize);
 INT_PTR CALLBACK About(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam);                  // about
 INT_PTR CALLBACK VSdot(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam);                  // vs
@@ -145,9 +143,7 @@ void moveSingleWindows(HWND hDlg, siData* data, INT clientWidth);
 INT_PTR CALLBACK VSOnline(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam);               // vsOnline
 INT_PTR CALLBACK VSOnlineDot(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam);
 INT_PTR CALLBACK color(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam);                  // color
-INT_PTR CALLBACK CreateRoomProc(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam);         // createRoom
-INT_PTR CALLBACK JoinRoomProc(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam);           // joinRoom
-void runServer(vsoData& data, HWND hDlg);                                                                 // trans
+void runServer(vsoData& data, HWND hDlg);                                                       // trans
 void runClient(vsoData& data, HWND hDlg);
 void clientSendMessage();
 void serverSendMessage();

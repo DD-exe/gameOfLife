@@ -145,7 +145,6 @@
   <ItemGroup>
     <ClCompile Include="about.cpp" />
     <ClCompile Include="color.cpp" />
-    <ClCompile Include="createRoom.cpp" />
     <ClCompile Include="rules.cpp" />
     <ClCompile Include="saveBmp.cpp" />
     <ClCompile Include="load.cpp" />
@@ -157,7 +156,6 @@
     <ClCompile Include="trans.cpp" />
     <ClCompile Include="vs.cpp" />
     <ClCompile Include="vsOnline.cpp" />
-    <ClCompile Include="joinRoom.cpp" />
     <ClCompile Include="vsrules.cpp" />
   </ItemGroup>
   <ItemGroup>
