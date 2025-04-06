@@ -16,6 +16,7 @@
 // stl
 #include <unordered_map>
 #include <string>
+#include <thread>
 //network
 #include <nlohmann/json.hpp>
 #include <winsock2.h>
