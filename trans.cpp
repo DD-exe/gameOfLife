@@ -47,6 +47,70 @@ static GridType deserializeGrid(const json& j) {
     return grid;
 }
 
+//序列化vsoData内容
+static json serializeVsoData(const vsoData& data) {
+    nlohmann::json j;
+
+    // 序列化 grid[2]
+    j["grid"] = nlohmann::json::array();
+    for (int i = 0; i < 2; ++i) {
+        nlohmann::json gridJson;
+        for (const auto& [x, innerMap] : data.grid[i]) {
+            nlohmann::json innerJson;
+            for (const auto& [y, value] : innerMap) {
+                innerJson[std::to_string(y)] = value;
+            }
+            gridJson[std::to_string(x)] = innerJson;
+        }
+        j["grid"].push_back(gridJson);
+    }
+
+    // 序列化其他数组成员
+    j["att"] = { data.att[0], data.att[1] };
+    j["def"] = { data.def[0], data.def[1] };
+    j["muv"] = { data.muv[0], data.muv[1] };
+    j["suv"] = { data.suv[0], data.suv[1] };
+    return j;
+}
+
+// 反序列化函数
+void deserializeVsoData(vsoData& data, nlohmann::json j) {
+
+    // 反序列化 grid[2]
+    for (int i = 0; i < 2; ++i) {
+        if (j.contains("grid") && j["grid"].size() > i) {
+            for (auto& [xStr, innerJson] : j["grid"][i].items()) {
+                INT x = std::stoi(xStr);
+                for (auto& [yStr, value] : innerJson.items()) {
+                    INT y = std::stoi(yStr);
+                    data.grid[i][x][y] = value;
+                }
+            }
+        }
+    }
+
+    // 反序列化其他数组成员
+    if (j.contains("att") && j["att"].size() == 2) {
+        data.att[0] = j["att"][0];
+        data.att[1] = j["att"][1];
+    }
+
+    if (j.contains("def") && j["def"].size() == 2) {
+        data.def[0] = j["def"][0];
+        data.def[1] = j["def"][1];
+    }
+
+    if (j.contains("muv") && j["muv"].size() == 2) {
+        data.muv[0] = j["muv"][0];
+        data.muv[1] = j["muv"][1];
+    }
+
+    if (j.contains("suv") && j["suv"].size() == 2) {
+        data.suv[0] = j["suv"][0];
+        data.suv[1] = j["suv"][1];
+    }
+}
+
 void mySendMessage() {
     ifsend = true;
 }
@@ -57,7 +121,7 @@ void serverSendLoop(ENetPeer* peer, vsoData& mainData) {
             this_thread::sleep_for(chrono::seconds(1));
             continue;
         }
-        json data = serializeGrid(mainData.grid[0]);
+        json data = serializeVsoData(mainData);
         string jsonData = data.dump();
         ENetPacket* packet = enet_packet_create(jsonData.c_str(), jsonData.size() + 1, ENET_PACKET_FLAG_RELIABLE);
         enet_peer_send(peer, 0, packet);
@@ -86,11 +150,28 @@ void serverReceiveLoop(ENetHost* server, vsoData& mainData) {
             do {
                 switch (event.type) {
                 case ENET_EVENT_TYPE_RECEIVE: {
-                    string receivedData(reinterpret_cast<char*>(event.packet->data));
-                    cout << "收到客户端数据: " << receivedData << endl;
-                    if (receivedData != "go") {
-                        // 添加对客户端操作数据包的处理
+                    if (!event.packet || event.packet->dataLength == 0) {
+                        printf("Received invalid packet\n");
+                        return;
+                    }
+                    //string receivedData(reinterpret_cast<char*>(event.packet->data));
+                    //cout << "收到客户端数据: " << receivedData << endl;
+                    //if (receivedData != "go") {
+                    //    // 添加对客户端操作数据包的处理
 
+                    //}
+                    try {
+                        // 将数据转换为字符串（注意：packet->data可能不以\0结尾）
+                        std::string jsonStr((const char*)event.packet->data, event.packet->dataLength);
+
+                        // 解析JSON
+                        nlohmann::json jsonData = nlohmann::json::parse(jsonStr);
+
+                        deserializeVsoData(mainData, jsonData);
+
+                    }
+                    catch (const std::exception& e) {
+                        printf("JSON parse error: %s\n", e.what());
                     }
                     enet_packet_destroy(event.packet);
                     break;
@@ -113,13 +194,18 @@ void serverReceiveLoop(ENetHost* server, vsoData& mainData) {
     }
 }
 
-BOOL runServer(vsoData& data) {
+BOOL runServer(vsoData& data, HWND hDlg) {
+    if (enet_initialize())return FALSE;
     ENetAddress address;
     address.host = ENET_HOST_ANY;
     address.port = 12138;
 
     ENetHost* server = enet_host_create(&address, 1, 2, 0, 0); // 此处有问题，什么host.c，
                                                                // 疑似/lib里enet.lib差东西?
+
+        exit(EXIT_FAILURE);
+    
+
     if (server == nullptr) {
         cerr << "服务器初始化失败！" << endl;
         return FALSE;// exit(EXIT_FAILURE);
@@ -169,7 +255,7 @@ void clientSendLoop(ENetPeer* peer, vsoData& mainData) {
             this_thread::sleep_for(chrono::seconds(1));
             continue;
         }
-        json change = move2json(&mainData);
+        json change = serializeVsoData(mainData);
         string jsonData = change.dump(); // 用户的设置数据
         ENetPacket* packet = enet_packet_create(jsonData.c_str(), jsonData.size() + 1, ENET_PACKET_FLAG_RELIABLE);
         enet_peer_send(peer, 0, packet);
@@ -199,7 +285,11 @@ void clientReceiveLoop(ENetHost* client, vsoData& mainData) {
             idleCounter = 0;
             do {
                 if (event.type == ENET_EVENT_TYPE_RECEIVE) {
-                    string receivedData(reinterpret_cast<char*>(event.packet->data));
+                    if (!event.packet || event.packet->dataLength == 0) {
+                        printf("Received invalid packet\n");
+                        return;
+                    }
+                    /*string receivedData(reinterpret_cast<char*>(event.packet->data));
                     if (receivedData != "go") {
                         try {
                             json newdata = json::parse(receivedData);
@@ -209,7 +299,20 @@ void clientReceiveLoop(ENetHost* client, vsoData& mainData) {
                             cerr << "解析JSON数据出错: " << e.what() << endl;
                         }
                     }
-                    cout << "收到服务器数据: " << receivedData << endl;
+                    cout << "收到服务器数据: " << receivedData << endl;*/
+                    try {
+                        // 将数据转换为字符串（注意：packet->data可能不以\0结尾）
+                        std::string jsonStr((const char*)event.packet->data, event.packet->dataLength);
+
+                        // 解析JSON
+                        nlohmann::json jsonData = nlohmann::json::parse(jsonStr);
+
+                        deserializeVsoData(mainData, jsonData);
+                        
+                    }
+                    catch (const std::exception& e) {
+                        printf("JSON parse error: %s\n", e.what());
+                    }
                     enet_packet_destroy(event.packet);
                 }
                 else if (event.type == ENET_EVENT_TYPE_DISCONNECT) {
@@ -228,7 +331,8 @@ void clientReceiveLoop(ENetHost* client, vsoData& mainData) {
     }
 }
 
-BOOL runClient(vsoData& data) {
+BOOL runClient(vsoData& data, HWND hDlg) {
+    if (enet_initialize())return FALSE; 
     ENetHost* client = enet_host_create(nullptr, 1, 2, 0, 0);
     if (client == nullptr) {
         cerr << "客户端初始化失败！" << endl;

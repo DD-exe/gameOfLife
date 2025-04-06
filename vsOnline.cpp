@@ -84,6 +84,8 @@ INT_PTR CALLBACK VSOnlineDot(HWND hDlg, UINT message, WPARAM wParam, LPARAM lPar
         SetDlgItemText(hDlg, ID_OUTPUT, std::to_wstring(data->score[0]).c_str());
         SetDlgItemText(hDlg, IDC_ROOMIP, L"127.0.0.1");
         SetWindowLongPtr(hDlg, GWLP_USERDATA, (LONG_PTR)data);
+        WSADATA wsaData;
+        WSAStartup(MAKEWORD(2, 2), &wsaData);
         return (INT_PTR)TRUE;
     }
     case WM_COMMAND:
@@ -314,7 +316,7 @@ INT_PTR CALLBACK VSOnlineDot(HWND hDlg, UINT message, WPARAM wParam, LPARAM lPar
             EnableWindow(GetDlgItem(hDlg,ID_STARTCLIENT), FALSE);
             EnableWindow(GetDlgItem(hDlg, IDC_IPADDRESS1), FALSE);
             SetDlgItemText(hDlg, ID_CNT, L"等待中……");
-            data->ifServer = runServer(*data); // trans缺陷，只传一个grid？
+            data->ifServer = runServer(*data,hDlg); // trans缺陷，只传一个grid？
                                                // 你看，这就是为什么要传vsoData
             if (data->ifServer) {
                 SetDlgItemText(hDlg, ID_CNT, L"已连接");
@@ -332,7 +334,7 @@ INT_PTR CALLBACK VSOnlineDot(HWND hDlg, UINT message, WPARAM wParam, LPARAM lPar
             BOOL success=GetDlgItemText(hDlg, IDC_ROOMIP, data->targetIP, 100);
             if (success) {
                 EnableWindow(GetDlgItem(hDlg, ID_STARTSERVER), FALSE);
-                data->ifClient = runClient(*data);
+                data->ifClient = runClient(*data, hDlg);
                 if (data->ifClient) {
                     SetDlgItemText(hDlg, ID_CNT, L"");
                 }
@@ -571,6 +573,7 @@ INT_PTR CALLBACK VSOnlineDot(HWND hDlg, UINT message, WPARAM wParam, LPARAM lPar
         delete data;
         KillTimer(hDlg, ID_TIMER2);
         EndDialog(hDlg, LOWORD(wParam));
+        WSACleanup();
         return (INT_PTR)TRUE;
     }
     }
