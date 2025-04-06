@@ -287,6 +287,7 @@ INT_PTR CALLBACK VSOnlineDot(HWND hDlg, UINT message, WPARAM wParam, LPARAM lPar
         {
             if (data->ifClient || data->ifServer) {
 
+
             }
             else {
                 data->score[0] += 10;

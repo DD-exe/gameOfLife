@@ -130,12 +130,6 @@ void serverReceiveLoop(ENetHost* server, vsoData& mainData) {
                         printf("Received invalid packet\n");
                         return;
                     }
-                    //string receivedData(reinterpret_cast<char*>(event.packet->data));
-                    //cout << "收到客户端数据: " << receivedData << endl;
-                    //if (receivedData != "go") {
-                    //    // 添加对客户端操作数据包的处理
-
-                    //}
                     try {
                         // 将数据转换为字符串（注意：packet->data可能不以\0结尾）
                         std::string jsonStr((const char*)event.packet->data, event.packet->dataLength);
@@ -263,36 +257,6 @@ void clientReceiveLoop(ENetHost* client, vsoData& mainData) {
                         printf("Received invalid packet\n");
                         return;
                     }
-                    /*string receivedData(reinterpret_cast<char*>(event.packet->data));
-                    if (receivedData != "go") {
-                        try {
-                            json newdata = json::parse(receivedData);
-                            shortVsoData shortData = deserializeVsoData(newdata);
-                            mainData.att[0] = shortData.att[0];
-                            mainData.att[1] = shortData.att[1];
-
-                            // 复制 def 数组
-                            mainData.def[0] = shortData.def[0];
-                            mainData.def[1] = shortData.def[1];
-
-                            // 复制 muv 数组
-                            mainData.muv[0] = shortData.muv[0];
-                            mainData.muv[1] = shortData.muv[1];
-
-                            // 复制 suv 数组
-                            mainData.suv[0] = shortData.suv[0];
-                            mainData.suv[1] = shortData.suv[1];
-
-                            // 复制 grid 数组
-                            for (int i = 0; i < 2; ++i) {
-                                mainData.grid[i].insert(shortData.grid[i].begin(), shortData.grid[i].end());
-                            }
-                        }
-                        catch (std::exception& e) {
-                            cerr << "解析JSON数据出错: " << e.what() << endl;
-                        }
-                    }
-                    cout << "收到服务器数据: " << receivedData << endl;*/
                     try {
                         // 将数据转换为字符串（注意：packet->data可能不以\0结尾）
                         std::string jsonStr((const char*)event.packet->data, event.packet->dataLength);
