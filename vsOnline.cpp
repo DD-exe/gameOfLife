@@ -338,8 +338,9 @@ INT_PTR CALLBACK VSOnlineDot(HWND hDlg, UINT message, WPARAM wParam, LPARAM lPar
             BOOL success=GetDlgItemText(hDlg, IDC_ROOMIP, data->targetIP, 100);
             if (success) {
                 EnableWindow(GetDlgItem(hDlg, ID_STARTSERVER), FALSE);
+                EnableWindow(GetDlgItem(hDlg, ID_STARTCLIENT), FALSE);
                 std::thread([hDlg, data]() {
-                    data->ifServer = runClient(*data, hDlg);
+                    data->ifClient = runClient(*data, hDlg);
                     PostMessage(hDlg, WM_CLIENT_WAITING, 0, 0);
                     }).detach();
             }
@@ -468,6 +469,7 @@ INT_PTR CALLBACK VSOnlineDot(HWND hDlg, UINT message, WPARAM wParam, LPARAM lPar
             SetDlgItemText(hDlg, ID_CNT, L"");
         }
         else {
+            EnableWindow(GetDlgItem(hDlg, ID_STARTCLIENT), TRUE);
             EnableWindow(GetDlgItem(hDlg, ID_STARTSERVER), TRUE);
         }
         return (INT_PTR)TRUE;

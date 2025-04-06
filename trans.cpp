@@ -28,7 +28,7 @@ static json serializeVsoData(const vsoData& data) {
 
     // 序列化 grid[2]
     j["grid"] = nlohmann::json::array();
-    for (int i = 0; i < 2; ++i) {
+    for (int i = 1; i >= 0; --i) {
         nlohmann::json gridJson;
         for (const auto& [x, innerMap] : data.grid[i]) {
             nlohmann::json innerJson;
@@ -41,14 +41,14 @@ static json serializeVsoData(const vsoData& data) {
     }
 
     // 序列化其他数组成员
-    j["att"] = { data.att[0], data.att[1] };
-    j["def"] = { data.def[0], data.def[1] };
-    j["muv"] = { data.muv[0], data.muv[1] };
-    j["suv"] = { data.suv[0], data.suv[1] };
+    j["att"] = { data.att[1], data.att[0] };
+    j["def"] = { data.def[1], data.def[0] };
+    j["muv"] = { data.muv[1], data.muv[0] };
+    j["suv"] = { data.suv[1], data.suv[0] };
     return j;
 }
 
-// 反序列化函数
+// 反序列化vsoData内容
 void deserializeVsoData(vsoData& data, nlohmann::json j) {
 
     // 反序列化 grid[2]
