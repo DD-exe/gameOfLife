@@ -113,6 +113,7 @@
 #define ID_32810                        32810
 #define WM_SERVER_WAITING				(WM_USER + 1)
 #define WM_CLIENT_WAITING				(WM_USER + 2)
+#define WM_RECEIVE						(WM_USER + 3)
 #define IDC_STATIC                      -1
 
 // Next default values for new objects

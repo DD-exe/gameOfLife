@@ -1,41 +1,5 @@
 #include "framework.h"
 #include "gameOfLife.h"
-
-// 在线对战设置窗口
-INT_PTR CALLBACK VSOnline(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
-{
-    UNREFERENCED_PARAMETER(lParam);
-
-    switch (message)
-    {
-    case WM_INITDIALOG:
-        // 初始化代码（例如设置图标、默认控件状态等）
-        return (INT_PTR)TRUE;
-
-    case WM_COMMAND:
-    {
-        int wmId = LOWORD(wParam);
-
-        switch (wmId)
-        {
-        case IDvsOnlineCREATE:  // "创建房间"按钮
-            DialogBox(GetModuleHandle(NULL),MAKEINTRESOURCE(IDD_CREATEROOM),hDlg,CreateRoomProc);
-            break;
-
-        case IDvsOnlineJOIN:   // "加入房间"按钮
-            DialogBox(GetModuleHandle(NULL),MAKEINTRESOURCE(IDD_JOINROOM),hDlg,JoinRoomProc);
-            break;
-
-        case IDCANCEL:         // 关闭对话框
-            EndDialog(hDlg, LOWORD(wParam));
-            return (INT_PTR)TRUE;
-        }
-    }
-    break;
-    }
-    return (INT_PTR)FALSE;
-}
-
 // 在线对战运行窗口
 INT_PTR CALLBACK VSOnlineDot(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
 {
@@ -51,6 +15,7 @@ INT_PTR CALLBACK VSOnlineDot(HWND hDlg, UINT message, WPARAM wParam, LPARAM lPar
         data->ifMouseDown = FALSE;
         data->ifServer = FALSE;
         data->ifClient = FALSE;
+        data->send = FALSE;
         SetWindowText(GetDlgItem(hDlg, ID_CNT), L"未启动");
         data->lastX = data->lastY = -1;
         data->cellSize = 10;
@@ -286,16 +251,15 @@ INT_PTR CALLBACK VSOnlineDot(HWND hDlg, UINT message, WPARAM wParam, LPARAM lPar
         case ID_START:
         {
             if (data->ifClient || data->ifServer) {
-
-
-            }
-            else {
+                //处理发送
+                data->send = TRUE;
+                //加分
                 data->score[0] += 10;
                 data->score[1] += 10;
                 HWND hChara = GetDlgItem(hDlg, IDC_CHARA);
                 int index = SendMessage(hChara, CB_GETCURSEL, 0, 0);
                 SetWindowText(GetDlgItem(hDlg, ID_OUTPUT), std::to_wstring(data->score[index]).c_str());
-                
+                //重绘
                 std::unordered_map<INT, std::unordered_map<INT, BOOL>> ans1;
                 std::unordered_map<INT, std::unordered_map<INT, BOOL>> ans2;
                 myLife(data->grid[0], ans1, data->rule[0], state);
@@ -303,15 +267,18 @@ INT_PTR CALLBACK VSOnlineDot(HWND hDlg, UINT message, WPARAM wParam, LPARAM lPar
                 RECT rect = { 0, 0,data->tableX * data->cellSize, data->tableY * data->cellSize };
                 data->grid[0] = std::move(ans1);
                 data->grid[1] = std::move(ans2);
-                data->ifCreate = FALSE;
                 InvalidateRect(hDlg, &rect, TRUE);
+                ////删除已有部分
+                //data->grid[0].clear();
+                //data->grid[1].clear();
             }
+            
             break;
         }
-        case ID_STOP:
+        /*case ID_STOP:
         {
-            if (data->ifClient || data->ifServer) {
-
+            if (data->ifClient|| data->ifServer) {
+                data->send = TRUE;
             }
             else {
                 data->grid[0].clear();
@@ -321,12 +288,14 @@ INT_PTR CALLBACK VSOnlineDot(HWND hDlg, UINT message, WPARAM wParam, LPARAM lPar
                 InvalidateRect(hDlg, &rect, TRUE);
             }
             break;
-        }
+        }*/
         case ID_STARTSERVER:
         {
             EnableWindow(GetDlgItem(hDlg,ID_STARTCLIENT), FALSE);
             EnableWindow(GetDlgItem(hDlg, IDC_IPADDRESS1), FALSE);
             EnableWindow(GetDlgItem(hDlg, ID_STARTSERVER), FALSE);
+            EnableWindow(GetDlgItem(hDlg, ID_START), FALSE);
+            EnableWindow(GetDlgItem(hDlg, ID_STOP), FALSE);
             SetDlgItemText(hDlg, ID_CNT, L"等待中……");
             std::thread([hDlg, data]() {
                 runServer(*data, hDlg);
@@ -339,6 +308,8 @@ INT_PTR CALLBACK VSOnlineDot(HWND hDlg, UINT message, WPARAM wParam, LPARAM lPar
             if (success) {
                 EnableWindow(GetDlgItem(hDlg, ID_STARTSERVER), FALSE);
                 EnableWindow(GetDlgItem(hDlg, ID_STARTCLIENT), FALSE);
+                EnableWindow(GetDlgItem(hDlg, ID_START), FALSE);
+                EnableWindow(GetDlgItem(hDlg, ID_STOP), FALSE);
                 std::thread([hDlg, data]() {
                     runClient(*data, hDlg);
                     }).detach();
@@ -424,6 +395,7 @@ INT_PTR CALLBACK VSOnlineDot(HWND hDlg, UINT message, WPARAM wParam, LPARAM lPar
             SetWindowText(GetDlgItem(hDlg, ID_OUTPUT2), std::to_wstring(data->def[index]).c_str());
             SetWindowText(GetDlgItem(hDlg, ID_OUTPUT3), std::to_wstring(data->muv[index]).c_str());
             SetWindowText(GetDlgItem(hDlg, ID_OUTPUT4), std::to_wstring(data->suv[index]).c_str());
+            SetWindowText(GetDlgItem(hDlg, ID_OUTPUT), std::to_wstring(data->score[index]).c_str());
             RECT rect = { data->colorBlockX,data->colorBlockY,
             data->colorBlockX + data->colorBlockSize,
             data->colorBlockY + data->colorBlockSize };
@@ -452,25 +424,48 @@ INT_PTR CALLBACK VSOnlineDot(HWND hDlg, UINT message, WPARAM wParam, LPARAM lPar
     {
         if (data->ifServer) {
             SetDlgItemText(hDlg, ID_CNT, L"已连接");
-            // EnableWindow(GetDlgItem(hDlg, ID_STARTSERVER), FALSE);
+            EnableWindow(GetDlgItem(hDlg, ID_START), TRUE);
+            EnableWindow(GetDlgItem(hDlg, ID_STOP), TRUE);
         }
         else {
             SetDlgItemText(hDlg, ID_CNT, L"无连接");
             EnableWindow(GetDlgItem(hDlg, ID_STARTCLIENT), TRUE);
             EnableWindow(GetDlgItem(hDlg, IDC_IPADDRESS1), TRUE);
             EnableWindow(GetDlgItem(hDlg, ID_STARTSERVER), TRUE);
+            EnableWindow(GetDlgItem(hDlg, ID_START), TRUE);
+            EnableWindow(GetDlgItem(hDlg, ID_STOP), TRUE);
         }
         return (INT_PTR)TRUE;
     }
     case WM_CLIENT_WAITING:
     {
         if (data->ifClient) {
-            SetDlgItemText(hDlg, ID_CNT, L"");
+            SetDlgItemText(hDlg, ID_CNT, L"已加入");
         }
         else {
             EnableWindow(GetDlgItem(hDlg, ID_STARTCLIENT), TRUE);
             EnableWindow(GetDlgItem(hDlg, ID_STARTSERVER), TRUE);
+            EnableWindow(GetDlgItem(hDlg, ID_START), TRUE);
+            EnableWindow(GetDlgItem(hDlg, ID_STOP), TRUE);
         }
+        return (INT_PTR)TRUE;
+    }
+    case WM_RECEIVE:
+    {
+        HWND hChara = GetDlgItem(hDlg, IDC_CHARA);
+        int index = SendMessage(hChara, CB_GETCURSEL, 0, 0);
+        if (index == 1) {
+            SetDlgItemText(hDlg, ID_OUTPUT1, std::to_wstring(data->att[index]).c_str());
+            SetDlgItemText(hDlg, ID_OUTPUT2, std::to_wstring(data->def[index]).c_str());
+            SetDlgItemText(hDlg, ID_OUTPUT3, std::to_wstring(data->muv[index]).c_str());
+            SetDlgItemText(hDlg, ID_OUTPUT4, std::to_wstring(data->suv[index]).c_str());
+            SetDlgItemText(hDlg, ID_OUTPUT, std::to_wstring(data->score[index]).c_str());
+        }
+        RECT rect = { 0, 0,data->tableX * data->cellSize, data->tableY * data->cellSize };
+        InvalidateRect(hDlg, &rect, TRUE);
+        EnableWindow(GetDlgItem(hDlg, ID_START), TRUE);
+        EnableWindow(GetDlgItem(hDlg, ID_STOP), TRUE);
+
         return (INT_PTR)TRUE;
     }
     case WM_PAINT:

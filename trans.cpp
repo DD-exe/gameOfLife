@@ -21,8 +21,8 @@ using GridType = std::unordered_map<INT, std::unordered_map<INT, BOOL>>;
 
 // 全局控制变量（使用原子类型保证线程安全）
 atomic<bool> go(true);
-atomic<bool> ifsend(true);
-
+atomic<bool> ifServerSend(false);
+atomic<bool> ifClientSend(false);
 //序列化vsoData内容
 static json serializeVsoData(const vsoData& data) {
     nlohmann::json j;
@@ -42,10 +42,11 @@ static json serializeVsoData(const vsoData& data) {
     }
 
     // 序列化其他数组成员
-    j["att"] = { data.att[1], data.att[0] };
-    j["def"] = { data.def[1], data.def[0] };
-    j["muv"] = { data.muv[1], data.muv[0] };
-    j["suv"] = { data.suv[1], data.suv[0] };
+    j["score"] = data.score[0] ;
+    j["att"] =data.att[0] ;
+    j["def"] = data.def[0] ;
+    j["muv"] =  data.muv[0] ;
+    j["suv"] =  data.suv[0] ;
     return j;
 }
 
@@ -66,43 +67,38 @@ void deserializeVsoData(vsoData& data, nlohmann::json j) {
     }
 
     // 反序列化其他数组成员
-    if (j.contains("att") && j["att"].size() == 2) {
-        data.att[0] = j["att"][0];
-        data.att[1] = j["att"][1];
-    }
-
-    if (j.contains("def") && j["def"].size() == 2) {
-        data.def[0] = j["def"][0];
-        data.def[1] = j["def"][1];
-    }
-
-    if (j.contains("muv") && j["muv"].size() == 2) {
-        data.muv[0] = j["muv"][0];
-        data.muv[1] = j["muv"][1];
-    }
-
-    if (j.contains("suv") && j["suv"].size() == 2) {
-        data.suv[0] = j["suv"][0];
-        data.suv[1] = j["suv"][1];
-    }
+    data.score[1] = j["score"];
+    data.att[1] = j["att"];
+    data.def[1] = j["def"];
+    data.muv[1] = j["muv"];
+    data.suv[1] = j["suv"];
 }
 
-void mySendMessage() {
-    ifsend = true;
+void serverSendMessage() {
+    ifServerSend = true;
 }
 
-void serverSendLoop(ENetPeer* peer, vsoData& mainData) {
+void clientSendMessage() {
+    ifClientSend = true;
+}
+
+void serverSendLoop(HWND hDlg, ENetPeer* peer, vsoData& mainData) {
     while (go) {
-        if (!ifsend) {
-            this_thread::sleep_for(chrono::seconds(1));
+        if (!mainData.send) {
+            this_thread::sleep_for(chrono::seconds(2));
             continue;
         }
-        json data = serializeVsoData(mainData);
+        json data0 = serializeVsoData(mainData);
+        json data;
+        data["handle"] = reinterpret_cast<std::uintptr_t>(hDlg);
+        data["data"] = data0;
         string jsonData = data.dump();
         ENetPacket* packet = enet_packet_create(jsonData.c_str(), jsonData.size() + 1, ENET_PACKET_FLAG_RELIABLE);
         enet_peer_send(peer, 0, packet);
         enet_host_flush(peer->host);
-        ifsend = true;
+        mainData.send = false;
+        EnableWindow(GetDlgItem(hDlg, ID_START), FALSE);
+        EnableWindow(GetDlgItem(hDlg, ID_STOP), FALSE);
         this_thread::sleep_for(chrono::seconds(1));
     }
 }
@@ -116,7 +112,7 @@ void serverBeatSendLoop(ENetPeer* peer) {
     }
 }
 
-void serverReceiveLoop(ENetHost* server, vsoData& mainData) {
+void serverReceiveLoop(HWND hDlg,ENetHost* server, vsoData& mainData) {
     ENetEvent event;
     int idleCounter = 0;
     while (go) {
@@ -136,9 +132,15 @@ void serverReceiveLoop(ENetHost* server, vsoData& mainData) {
 
                         // 解析JSON
                         nlohmann::json jsonData = nlohmann::json::parse(jsonStr);
-
-                        deserializeVsoData(mainData, jsonData);
-
+                        HWND h = reinterpret_cast<HWND>(jsonData["handle"].get<std::uintptr_t>());
+                        if (h != hDlg)
+                        {
+                            //删除已有部分
+                            mainData.grid[0].clear();
+                            mainData.grid[1].clear();
+                            deserializeVsoData(mainData, jsonData["data"]);
+                        }
+                        PostMessage(hDlg, WM_RECEIVE, 0, 0);
                     }
                     catch (const std::exception& e) {
                         printf("JSON parse error: %s\n", e.what());
@@ -202,8 +204,8 @@ void runServer(vsoData& data, HWND hDlg) {
 
     // 启动服务器的发送和接收线程
     thread beatThread(serverBeatSendLoop, event.peer);
-    thread sendThread(serverSendLoop, event.peer, ref(data));
-    thread receiveThread(serverReceiveLoop, server, ref(data));
+    thread sendThread(serverSendLoop,hDlg, event.peer, ref(data));
+    thread receiveThread(serverReceiveLoop, hDlg, server, ref(data));
     data.ifServer = TRUE;
     PostMessage(hDlg, WM_SERVER_WAITING, 0, 0);
     beatThread.join();
@@ -213,19 +215,24 @@ void runServer(vsoData& data, HWND hDlg) {
     enet_host_destroy(server);
 }
 
-void clientSendLoop(ENetPeer* peer, vsoData& mainData) {
+void clientSendLoop(HWND hDlg, ENetPeer* peer, vsoData& mainData) {
     while (go) {
-        if (!ifsend) {
-            this_thread::sleep_for(chrono::seconds(1));
+        if (!mainData.send) {
+            this_thread::sleep_for(chrono::seconds(3));
             continue;
         }
-        json change = serializeVsoData(mainData);
-        string jsonData = change.dump(); // 用户的设置数据
+        json data0 = serializeVsoData(mainData);
+        json data;
+        data["handle"] = reinterpret_cast<std::uintptr_t>(hDlg);
+        data["data"] = data0;
+        string jsonData = data.dump(); // 用户的设置数据
         ENetPacket* packet = enet_packet_create(jsonData.c_str(), jsonData.size() + 1, ENET_PACKET_FLAG_RELIABLE);
         enet_peer_send(peer, 0, packet);
         enet_host_flush(peer->host);
         cout << "客户端发送操作包。" << endl;
-        ifsend = true;
+        mainData.send = false;
+        EnableWindow(GetDlgItem(hDlg, ID_START), FALSE);
+        EnableWindow(GetDlgItem(hDlg, ID_STOP), FALSE);
         this_thread::sleep_for(chrono::seconds(1)); // 防止忙等待
     }
 }
@@ -240,7 +247,7 @@ void clientBeatSendLoop(ENetPeer* peer) {
     }
 }
 
-void clientReceiveLoop(ENetHost* client, vsoData& mainData) {
+void clientReceiveLoop(HWND hDlg,ENetHost* client, vsoData& mainData) {
     ENetEvent event;
     int idleCounter = 0;
     while (go) {
@@ -260,8 +267,15 @@ void clientReceiveLoop(ENetHost* client, vsoData& mainData) {
                         // 解析JSON
                         nlohmann::json jsonData = nlohmann::json::parse(jsonStr);
 
-                        deserializeVsoData(mainData, jsonData);
-                        
+                        HWND h = reinterpret_cast<HWND>(jsonData["handle"].get<std::uintptr_t>());
+                        if (h != hDlg)
+                        {
+                            //删除已有部分
+                            mainData.grid[0].clear();
+                            mainData.grid[1].clear();
+                            deserializeVsoData(mainData, jsonData["data"]);
+                        }
+                        PostMessage(hDlg, WM_RECEIVE, 0, 0);
                     }
                     catch (const std::exception& e) {
                         printf("JSON parse error: %s\n", e.what());
@@ -322,8 +336,8 @@ void runClient(vsoData& data, HWND hDlg) {
 
     // 启动发送和接收线程
     thread beatThread(clientBeatSendLoop, peer);
-    thread sendThread(clientSendLoop, peer, ref(data));
-    thread receiveThread(clientReceiveLoop, client, ref(data));
+    thread sendThread(clientSendLoop, hDlg, peer, ref(data));
+    thread receiveThread(clientReceiveLoop, hDlg, client, ref(data));
     data.ifClient = TRUE;
     PostMessage(hDlg, WM_CLIENT_WAITING, 0, 0);
 

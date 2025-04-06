@@ -56,12 +56,6 @@
     <ClCompile Include="color.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="createRoom.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="joinRoom.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
     <ClCompile Include="load.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
