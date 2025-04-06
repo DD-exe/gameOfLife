@@ -51,6 +51,7 @@ INT_PTR CALLBACK VSOnlineDot(HWND hDlg, UINT message, WPARAM wParam, LPARAM lPar
         data->ifMouseDown = FALSE;
         data->ifServer = FALSE;
         data->ifClient = FALSE;
+        data->send = FALSE;
         SetWindowText(GetDlgItem(hDlg, ID_CNT), L"Î´Æô¶¯");
         data->lastX = data->lastY = -1;
         data->cellSize = 10;
@@ -286,31 +287,30 @@ INT_PTR CALLBACK VSOnlineDot(HWND hDlg, UINT message, WPARAM wParam, LPARAM lPar
         case ID_START:
         {
             if (data->ifClient || data->ifServer) {
-
-            }
-            else {
-                data->score[0] += 10;
-                data->score[1] += 10;
-                HWND hChara = GetDlgItem(hDlg, IDC_CHARA);
-                int index = SendMessage(hChara, CB_GETCURSEL, 0, 0);
-                SetWindowText(GetDlgItem(hDlg, ID_OUTPUT), std::to_wstring(data->score[index]).c_str());
                 
-                std::unordered_map<INT, std::unordered_map<INT, BOOL>> ans1;
-                std::unordered_map<INT, std::unordered_map<INT, BOOL>> ans2;
-                myLife(data->grid[0], ans1, data->rule[0], state);
-                myLife(data->grid[1], ans2, data->rule[1], state);
-                RECT rect = { 0, 0,data->tableX * data->cellSize, data->tableY * data->cellSize };
-                data->grid[0] = std::move(ans1);
-                data->grid[1] = std::move(ans2);
-                data->ifCreate = FALSE;
-                InvalidateRect(hDlg, &rect, TRUE);
             }
+            data->score[0] += 10;
+            data->score[1] += 10;
+            HWND hChara = GetDlgItem(hDlg, IDC_CHARA);
+            int index = SendMessage(hChara, CB_GETCURSEL, 0, 0);
+            SetWindowText(GetDlgItem(hDlg, ID_OUTPUT), std::to_wstring(data->score[index]).c_str());
+                
+            std::unordered_map<INT, std::unordered_map<INT, BOOL>> ans1;
+            std::unordered_map<INT, std::unordered_map<INT, BOOL>> ans2;
+            myLife(data->grid[0], ans1, data->rule[0], state);
+            myLife(data->grid[1], ans2, data->rule[1], state);
+            RECT rect = { 0, 0,data->tableX * data->cellSize, data->tableY * data->cellSize };
+            data->grid[0] = std::move(ans1);
+            data->grid[1] = std::move(ans2);
+            data->ifCreate = FALSE;
+            InvalidateRect(hDlg, &rect, TRUE);
+            
             break;
         }
         case ID_STOP:
         {
-            if (data->ifClient || data->ifServer) {
-
+            if (data->ifClient|| data->ifServer) {
+                data->send = TRUE;
             }
             else {
                 data->grid[0].clear();
@@ -423,6 +423,7 @@ INT_PTR CALLBACK VSOnlineDot(HWND hDlg, UINT message, WPARAM wParam, LPARAM lPar
             SetWindowText(GetDlgItem(hDlg, ID_OUTPUT2), std::to_wstring(data->def[index]).c_str());
             SetWindowText(GetDlgItem(hDlg, ID_OUTPUT3), std::to_wstring(data->muv[index]).c_str());
             SetWindowText(GetDlgItem(hDlg, ID_OUTPUT4), std::to_wstring(data->suv[index]).c_str());
+            SetWindowText(GetDlgItem(hDlg, ID_OUTPUT), std::to_wstring(data->score[index]).c_str());
             RECT rect = { data->colorBlockX,data->colorBlockY,
             data->colorBlockX + data->colorBlockSize,
             data->colorBlockY + data->colorBlockSize };
@@ -470,6 +471,22 @@ INT_PTR CALLBACK VSOnlineDot(HWND hDlg, UINT message, WPARAM wParam, LPARAM lPar
             EnableWindow(GetDlgItem(hDlg, ID_STARTCLIENT), TRUE);
             EnableWindow(GetDlgItem(hDlg, ID_STARTSERVER), TRUE);
         }
+        return (INT_PTR)TRUE;
+    }
+    case WM_RECEIVE:
+    {
+        HWND hChara = GetDlgItem(hDlg, IDC_CHARA);
+        int index = SendMessage(hChara, CB_GETCURSEL, 0, 0);
+        if (index == 1) {
+            SetDlgItemText(hDlg, ID_OUTPUT1, std::to_wstring(data->att[index]).c_str());
+            SetDlgItemText(hDlg, ID_OUTPUT2, std::to_wstring(data->def[index]).c_str());
+            SetDlgItemText(hDlg, ID_OUTPUT3, std::to_wstring(data->muv[index]).c_str());
+            SetDlgItemText(hDlg, ID_OUTPUT4, std::to_wstring(data->suv[index]).c_str());
+            SetDlgItemText(hDlg, ID_OUTPUT, std::to_wstring(data->score[index]).c_str());
+        }
+        RECT rect = { 0, 0,data->tableX * data->cellSize, data->tableY * data->cellSize };
+        InvalidateRect(hDlg, &rect, TRUE);
+
         return (INT_PTR)TRUE;
     }
     case WM_PAINT:

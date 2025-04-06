@@ -93,6 +93,7 @@ struct vsoData {
     std::unordered_map<INT, std::unordered_map<INT, BOOL>> grid[2];
     BOOL ifCreate;
     BOOL ifServer,ifClient;
+    BOOL send;
     wchar_t targetIP[100];
     nlohmann::json theMove;
     BOOL ifMouseDown;
@@ -148,7 +149,8 @@ INT_PTR CALLBACK CreateRoomProc(HWND hDlg, UINT message, WPARAM wParam, LPARAM l
 INT_PTR CALLBACK JoinRoomProc(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam);           // joinRoom
 void runServer(vsoData& data, HWND hDlg);                                                                 // trans
 void runClient(vsoData& data, HWND hDlg);
-void mySendMessage();
+void clientSendMessage();
+void serverSendMessage();
 INT_PTR CALLBACK Rules(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam);                  //rules
 INT_PTR CALLBACK VSRules(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam);                //vsrules
 
