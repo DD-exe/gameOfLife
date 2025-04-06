@@ -146,8 +146,8 @@ INT_PTR CALLBACK VSOnlineDot(HWND hDlg, UINT message, WPARAM wParam, LPARAM lPar
 INT_PTR CALLBACK color(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam);                  // color
 INT_PTR CALLBACK CreateRoomProc(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam);         // createRoom
 INT_PTR CALLBACK JoinRoomProc(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam);           // joinRoom
-BOOL runServer(vsoData& data, HWND hDlg);                                                                 // trans
-BOOL runClient(vsoData& data, HWND hDlg);
+void runServer(vsoData& data, HWND hDlg);                                                                 // trans
+void runClient(vsoData& data, HWND hDlg);
 void mySendMessage();
 INT_PTR CALLBACK Rules(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam);                  //rules
 INT_PTR CALLBACK VSRules(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam);                //vsrules

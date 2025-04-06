@@ -12,6 +12,7 @@
 #include <ws2tcpip.h>
 #include <iphlpapi.h>
 #pragma comment(lib, "winmm.lib")
+#include "resource.h"
 
 using namespace std;
 using json = nlohmann::json;
@@ -20,7 +21,7 @@ using GridType = std::unordered_map<INT, std::unordered_map<INT, BOOL>>;
 
 // 全局控制变量（使用原子类型保证线程安全）
 atomic<bool> go(true);
-atomic<bool> ifsend(false);
+atomic<bool> ifsend(true);
 
 //序列化vsoData内容
 static json serializeVsoData(const vsoData& data) {
@@ -101,7 +102,7 @@ void serverSendLoop(ENetPeer* peer, vsoData& mainData) {
         ENetPacket* packet = enet_packet_create(jsonData.c_str(), jsonData.size() + 1, ENET_PACKET_FLAG_RELIABLE);
         enet_peer_send(peer, 0, packet);
         enet_host_flush(peer->host);
-        ifsend = false;
+        ifsend = true;
         this_thread::sleep_for(chrono::seconds(1));
     }
 }
@@ -169,19 +170,15 @@ void serverReceiveLoop(ENetHost* server, vsoData& mainData) {
     }
 }
 
-BOOL runServer(vsoData& data, HWND hDlg) {
-    if (enet_initialize())return FALSE;
+void runServer(vsoData& data, HWND hDlg) {
+    if (enet_initialize())exit(EXIT_FAILURE);
     ENetAddress address;
     address.host = ENET_HOST_ANY;
     address.port = 12138;
-
-    ENetHost* server = enet_host_create(&address, 1, 2, 0, 0); // 此处有问题，什么host.c，
-                                                               // 疑似/lib里enet.lib差东西?
-    
-
+    ENetHost* server = enet_host_create(&address, 1, 2, 0, 0);
     if (server == nullptr) {
         cerr << "服务器初始化失败！" << endl;
-        return FALSE;// exit(EXIT_FAILURE);
+        exit(EXIT_FAILURE);
     }
 
     cout << "服务器启动，监听端口 12138，等待客户端连接..." << endl;
@@ -193,7 +190,7 @@ BOOL runServer(vsoData& data, HWND hDlg) {
     else {
         cerr << "客户端连接超时。" << endl;
         enet_host_destroy(server);
-        return FALSE;
+        exit(EXIT_FAILURE);
     }
 
     // 等待客户端发送 "准备" 指令
@@ -213,13 +210,13 @@ BOOL runServer(vsoData& data, HWND hDlg) {
     thread beatThread(serverBeatSendLoop, event.peer);
     thread sendThread(serverSendLoop, event.peer, ref(data));
     thread receiveThread(serverReceiveLoop, server, ref(data));
-
+    data.ifServer = TRUE;
+    PostMessage(hDlg, WM_SERVER_WAITING, 0, 0);
     beatThread.join();
     sendThread.join();
     receiveThread.join();
 
     enet_host_destroy(server);
-    return TRUE;
 }
 
 void clientSendLoop(ENetPeer* peer, vsoData& mainData) {
@@ -234,7 +231,7 @@ void clientSendLoop(ENetPeer* peer, vsoData& mainData) {
         enet_peer_send(peer, 0, packet);
         enet_host_flush(peer->host);
         cout << "客户端发送操作包。" << endl;
-        ifsend = false;
+        ifsend = true;
         this_thread::sleep_for(chrono::seconds(1)); // 防止忙等待
     }
 }
@@ -323,12 +320,12 @@ void clientReceiveLoop(ENetHost* client, vsoData& mainData) {
     }
 }
 
-BOOL runClient(vsoData& data, HWND hDlg) {
-    if (enet_initialize())return FALSE; 
+void runClient(vsoData& data, HWND hDlg) {
+    if (enet_initialize())exit(EXIT_FAILURE);
     ENetHost* client = enet_host_create(nullptr, 1, 2, 0, 0);
     if (client == nullptr) {
         cerr << "客户端初始化失败！" << endl;
-        return FALSE;// exit(EXIT_FAILURE);
+        exit(EXIT_FAILURE);
     }
     ENetAddress address;
     enet_address_set_host(&address, wc2s(data.targetIP).c_str());
@@ -338,7 +335,7 @@ BOOL runClient(vsoData& data, HWND hDlg) {
     if (peer == nullptr) {
         cerr << "无法创建连接！" << endl;
         enet_host_destroy(client);
-        return FALSE; // exit(EXIT_FAILURE);
+        exit(EXIT_FAILURE);
     }
 
     ENetEvent event;
@@ -349,7 +346,7 @@ BOOL runClient(vsoData& data, HWND hDlg) {
         cerr << "连接失败或超时。" << endl;
         enet_peer_reset(peer);
         enet_host_destroy(client);
-        return FALSE; // exit(EXIT_FAILURE);
+        exit(EXIT_FAILURE);
     }
 
     // 发送 "准备" 指令
@@ -363,13 +360,14 @@ BOOL runClient(vsoData& data, HWND hDlg) {
     thread beatThread(clientBeatSendLoop, peer);
     thread sendThread(clientSendLoop, peer, ref(data));
     thread receiveThread(clientReceiveLoop, client, ref(data));
+    data.ifClient = TRUE;
+    PostMessage(hDlg, WM_CLIENT_WAITING, 0, 0);
 
     beatThread.join();
     sendThread.join();
     receiveThread.join();
 
     enet_host_destroy(client);
-    return TRUE;
 }
 
 /*

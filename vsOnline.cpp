@@ -328,8 +328,7 @@ INT_PTR CALLBACK VSOnlineDot(HWND hDlg, UINT message, WPARAM wParam, LPARAM lPar
             EnableWindow(GetDlgItem(hDlg, ID_STARTSERVER), FALSE);
             SetDlgItemText(hDlg, ID_CNT, L"µÈ´ýÖÐ¡­¡­");
             std::thread([hDlg, data]() {
-                data->ifServer = runServer(*data, hDlg);
-                PostMessage(hDlg, WM_SERVER_WAITING, 0, 0);
+                runServer(*data, hDlg);
                 }).detach();      
             return (INT_PTR)TRUE;
         }
@@ -340,8 +339,7 @@ INT_PTR CALLBACK VSOnlineDot(HWND hDlg, UINT message, WPARAM wParam, LPARAM lPar
                 EnableWindow(GetDlgItem(hDlg, ID_STARTSERVER), FALSE);
                 EnableWindow(GetDlgItem(hDlg, ID_STARTCLIENT), FALSE);
                 std::thread([hDlg, data]() {
-                    data->ifClient = runClient(*data, hDlg);
-                    PostMessage(hDlg, WM_CLIENT_WAITING, 0, 0);
+                    runClient(*data, hDlg);
                     }).detach();
             }
             return (INT_PTR)TRUE;
