@@ -146,8 +146,7 @@
     <ClCompile Include="about.cpp" />
     <ClCompile Include="color.cpp" />
     <ClCompile Include="createRoom.cpp" />
-    <ClCompile Include="E:\VScodes\C++\gameoflife\gameOfLife\rules.cpp" />
-    <ClCompile Include="E:\VScodes\C++\gameoflife\gameOfLife\vsrules.cpp" />
+    <ClCompile Include="rules.cpp" />
     <ClCompile Include="saveBmp.cpp" />
     <ClCompile Include="load.cpp" />
     <ClCompile Include="save.cpp" />
@@ -159,6 +158,7 @@
     <ClCompile Include="vs.cpp" />
     <ClCompile Include="vsOnline.cpp" />
     <ClCompile Include="joinRoom.cpp" />
+    <ClCompile Include="vsrules.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="gameOfLife.rc" />

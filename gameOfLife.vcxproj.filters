@@ -71,10 +71,10 @@
     <ClCompile Include="trans.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="E:\VScodes\C++\gameoflife\gameOfLife\rules.cpp">
+    <ClCompile Include="rules.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="E:\VScodes\C++\gameoflife\gameOfLife\vsrules.cpp">
+    <ClCompile Include="vsrules.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>
