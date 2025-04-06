@@ -331,6 +331,7 @@ INT_PTR CALLBACK VSOnlineDot(HWND hDlg, UINT message, WPARAM wParam, LPARAM lPar
             std::thread([hDlg, data]() {
                 data->ifServer = runServer(*data, hDlg);
                 PostMessage(hDlg, WM_SERVER_WAITING, 0, 0);
+
                 }).detach();      
             return (INT_PTR)TRUE;
         }

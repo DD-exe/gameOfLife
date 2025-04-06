@@ -20,7 +20,7 @@ using GridType = std::unordered_map<INT, std::unordered_map<INT, BOOL>>;
 
 // 全局控制变量（使用原子类型保证线程安全）
 atomic<bool> go(true);
-atomic<bool> ifsend(false);
+atomic<bool> ifsend(true);
 
 //序列化vsoData内容
 static json serializeVsoData(const vsoData& data) {
@@ -101,7 +101,7 @@ void serverSendLoop(ENetPeer* peer, vsoData& mainData) {
         ENetPacket* packet = enet_packet_create(jsonData.c_str(), jsonData.size() + 1, ENET_PACKET_FLAG_RELIABLE);
         enet_peer_send(peer, 0, packet);
         enet_host_flush(peer->host);
-        ifsend = false;
+        ifsend = true;
         this_thread::sleep_for(chrono::seconds(1));
     }
 }
@@ -228,7 +228,7 @@ void clientSendLoop(ENetPeer* peer, vsoData& mainData) {
         enet_peer_send(peer, 0, packet);
         enet_host_flush(peer->host);
         cout << "客户端发送操作包。" << endl;
-        ifsend = false;
+        ifsend = true;
         this_thread::sleep_for(chrono::seconds(1)); // 防止忙等待
     }
 }
