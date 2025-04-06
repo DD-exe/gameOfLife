@@ -37,6 +37,11 @@ INT_PTR CALLBACK single(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
         // ²Ëµ¥Ñ¡Ôñ
         switch (wmId)
         {
+        case IDM_RULES:
+        {
+            DialogBox(GetModuleHandle(NULL), MAKEINTRESOURCE(IDD_RULES), hDlg, Rules);
+        }
+        break;
         case ID_START:
         {
             data->ifRun = !data->ifRun;

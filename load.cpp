@@ -99,7 +99,7 @@ std::unordered_map<INT, std::unordered_map<INT, BOOL>> loadGrid(HWND hWnd) {
     // 显示文件选择对话框
     std::wstring filepath = openFileDialog(hWnd);
     if (filepath.empty()) {
-        throw std::runtime_error("用户取消选择");
+        return std::unordered_map<INT, std::unordered_map<INT, BOOL>>();
     }
 
     try {
@@ -123,7 +123,7 @@ void loadVSGrid(HWND hWnd, std::unordered_map<INT, std::unordered_map<INT, BOOL>
     // 显示文件选择对话框
     std::wstring filepath = openFileDialog(hWnd);
     if (filepath.empty()) {
-        throw std::runtime_error("用户取消选择");
+        return;
     }
 
     try {

@@ -141,6 +141,8 @@ INT_PTR CALLBACK JoinRoomProc(HWND hDlg, UINT message, WPARAM wParam, LPARAM lPa
 BOOL runServer(vsoData& data);                                                                 // trans
 BOOL runClient(vsoData& data);
 void mySendMessage();
+INT_PTR CALLBACK Rules(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam);                  //rules
+INT_PTR CALLBACK VSRules(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam);                //vsrules
 
 // inline
 inline void getClientXY(HWND hWnd, INT* x, INT* y) {

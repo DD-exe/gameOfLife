@@ -71,6 +71,12 @@
     <ClCompile Include="trans.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="E:\VScodes\C++\gameoflife\gameOfLife\rules.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="E:\VScodes\C++\gameoflife\gameOfLife\vsrules.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="gameOfLife.rc">

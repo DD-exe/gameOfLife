@@ -13,6 +13,8 @@
 #define ID_STARTSERVER                  8
 #define ID_STARTCLIENT                  11
 #define IDD_GAMEOFLIFE_DIALOG           102
+#define IDD_VSRULES                     102
+#define IDD_VRULES                      102
 #define IDS_APP_TITLE                   103
 #define IDD_ABOUTBOX                    103
 #define IDM_ABOUT                       104
@@ -32,6 +34,7 @@
 #define IDR_GAMEONLINE                  139
 #define IDD_JOINROOM                    140
 #define IDD_VSONLINE                    141
+#define IDD_RULES                       145
 #define IDC_EDITvsSIZE                  1000
 #define IDC_EDITvsSPEED                 1001
 #define IDC_P1ATT                       1002
@@ -105,6 +108,9 @@
 #define IDM_LOAD                        32803
 #define ID_32806                        32806
 #define ID_32807                        32807
+#define ID_32808                        32808
+#define IDM_RULES                       32809
+#define ID_32810                        32810
 #define IDC_STATIC                      -1
 
 // Next default values for new objects
@@ -112,8 +118,8 @@
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NO_MFC                     1
-#define _APS_NEXT_RESOURCE_VALUE        145
-#define _APS_NEXT_COMMAND_VALUE         32808
+#define _APS_NEXT_RESOURCE_VALUE        147
+#define _APS_NEXT_COMMAND_VALUE         32811
 #define _APS_NEXT_CONTROL_VALUE         1029
 #define _APS_NEXT_SYMED_VALUE           110
 #endif

@@ -52,6 +52,11 @@ INT_PTR CALLBACK VSdot(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
         int wmId = LOWORD(wParam);
         switch (wmId)
         {
+        case IDM_RULES:
+        {
+            DialogBox(GetModuleHandle(NULL), MAKEINTRESOURCE(IDD_VSRULES), hDlg, VSRules);
+        }
+        break;
         case IDOKvsSIZE:
         {
             BOOL success; data->ifCreate = FALSE;

@@ -147,6 +147,9 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
             case IDM_ABOUT:
                 DialogBox(hInst, MAKEINTRESOURCE(IDD_ABOUTBOX), hWnd, About);
             break;
+            case IDM_RULES:
+                DialogBox(hInst, MAKEINTRESOURCE(IDD_RULES), hWnd, Rules);
+                break;
             //功能菜单下内容
             case ID_SINGLE:                    // 单机模式
             {
