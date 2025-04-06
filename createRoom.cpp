@@ -9,46 +9,6 @@
 #pragma comment(lib, "iphlpapi.lib")
 #pragma comment(lib, "ws2_32.lib")
 
-// 获取本机IPv4地址的函数
-bool GetLocalIPAddress(wchar_t* ipBuffer, int bufferSize)
-{
-    PIP_ADAPTER_ADDRESSES pAddresses = NULL;
-    ULONG outBufLen = 0;
-    DWORD dwRetVal = 0;
-
-    // 第一次调用获取所需缓冲区大小
-    GetAdaptersAddresses(AF_INET, GAA_FLAG_INCLUDE_PREFIX, NULL, pAddresses, &outBufLen);
-    pAddresses = (PIP_ADAPTER_ADDRESSES)malloc(outBufLen);
-
-    // 第二次调用实际获取适配器信息
-    dwRetVal = GetAdaptersAddresses(AF_INET, GAA_FLAG_INCLUDE_PREFIX, NULL, pAddresses, &outBufLen);
-
-    if (dwRetVal == NO_ERROR) {
-        PIP_ADAPTER_ADDRESSES pCurrAddresses = pAddresses;
-        while (pCurrAddresses) {
-            // 跳过回环接口
-            if (pCurrAddresses->IfType != IF_TYPE_SOFTWARE_LOOPBACK) {
-                PIP_ADAPTER_UNICAST_ADDRESS pUnicast = pCurrAddresses->FirstUnicastAddress;
-                while (pUnicast) {
-                    if (pUnicast->Address.lpSockaddr->sa_family == AF_INET) {
-                        sockaddr_in* sa_in = (sockaddr_in*)pUnicast->Address.lpSockaddr;
-                        InetNtop(AF_INET, &(sa_in->sin_addr), ipBuffer, bufferSize);
-                        free(pAddresses);
-                        return true;
-                    }
-                    pUnicast = pUnicast->Next;
-                }
-            }
-            pCurrAddresses = pCurrAddresses->Next;
-        }
-    }
-
-    // 如果获取失败
-    wcscpy_s(ipBuffer, bufferSize, L"无法获取IP");
-    if (pAddresses) free(pAddresses);
-    return false;
-}
-
 INT_PTR CALLBACK CreateRoomProc(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
 {
     static wchar_t roomName[100] = { 0 };

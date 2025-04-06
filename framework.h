@@ -13,10 +13,16 @@
 #include <stdio.h>
 #include <fstream>
 #include <shlobj.h>
-#include <nlohmann/json.hpp>
 // stl
 #include <unordered_map>
 #include <string>
+//network
+#include <nlohmann/json.hpp>
+#include <winsock2.h>
+#include <iphlpapi.h>
+#include <ws2tcpip.h>
+#pragma comment(lib, "iphlpapi.lib")
+#pragma comment(lib, "ws2_32.lib")
 
 #define RGBgrey     RGB(200,200,200)
 #define RGBblack    RGB(0,0,0)
@@ -128,6 +134,7 @@ int getRandomNum(int min, int max);
 std::string wc2s(const wchar_t* wstr);
 nlohmann::json move2json(vsoData* data);
 void json2move(vsoData* data, nlohmann::json change);
+bool GetLocalIPAddress(wchar_t* ipBuffer, int bufferSize);
 INT_PTR CALLBACK About(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam);                  // about
 INT_PTR CALLBACK VSdot(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam);                  // vs
 INT_PTR CALLBACK single(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam);                 // single

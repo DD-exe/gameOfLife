@@ -86,6 +86,16 @@ INT_PTR CALLBACK VSOnlineDot(HWND hDlg, UINT message, WPARAM wParam, LPARAM lPar
         SetWindowLongPtr(hDlg, GWLP_USERDATA, (LONG_PTR)data);
         WSADATA wsaData;
         WSAStartup(MAKEWORD(2, 2), &wsaData);
+
+        // 获取并显示本机IP
+        wchar_t ipBuffer[46] = { 0 }; // IPv4最大长度
+        if (GetLocalIPAddress(ipBuffer, sizeof(ipBuffer) / sizeof(wchar_t))) {
+            SetDlgItemText(hDlg, IDC_LOCALIP, ipBuffer);
+        }
+        else {
+            SetDlgItemText(hDlg, IDC_LOCALIP, L"获取IP失败");
+        }
+
         return (INT_PTR)TRUE;
     }
     case WM_COMMAND:

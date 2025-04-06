@@ -23,30 +23,6 @@ using GridType = std::unordered_map<INT, std::unordered_map<INT, BOOL>>;
 atomic<bool> go(true);
 atomic<bool> ifsend(false);
 
-// 将 grid 转换为 JSON
-static json serializeGrid(const GridType& grid) {
-    json j;
-    for (const auto& [y, row] : grid) {
-        for (const auto& [x, value] : row) {
-            j[to_string(y)][to_string(x)] = value;
-        }
-    }
-    return j;
-}
-
-// 反序列化 JSON 到 grid
-static GridType deserializeGrid(const json& j) {
-    GridType grid;
-    for (const auto& [yStr, row] : j.items()) {
-        INT y = stoi(yStr);
-        for (const auto& [xStr, value] : row.items()) {
-            INT x = stoi(xStr);
-            grid[y][x] = value.get<BOOL>();
-        }
-    }
-    return grid;
-}
-
 //序列化vsoData内容
 static json serializeVsoData(const vsoData& data) {
     nlohmann::json j;
@@ -202,8 +178,6 @@ BOOL runServer(vsoData& data, HWND hDlg) {
 
     ENetHost* server = enet_host_create(&address, 1, 2, 0, 0); // 此处有问题，什么host.c，
                                                                // 疑似/lib里enet.lib差东西?
-
-        exit(EXIT_FAILURE);
     
 
     if (server == nullptr) {
@@ -293,7 +267,26 @@ void clientReceiveLoop(ENetHost* client, vsoData& mainData) {
                     if (receivedData != "go") {
                         try {
                             json newdata = json::parse(receivedData);
-                            mainData.grid[0] = deserializeGrid(newdata);
+                            shortVsoData shortData = deserializeVsoData(newdata);
+                            mainData.att[0] = shortData.att[0];
+                            mainData.att[1] = shortData.att[1];
+
+                            // 复制 def 数组
+                            mainData.def[0] = shortData.def[0];
+                            mainData.def[1] = shortData.def[1];
+
+                            // 复制 muv 数组
+                            mainData.muv[0] = shortData.muv[0];
+                            mainData.muv[1] = shortData.muv[1];
+
+                            // 复制 suv 数组
+                            mainData.suv[0] = shortData.suv[0];
+                            mainData.suv[1] = shortData.suv[1];
+
+                            // 复制 grid 数组
+                            for (int i = 0; i < 2; ++i) {
+                                mainData.grid[i].insert(shortData.grid[i].begin(), shortData.grid[i].end());
+                            }
                         }
                         catch (std::exception& e) {
                             cerr << "解析JSON数据出错: " << e.what() << endl;
