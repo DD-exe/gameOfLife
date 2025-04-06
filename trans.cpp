@@ -4,7 +4,6 @@
 #include <enet/enet.h>
 #include <cstring>
 #include <cstdlib>
-#include <thread>
 #include <chrono>
 #include <atomic>
 #include <stdexcept>

@@ -325,18 +325,12 @@ INT_PTR CALLBACK VSOnlineDot(HWND hDlg, UINT message, WPARAM wParam, LPARAM lPar
         {
             EnableWindow(GetDlgItem(hDlg,ID_STARTCLIENT), FALSE);
             EnableWindow(GetDlgItem(hDlg, IDC_IPADDRESS1), FALSE);
+            EnableWindow(GetDlgItem(hDlg, ID_STARTSERVER), FALSE);
             SetDlgItemText(hDlg, ID_CNT, L"等待中……");
-            data->ifServer = runServer(*data,hDlg); // trans缺陷，只传一个grid？
-                                               // 你看，这就是为什么要传vsoData
-            if (data->ifServer) {
-                SetDlgItemText(hDlg, ID_CNT, L"已连接");
-                EnableWindow(GetDlgItem(hDlg, ID_STARTSERVER), FALSE);
-            }
-            else {
-                SetDlgItemText(hDlg, ID_CNT, L"无连接");
-                EnableWindow(GetDlgItem(hDlg, ID_STARTCLIENT), TRUE);
-                EnableWindow(GetDlgItem(hDlg, IDC_IPADDRESS1), TRUE);
-            }           
+            std::thread([hDlg, data]() {
+                data->ifServer = runServer(*data, hDlg);
+                PostMessage(hDlg, WM_SERVER_WAITING, 0, 0);
+                }).detach();      
             return (INT_PTR)TRUE;
         }
         case ID_STARTCLIENT:
@@ -344,13 +338,10 @@ INT_PTR CALLBACK VSOnlineDot(HWND hDlg, UINT message, WPARAM wParam, LPARAM lPar
             BOOL success=GetDlgItemText(hDlg, IDC_ROOMIP, data->targetIP, 100);
             if (success) {
                 EnableWindow(GetDlgItem(hDlg, ID_STARTSERVER), FALSE);
-                data->ifClient = runClient(*data, hDlg);
-                if (data->ifClient) {
-                    SetDlgItemText(hDlg, ID_CNT, L"");
-                }
-                else {
-                    EnableWindow(GetDlgItem(hDlg, ID_STARTSERVER), TRUE);
-                }
+                std::thread([hDlg, data]() {
+                    data->ifServer = runClient(*data, hDlg);
+                    PostMessage(hDlg, WM_CLIENT_WAITING, 0, 0);
+                    }).detach();
             }
             return (INT_PTR)TRUE;
         }
@@ -455,6 +446,30 @@ INT_PTR CALLBACK VSOnlineDot(HWND hDlg, UINT message, WPARAM wParam, LPARAM lPar
         data->tableY = clientHeight / data->cellSize;
         data->ifCreate = FALSE;
         InvalidateRect(hDlg, NULL, TRUE);
+        return (INT_PTR)TRUE;
+    }
+    case WM_SERVER_WAITING:
+    {
+        if (data->ifServer) {
+            SetDlgItemText(hDlg, ID_CNT, L"已连接");
+            // EnableWindow(GetDlgItem(hDlg, ID_STARTSERVER), FALSE);
+        }
+        else {
+            SetDlgItemText(hDlg, ID_CNT, L"无连接");
+            EnableWindow(GetDlgItem(hDlg, ID_STARTCLIENT), TRUE);
+            EnableWindow(GetDlgItem(hDlg, IDC_IPADDRESS1), TRUE);
+            EnableWindow(GetDlgItem(hDlg, ID_STARTSERVER), TRUE);
+        }
+        return (INT_PTR)TRUE;
+    }
+    case WM_CLIENT_WAITING:
+    {
+        if (data->ifClient) {
+            SetDlgItemText(hDlg, ID_CNT, L"");
+        }
+        else {
+            EnableWindow(GetDlgItem(hDlg, ID_STARTSERVER), TRUE);
+        }
         return (INT_PTR)TRUE;
     }
     case WM_PAINT:

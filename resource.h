@@ -111,6 +111,8 @@
 #define ID_32808                        32808
 #define IDM_RULES                       32809
 #define ID_32810                        32810
+#define WM_SERVER_WAITING				(WM_USER + 1)
+#define WM_CLIENT_WAITING				(WM_USER + 2)
 #define IDC_STATIC                      -1
 
 // Next default values for new objects
