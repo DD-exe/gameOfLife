@@ -23,28 +23,165 @@ using GridType = std::unordered_map<INT, std::unordered_map<INT, BOOL>>;
 atomic<bool> go(true);
 atomic<bool> ifsend(false);
 
-// 将 grid 转换为 JSON
-static json serializeGrid(const GridType& grid) {
+struct shortVsoData {
+    int att[2];
+    int def[2];
+    int muv[2];
+    int suv[2];
+    // grid 为大小为2的数组，每个元素为一个嵌套的 unordered_map
+    std::unordered_map<int, std::unordered_map<int, bool>> grid[2];
+};
+
+struct serverVsoData {
+    int att[2];
+    int def[2];
+    int muv[2];
+    int suv[2];
+};
+
+// 序列化函数
+json serialize(const serverVsoData& data) {
+    nlohmann::json j;
+    j["att"] = { data.att[0], data.att[1] };
+    j["def"] = { data.def[0], data.def[1] };
+    j["muv"] = { data.muv[0], data.muv[1] };
+    j["suv"] = { data.suv[0], data.suv[1] };
+    return j;
+}
+
+// 反序列化函数
+serverVsoData deserialize(const std::string& jsonStr) {
+    serverVsoData data;
+    nlohmann::json j = nlohmann::json::parse(jsonStr);
+    for (int i = 0; i < 2; ++i) {
+        data.att[i] = j["att"][i];
+        data.def[i] = j["def"][i];
+        data.muv[i] = j["muv"][i];
+        data.suv[i] = j["suv"][i];
+    }
+    return data;
+}
+
+serverVsoData extractServerVsoData(const vsoData& original) {
+    serverVsoData result;
+
+    // 复制 att 数组
+    result.att[0] = original.att[0];
+    result.att[1] = original.att[1];
+
+    // 复制 def 数组
+    result.def[0] = original.def[0];
+    result.def[1] = original.def[1];
+
+    // 复制 muv 数组
+    result.muv[0] = original.muv[0];
+    result.muv[1] = original.muv[1];
+
+    // 复制 suv 数组
+    result.suv[0] = original.suv[0];
+    result.suv[1] = original.suv[1];
+
+    // 复制 grid 数组
+
+    return result;
+}
+
+shortVsoData extractShortVsoData(const vsoData& original) {
+    shortVsoData result;
+
+    // 复制 att 数组
+    result.att[0] = original.att[0];
+    result.att[1] = original.att[1];
+
+    // 复制 def 数组
+    result.def[0] = original.def[0];
+    result.def[1] = original.def[1];
+
+    // 复制 muv 数组
+    result.muv[0] = original.muv[0];
+    result.muv[1] = original.muv[1];
+
+    // 复制 suv 数组
+    result.suv[0] = original.suv[0];
+    result.suv[1] = original.suv[1];
+
+    // 复制 grid 数组
+    for (int i = 0; i < 2; ++i) {
+        result.grid[i].insert(original.grid[i].begin(), original.grid[i].end());
+    }
+
+    return result;
+}
+
+// 序列化函数，将 vsoData 对象转换为 JSON 对象
+json serializeVsoData(const shortVsoData& data) {
     json j;
-    for (const auto& [y, row] : grid) {
-        for (const auto& [x, value] : row) {
-            j[to_string(y)][to_string(x)] = value;
+    // 序列化固定数组
+    j["att"] = { data.att[0], data.att[1] };
+    j["def"] = { data.def[0], data.def[1] };
+    j["muv"] = { data.muv[0], data.muv[1] };
+    j["suv"] = { data.suv[0], data.suv[1] };
+
+    // 序列化 grid 数组（长度为2）
+    j["grid"] = json::array();
+    for (int i = 0; i < 2; ++i) {
+        json gridJson = json::object();
+        // 遍历外层 map
+        for (const auto& outerPair : data.grid[i]) {
+            int key1 = outerPair.first;
+            json innerJson = json::object();
+            // 遍历内层 map
+            for (const auto& innerPair : outerPair.second) {
+                int key2 = innerPair.first;
+                bool value = innerPair.second;
+                // JSON 的 key 必须为字符串，因此这里用 std::to_string 转换
+                innerJson[std::to_string(key2)] = value;
+            }
+            gridJson[std::to_string(key1)] = innerJson;
         }
+        j["grid"].push_back(gridJson);
     }
     return j;
 }
 
-// 反序列化 JSON 到 grid
-static GridType deserializeGrid(const json& j) {
-    GridType grid;
-    for (const auto& [yStr, row] : j.items()) {
-        INT y = stoi(yStr);
-        for (const auto& [xStr, value] : row.items()) {
-            INT x = stoi(xStr);
-            grid[y][x] = value.get<BOOL>();
+// 反序列化函数，从 JSON 对象还原 vsoData 对象
+shortVsoData deserializeVsoData(const json& j) {
+    shortVsoData data;
+    // 还原固定数组
+    if (j.contains("att") && j["att"].is_array() && j["att"].size() == 2) {
+        data.att[0] = j["att"][0].get<int>();
+        data.att[1] = j["att"][1].get<int>();
+    }
+    if (j.contains("def") && j["def"].is_array() && j["def"].size() == 2) {
+        data.def[0] = j["def"][0].get<int>();
+        data.def[1] = j["def"][1].get<int>();
+    }
+    if (j.contains("muv") && j["muv"].is_array() && j["muv"].size() == 2) {
+        data.muv[0] = j["muv"][0].get<int>();
+        data.muv[1] = j["muv"][1].get<int>();
+    }
+    if (j.contains("suv") && j["suv"].is_array() && j["suv"].size() == 2) {
+        data.suv[0] = j["suv"][0].get<int>();
+        data.suv[1] = j["suv"][1].get<int>();
+    }
+
+    // 还原 grid 数组
+    if (j.contains("grid") && j["grid"].is_array() && j["grid"].size() == 2) {
+        for (int i = 0; i < 2; ++i) {
+            json gridJson = j["grid"][i];
+            // 遍历外层对象
+            for (auto it = gridJson.begin(); it != gridJson.end(); ++it) {
+                int key1 = std::stoi(it.key());
+                // 遍历内层对象
+                for (auto innerIt = it.value().begin(); innerIt != it.value().end(); ++innerIt) {
+                    int key2 = std::stoi(innerIt.key());
+                    bool value = innerIt.value().get<bool>();
+                    data.grid[i][key1][key2] = value;
+                }
+            }
         }
     }
-    return grid;
+    return data;
 }
 
 void mySendMessage() {
@@ -57,7 +194,7 @@ void serverSendLoop(ENetPeer* peer, vsoData& mainData) {
             this_thread::sleep_for(chrono::seconds(1));
             continue;
         }
-        json data = serializeGrid(mainData.grid[0]);
+        json data = serializeVsoData(extractShortVsoData(mainData));
         string jsonData = data.dump();
         ENetPacket* packet = enet_packet_create(jsonData.c_str(), jsonData.size() + 1, ENET_PACKET_FLAG_RELIABLE);
         enet_peer_send(peer, 0, packet);
@@ -89,7 +226,17 @@ void serverReceiveLoop(ENetHost* server, vsoData& mainData) {
                     string receivedData(reinterpret_cast<char*>(event.packet->data));
                     cout << "收到客户端数据: " << receivedData << endl;
                     if (receivedData != "go") {
-                        // 添加对客户端操作数据包的处理
+                        // 同步客户端的操作数据
+                        serverVsoData j=deserialize(receivedData);
+
+                        mainData.att[0] = j.att[0];
+                        mainData.att[1] = j.att[1];
+                        mainData.def[0] = j.def[0];
+                        mainData.def[1] = j.def[1];
+                        mainData.muv[0] = j.muv[0];
+                        mainData.muv[1] = j.muv[1];
+                        mainData.suv[0] = j.suv[0];
+                        mainData.suv[1] = j.suv[1];
 
                     }
                     enet_packet_destroy(event.packet);
@@ -169,7 +316,7 @@ void clientSendLoop(ENetPeer* peer, vsoData& mainData) {
             this_thread::sleep_for(chrono::seconds(1));
             continue;
         }
-        json change = move2json(&mainData);
+        json change = serialize(extractServerVsoData(mainData));
         string jsonData = change.dump(); // 用户的设置数据
         ENetPacket* packet = enet_packet_create(jsonData.c_str(), jsonData.size() + 1, ENET_PACKET_FLAG_RELIABLE);
         enet_peer_send(peer, 0, packet);
@@ -203,7 +350,26 @@ void clientReceiveLoop(ENetHost* client, vsoData& mainData) {
                     if (receivedData != "go") {
                         try {
                             json newdata = json::parse(receivedData);
-                            mainData.grid[0] = deserializeGrid(newdata);
+                            shortVsoData shortData = deserializeVsoData(newdata);
+                            mainData.att[0] = shortData.att[0];
+                            mainData.att[1] = shortData.att[1];
+
+                            // 复制 def 数组
+                            mainData.def[0] = shortData.def[0];
+                            mainData.def[1] = shortData.def[1];
+
+                            // 复制 muv 数组
+                            mainData.muv[0] = shortData.muv[0];
+                            mainData.muv[1] = shortData.muv[1];
+
+                            // 复制 suv 数组
+                            mainData.suv[0] = shortData.suv[0];
+                            mainData.suv[1] = shortData.suv[1];
+
+                            // 复制 grid 数组
+                            for (int i = 0; i < 2; ++i) {
+                                mainData.grid[i].insert(shortData.grid[i].begin(), shortData.grid[i].end());
+                            }
                         }
                         catch (std::exception& e) {
                             cerr << "解析JSON数据出错: " << e.what() << endl;
