@@ -9,7 +9,6 @@
 #define IDP2OK                          5
 #define ID_START                        6
 #define ID_STOP                         7
-#define IDlizi                          8
 #define ID_STARTSERVER                  8
 #define ID_STARTCLIENT                  11
 #define IDD_GAMEOFLIFE_DIALOG           102
@@ -35,6 +34,7 @@
 #define IDD_JOINROOM                    140
 #define IDD_VSONLINE                    141
 #define IDD_RULES                       145
+#define IDD_VSOnlineRULES               146
 #define IDC_EDITvsSIZE                  1000
 #define IDC_EDITvsSPEED                 1001
 #define IDC_P1ATT                       1002
@@ -104,16 +104,17 @@
 #define ID_VSMODE                       32799
 #define ID_32799                        32799
 #define ID_VSOnline                     32801
-#define IDM_SAVE                        32802
+#define ID_SAVEJSON                     32802
 #define IDM_LOAD                        32803
 #define ID_32806                        32806
 #define ID_32807                        32807
 #define ID_32808                        32808
 #define IDM_RULES                       32809
 #define ID_32810                        32810
-#define WM_SERVER_WAITING				(WM_USER + 1)
-#define WM_CLIENT_WAITING				(WM_USER + 2)
-#define WM_RECEIVE						(WM_USER + 3)
+#define ID_32811                        32811
+#define ID_32812                        32812
+#define ID_32813                        32813
+#define IDM_SCORERULES                  32814
 #define IDC_STATIC                      -1
 
 // Next default values for new objects
@@ -122,7 +123,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NO_MFC                     1
 #define _APS_NEXT_RESOURCE_VALUE        147
-#define _APS_NEXT_COMMAND_VALUE         32811
+#define _APS_NEXT_COMMAND_VALUE         32815
 #define _APS_NEXT_CONTROL_VALUE         1029
 #define _APS_NEXT_SYMED_VALUE           110
 #endif

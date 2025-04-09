@@ -1,5 +1,5 @@
 /*
-    用于实现单机模拟“规则”对话框消息处理
+    用于实现“规则”对话框消息处理
 */
 #include "framework.h"
 #include "gameOfLife.h"

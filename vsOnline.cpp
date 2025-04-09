@@ -9,9 +9,9 @@ INT_PTR CALLBACK VSOnlineDot(HWND hDlg, UINT message, WPARAM wParam, LPARAM lPar
     {
     case WM_INITDIALOG:
     {
+        // 初始化窗口数据结构体
         vsoData* data = new vsoData();
         data->ifCreate = FALSE;
-        // data->ifRun = FALSE;
         data->ifMouseDown = FALSE;
         data->ifServer = FALSE;
         data->ifClient = FALSE;
@@ -68,6 +68,18 @@ INT_PTR CALLBACK VSOnlineDot(HWND hDlg, UINT message, WPARAM wParam, LPARAM lPar
         int wmId = LOWORD(wParam);
         switch (wmId)
         {
+        // 规则栏系列按钮
+        case IDM_RULES:
+        {
+            DialogBox(GetModuleHandle(NULL), MAKEINTRESOURCE(IDD_VSRULES), hDlg, Rules);
+            break;
+        }
+        case IDM_SCORERULES:
+        {
+            DialogBox(GetModuleHandle(NULL), MAKEINTRESOURCE(IDD_VSOnlineRULES), hDlg, Rules);
+            break;
+        }
+        // 网格大小系列按钮
         case IDOKvsSIZE:
         {
             BOOL success; data->ifCreate = FALSE;
@@ -87,7 +99,7 @@ INT_PTR CALLBACK VSOnlineDot(HWND hDlg, UINT message, WPARAM wParam, LPARAM lPar
             }
             break;
         }
-        // 对于下面一系列add/sub，若为客户端，需要将操作同步给服务端（？
+        // 数值修改系列按钮
         case ID_ADDATT:
         {
             HWND hChara = GetDlgItem(hDlg, IDC_CHARA);
@@ -248,6 +260,7 @@ INT_PTR CALLBACK VSOnlineDot(HWND hDlg, UINT message, WPARAM wParam, LPARAM lPar
             }
             break;
         }
+        // 单步运行按钮
         case ID_START:
         {
             if (data->ifClient || data->ifServer) {
@@ -268,27 +281,11 @@ INT_PTR CALLBACK VSOnlineDot(HWND hDlg, UINT message, WPARAM wParam, LPARAM lPar
                 data->grid[0] = std::move(ans1);
                 data->grid[1] = std::move(ans2);
                 InvalidateRect(hDlg, &rect, TRUE);
-                ////删除已有部分
-                //data->grid[0].clear();
-                //data->grid[1].clear();
             }
             
             break;
         }
-        /*case ID_STOP:
-        {
-            if (data->ifClient|| data->ifServer) {
-                data->send = TRUE;
-            }
-            else {
-                data->grid[0].clear();
-                data->grid[1].clear();
-                data->ifCreate = FALSE;
-                RECT rect = { 0,0,data->tableX * data->cellSize,data->tableY * data->cellSize };
-                InvalidateRect(hDlg, &rect, TRUE);
-            }
-            break;
-        }*/
+        // 通信服务建立系列按钮
         case ID_STARTSERVER:
         {
             EnableWindow(GetDlgItem(hDlg,ID_STARTCLIENT), FALSE);
@@ -316,16 +313,19 @@ INT_PTR CALLBACK VSOnlineDot(HWND hDlg, UINT message, WPARAM wParam, LPARAM lPar
             }
             return (INT_PTR)TRUE;
         }
-        case IDM_SAVE:
+        // 存档按钮(json)
+        case ID_SAVEJSON:
         {
             saveVSGrid(hDlg, data->grid);
             return (INT_PTR)TRUE;
         }
+        // 存档按钮(bmp)
         case ID_SAVE:
         {
             saveBmp(hDlg, 0, 0, data->cellSize * data->tableX, data->cellSize * data->tableY);
             return (INT_PTR)TRUE;
         }
+        // 读档按钮(json)
         case IDM_LOAD:
         {
             loadVSGrid(hDlg, data->grid);
@@ -335,6 +335,7 @@ INT_PTR CALLBACK VSOnlineDot(HWND hDlg, UINT message, WPARAM wParam, LPARAM lPar
             MessageBox(hDlg, L"成功加载文件: ", L"加载成功", MB_ICONINFORMATION);
             return (INT_PTR)TRUE;
         }
+        // 网格移动系列按钮
         case IDvsUP:
         {
             if (data->moveY > 0)--(data->moveY);
@@ -367,6 +368,7 @@ INT_PTR CALLBACK VSOnlineDot(HWND hDlg, UINT message, WPARAM wParam, LPARAM lPar
             InvalidateRect(hDlg, &rect, TRUE);
             return (INT_PTR)TRUE;
         }
+        // 阵营切换处理
         case IDC_CHARA:
         {
             HWND hChara = GetDlgItem(hDlg, IDC_CHARA);
@@ -483,6 +485,7 @@ INT_PTR CALLBACK VSOnlineDot(HWND hDlg, UINT message, WPARAM wParam, LPARAM lPar
                     (x + 1) * data->cellSize, (y + 1) * data->cellSize };
                 INT mx = x + data->moveX;
                 INT my = y + data->moveY;
+                // 按描述的对战规则处理重叠区域
                 if (findLife(data->grid[0], mx, my)) {
                     if (findLife(data->grid[1], mx, my)) {
                         INT p1vs = data->grid[0][my][mx] ? data->att[0] : data->def[0];

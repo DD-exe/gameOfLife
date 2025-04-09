@@ -17,13 +17,18 @@
 #include <unordered_map>
 #include <string>
 #include <thread>
-//network
+// 网络
 #include <nlohmann/json.hpp>
 #include <winsock2.h>
 #include <iphlpapi.h>
 #include <ws2tcpip.h>
 #pragma comment(lib, "iphlpapi.lib")
 #pragma comment(lib, "ws2_32.lib")
+
+// 加入新消息类型
+#define WM_SERVER_WAITING				(WM_USER + 1)
+#define WM_CLIENT_WAITING				(WM_USER + 2)
+#define WM_RECEIVE						(WM_USER + 3)
 
 #define RGBgrey     RGB(200,200,200)
 #define RGBblack    RGB(0,0,0)
@@ -68,17 +73,22 @@ struct siData {
     INT         colorBlockSize;
 };
 struct vsData {
+    // 细胞状态存储
     std::unordered_map<INT, std::unordered_map<INT, BOOL>> grid[2];
+    // 内部信号变量
     BOOL ifCreate;
     BOOL ifRun;
     BOOL ifMouseDown;
     INT lastX, lastY;
     INT speed;
-    INT cellSize; INT tableX; INT tableY; INT listHalfSize;
+    INT moveX, moveY;
+    // 玩家参数
+    INT cellSize; INT tableX; INT tableY;
     INT4 rule[2];
     INT att[2]; INT def[2];
-    INT moveX, moveY;
     COLORREF playerColor[2];
+    // 页面布局参数
+    INT listHalfSize;
     INT colorBlockX;
     INT colorBlockY;
     INT colorBlockSize;
@@ -140,8 +150,7 @@ INT_PTR CALLBACK VSdot(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam);  
 INT_PTR CALLBACK single(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam);                 // single
 void SetSingleWindows(HWND hDlg, siData* data);
 void moveSingleWindows(HWND hDlg, siData* data, INT clientWidth);
-INT_PTR CALLBACK VSOnline(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam);               // vsOnline
-INT_PTR CALLBACK VSOnlineDot(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam);
+INT_PTR CALLBACK VSOnlineDot(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam);            // vsOnline
 INT_PTR CALLBACK color(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam);                  // color
 void runServer(vsoData& data, HWND hDlg);                                                       // trans
 void runClient(vsoData& data, HWND hDlg);

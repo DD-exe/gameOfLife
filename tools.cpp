@@ -6,6 +6,7 @@
 #include "gameOfLife.h"
 #include <random>
 
+// 绘制网格
 void myPaintFrame(Gdiplus::Graphics& graphics, int x, int y, int w, int h, int cellSize)
 {
     if (cellSize <= 0)return;
@@ -20,6 +21,7 @@ void myPaintFrame(Gdiplus::Graphics& graphics, int x, int y, int w, int h, int c
     }
 }
 
+// 简单统计三行细胞数目，用于生命迭代
 INT getAll(std::unordered_map<INT, std::unordered_map<INT, BOOL>>& grid,INT x, INT y, INT z) {
     INT ans = 0;
     if (grid.count(x)) {
@@ -35,6 +37,7 @@ INT getAll(std::unordered_map<INT, std::unordered_map<INT, BOOL>>& grid,INT x, I
     return ans;
 }
 
+// 清空状态表
 void delState(STATE** x) {
     for (int i = 0; i < 9 * 9 * 9 * 9; ++i) {
         if (x[i] != nullptr) {
@@ -51,6 +54,7 @@ int getRandomNum(int min, int max) {
     return distrib(gen);
 }
 
+// wchar_t[]转string
 std::string wc2s(const wchar_t* wstr) {
     int len = WideCharToMultiByte(CP_UTF8, 0, wstr, -1, nullptr, 0, nullptr, nullptr);
     std::string str(len, 0);

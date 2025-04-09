@@ -12,6 +12,7 @@ INT_PTR CALLBACK single(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
     {
     case WM_INITDIALOG:
     {
+        // 初始化窗口数据结构体
         siData* data = new siData();
         data->ifRun = FALSE;
         data->cellSize = 10;
@@ -20,7 +21,7 @@ INT_PTR CALLBACK single(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
         data->speed = 10;
         data->ifCreate = FALSE;
         data->ifMouseDown = FALSE;
-        data->lastX = data->lastY = -1;                         //TODO: done
+        data->lastX = data->lastY = -1;                         
         data->listHalfSize = 150;
         data->listUnitHeight = 40;
         data->titleSize = 80;
@@ -75,7 +76,6 @@ INT_PTR CALLBACK single(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
                 oX = data->tableX * data->cellSize > oX ? data->tableX * data->cellSize : oX;
                 oY = data->tableY * data->cellSize > oY ? data->tableY * data->cellSize : oY;
                 RECT rect = { 0,0,oX,oY };
-                // COLORREF it=SetTextColor(GetDC(cellsizeInfo), RGB(255, 255, 0));
                 SetWindowText(data->cellsizeInfo, std::to_wstring(data->cellSize).c_str());
                 InvalidateRect(hDlg, &rect, TRUE);
             }
@@ -126,7 +126,7 @@ INT_PTR CALLBACK single(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
             }
         }
         break;
-        case IDM_SAVE:
+        case ID_SAVEJSON:
         {
             saveGrid(hDlg, data->grid);
         }
@@ -271,6 +271,7 @@ INT_PTR CALLBACK single(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
     return (INT_PTR)FALSE;
 }
 
+// 初始化一系列控件
 void SetSingleWindows(HWND hDlg, siData* data) {
     INT clientWidth, clientHeight;
     getClientXY(hDlg, &clientWidth, &clientHeight);
@@ -399,6 +400,7 @@ void SetSingleWindows(HWND hDlg, siData* data) {
     data->colorBlockSize = 64;
 }
 
+// 在窗口大小变化时移动控件
 void moveSingleWindows(HWND hDlg, siData* data,INT clientWidth) {
     MoveWindow(data->startBotton, clientWidth - 50 - data->listHalfSize,
         data->listUnitHeight * 0, 100, 30, TRUE);

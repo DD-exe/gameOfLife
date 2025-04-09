@@ -9,6 +9,7 @@ INT_PTR CALLBACK VSdot(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
     {
     case WM_INITDIALOG:
     {
+        // 初始化窗口数据结构体
         vsData* data = new vsData();
         data->ifCreate = FALSE;
         data->ifRun = FALSE;
@@ -54,9 +55,9 @@ INT_PTR CALLBACK VSdot(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
         {
         case IDM_RULES:
         {
-            DialogBox(GetModuleHandle(NULL), MAKEINTRESOURCE(IDD_VSRULES), hDlg, VSRules);
+            DialogBox(GetModuleHandle(NULL), MAKEINTRESOURCE(IDD_VSRULES), hDlg, Rules);
+            break;
         }
-        break;
         case IDOKvsSIZE:
         {
             BOOL success; data->ifCreate = FALSE;
@@ -143,7 +144,7 @@ INT_PTR CALLBACK VSdot(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
             InvalidateRect(hDlg, &rect, TRUE);
             break;
         }
-        case IDM_SAVE:
+        case ID_SAVEJSON:
         {
             saveVSGrid(hDlg, data->grid);
             return (INT_PTR)TRUE;
@@ -235,6 +236,7 @@ INT_PTR CALLBACK VSdot(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
                     (x + 1) * data->cellSize, (y + 1) * data->cellSize };
                 INT mx = x+data->moveX;
                 INT my = y+data->moveY;
+                // 按描述的对战规则处理重叠区域
                 if (findLife(data->grid[0], mx, my)) {
                     if (findLife(data->grid[1], mx, my)) {
                         INT p1vs = data->grid[0][my][mx] ? data->att[0] : data->def[0];

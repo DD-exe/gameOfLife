@@ -66,7 +66,7 @@ BEGIN
     MENUITEM "重置(&R)",                      ID_STOP
     POPUP "保存(&S)"
     BEGIN
-        MENUITEM "保存数据(&D)",                    IDM_SAVE
+        MENUITEM "保存数据(&D)",                    ID_SAVEJSON
         MENUITEM "保存画面(&F)",                    ID_SAVE
     END
     MENUITEM "读取(&L)",                      IDM_LOAD
@@ -79,10 +79,15 @@ BEGIN
     MENUITEM "重置(&R)",                      ID_STOP
     POPUP "保存(&S)"
     BEGIN
-        MENUITEM "保存数据(&D)",                    IDM_SAVE
+        MENUITEM "保存数据(&D)",                    ID_SAVEJSON
         MENUITEM "保存画面(&F)",                    ID_SAVE
     END
     MENUITEM "读取数据(L)",                     IDM_LOAD
+    POPUP "帮助(&H)"
+    BEGIN
+        MENUITEM "对战规则(&J)",                    IDM_RULES
+        MENUITEM "分数规则(&K)",                    IDM_SCORERULES
+    END
 END
 
 
@@ -267,6 +272,20 @@ BEGIN
     LTEXT           "自由地调整你的细胞的存活繁殖需求和攻防等级，然后进行生命的演化模拟吧！",IDC_STATIC,31,123,306,8
 END
 
+IDD_VSOnlineRULES DIALOGEX 0, 0, 312, 143
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "分数调整规则说明"
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    DEFPUSHBUTTON   "确定",IDOK,255,122,50,14
+    LTEXT           "为适应在线对战的条件，我们引入了分数作为特殊约束。",-1,31,24,274,8
+    LTEXT           "开局20点，每回合增加10点；",-1,45,41,235,8
+    LTEXT           "1点可改变一格状态(无论是加入还是移除细胞)；",-1,45,59,210,8
+    LTEXT           "2点可增加1攻击或1防御；",-1,45,75,184,8
+    LTEXT           "100点可提升1级繁殖或适应，3级为满。",-1,45,91,227,8
+    LTEXT           "玩得开心~",-1,30,109,206,8
+END
+
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -357,6 +376,14 @@ BEGIN
         RIGHTMARGIN, 425
         TOPMARGIN, 7
         BOTTOMMARGIN, 161
+    END
+
+    IDD_VSOnlineRULES, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 305
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 136
     END
 END
 #endif    // APSTUDIO_INVOKED
